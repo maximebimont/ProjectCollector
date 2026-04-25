@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: vintage-marketplace
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vintage_marketplace
+    username: vintage_user
+    password: vintage_password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
