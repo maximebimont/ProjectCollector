@@ -3,7 +3,7 @@ spring:
     name: vintage-marketplace
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/vintage_marketplace
+    url: jdbc:postgresql://localhost:5433/vintage_marketplace
     username: vintage_user
     password: vintage_password
 
