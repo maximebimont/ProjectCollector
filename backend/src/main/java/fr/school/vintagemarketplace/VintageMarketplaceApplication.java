@@ -1,4 +1,4 @@
-package fr.school.vintage_marketplace;
+package fr.school.vintagemarketplace;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
