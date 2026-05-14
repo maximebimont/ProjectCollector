@@ -1,1 +1,96 @@
-<p>item-list works!</p>
+<header class="navbar">
+  <div>
+    <h1>Collector</h1>
+    <p>Marketplace d’objets vintage et de collection</p>
+  </div>
+
+  <nav>
+    <a routerLink="/items">Catalogue</a>
+
+    <a *ngIf="authService.isAuthenticated()" routerLink="/items/new">
+      Vendre un objet
+    </a>
+
+    <a *ngIf="authService.isAuthenticated()" routerLink="/my-items">
+      Mes objets
+    </a>
+
+    <a *ngIf="authService.isAuthenticated()" routerLink="/my-purchases">
+      Mes achats
+    </a>
+
+    <a *ngIf="authService.isAuthenticated()" routerLink="/my-sales">
+      Mes ventes
+    </a>
+
+    <a *ngIf="!authService.isAuthenticated()" routerLink="/login">
+      Connexion
+    </a>
+
+    <a *ngIf="!authService.isAuthenticated()" routerLink="/register">
+      Inscription
+    </a>
+
+    <button *ngIf="authService.isAuthenticated()" type="button" (click)="logout()">
+      Déconnexion
+    </button>
+  </nav>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h2>Objets disponibles</h2>
+    <p>Découvrez les objets de collection proposés par les vendeurs particuliers.</p>
+  </section>
+
+  <div *ngIf="isLoading" class="state">
+    Chargement des objets...
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && items.length === 0" class="state">
+    Aucun objet disponible pour le moment.
+  </div>
+
+  <section *ngIf="!isLoading && items.length > 0" class="grid">
+    <article class="card" *ngFor="let item of items">
+      <div class="image-wrapper">
+        <img
+          *ngIf="item.imageUrl; else noImage"
+          [src]="item.imageUrl"
+          [alt]="item.title"
+        />
+
+        <ng-template #noImage>
+          <div class="placeholder">
+            Pas d’image
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="card-content">
+        <div class="card-header">
+          <h3>{{ item.title }}</h3>
+          <span>{{ item.price | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}</span>
+        </div>
+
+        <p class="description">
+          {{ item.description }}
+        </p>
+
+        <p class="seller">
+          Vendeur : {{ item.sellerFirstname }} {{ item.sellerLastname }}
+        </p>
+
+        <div class="actions">
+          <a [routerLink]="['/items', item.id]">
+            Voir le détail
+          </a>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>

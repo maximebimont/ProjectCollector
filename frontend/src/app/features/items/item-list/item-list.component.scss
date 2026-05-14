@@ -1,0 +1,150 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 40px;
+  background: #222;
+  color: white;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: #ccc;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  a,
+  button {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  button {
+    padding: 8px 12px;
+    border: 1px solid #fff;
+    border-radius: 8px;
+  }
+}
+
+.container {
+  padding: 40px;
+  background: #f5f5f5;
+  min-height: calc(100vh - 96px);
+}
+
+.hero {
+  margin-bottom: 32px;
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 32px;
+  }
+
+  p {
+    margin: 0;
+    color: #666;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.image-wrapper {
+  height: 180px;
+  background: #eaeaea;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.placeholder {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  span {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+}
+
+.description {
+  color: #555;
+  margin: 12px 0;
+}
+
+.seller {
+  color: #777;
+  font-size: 14px;
+}
+
+.actions {
+  margin-top: 16px;
+
+  a {
+    display: inline-block;
+    padding: 10px 14px;
+    background: #222;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+}
+
+.state,
+.error {
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+}
+
+.error {
+  color: #c0392b;
+}
