@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16
-    container_name: vintage_marketplace_db
+    container_name: collector_postgres
     restart: always
     environment:
       POSTGRES_DB: vintage_marketplace
@@ -11,6 +11,23 @@ services:
       - "5433:5432"
     volumes:
       - vintage_marketplace_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: collector_backend
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/vintage_marketplace
+      SPRING_DATASOURCE_USERNAME: vintage_user
+      SPRING_DATASOURCE_PASSWORD: vintage_password
+      APP_JWT_SECRET: ZmFrZVNlY3JldEtleUZvclNjaG9vbFByb2plY3RNdXN0QmVMb25nRW5vdWdoMzI=
+      APP_JWT_EXPIRATION: 86400000
+    ports:
+      - "8080:8080"
 
 volumes:
   vintage_marketplace_data:

@@ -3,9 +3,9 @@ spring:
     name: vintage-marketplace
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/vintage_marketplace
-    username: vintage_user
-    password: vintage_password
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/vintage_marketplace}
+    username: ${SPRING_DATASOURCE_USERNAME:vintage_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:vintage_password}
 
   jpa:
     hibernate:
@@ -20,8 +20,8 @@ server:
 
 app:
   jwt:
-    secret: "ZmFrZVNlY3JldEtleUZvclNjaG9vbFByb2plY3RNdXN0QmVMb25nRW5vdWdoMzI="
-    expiration: 86400000
+    secret: ${APP_JWT_SECRET:ZmFrZVNlY3JldEtleUZvclNjaG9vbFByb2plY3RNdXN0QmVMb25nRW5vdWdoMzI=}
+    expiration: ${APP_JWT_EXPIRATION:86400000}
 
 management:
   endpoints:
