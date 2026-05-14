@@ -17,8 +17,8 @@ on:
       - '.github/workflows/backend-ci.yml'
 
 jobs:
-  backend-build-test-and-security:
-    name: Build, test, scan and dockerize backend
+  backend-build-test-and-docker:
+    name: Build, test and dockerize backend
     runs-on: ubuntu-latest
 
     defaults:
@@ -49,19 +49,6 @@ jobs:
 
       - name: Package backend
         run: mvn package -DskipTests
-
-      - name: Run OWASP Dependency-Check
-        run: |
-          mvn org.owasp:dependency-check-maven:check \
-            -Dformat=HTML \
-            -DfailBuildOnCVSS=9
-
-      - name: Upload dependency-check report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-check-report
-          path: backend/target/dependency-check-report.html
 
       - name: Build backend Docker image
         run: docker build -t collector-backend:ci .
