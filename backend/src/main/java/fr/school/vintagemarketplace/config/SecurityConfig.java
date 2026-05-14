@@ -41,8 +41,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Auth publique
                         .requestMatchers("/api/auth/**").permitAll()
-                        
+
+                        // Actuator public pour healthcheck
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/actuator/info").permitAll()
+
+                        // Mes objets : protégé
                         .requestMatchers(HttpMethod.GET, "/api/items/me").authenticated()
+
+                        // Catalogue public
                         .requestMatchers(HttpMethod.GET, "/api/items").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/items/*").permitAll()
 

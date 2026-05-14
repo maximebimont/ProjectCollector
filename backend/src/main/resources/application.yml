@@ -22,3 +22,23 @@ app:
   jwt:
     secret: "ZmFrZVNlY3JldEtleUZvclNjaG9vbFByb2plY3RNdXN0QmVMb25nRW5vdWdoMzI="
     expiration: 86400000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+  endpoint:
+    health:
+      show-details: always
+
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: Collector Backend
+    description: Backend Spring Boot pour la marketplace Collector
+    version: 1.0.0
