@@ -1,0 +1,57 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h1>Créer un compte</h1>
+    <p>Inscrivez-vous pour acheter ou vendre des objets de collection.</p>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label>Prénom</label>
+        <input type="text" formControlName="firstname" placeholder="Votre prénom" />
+
+        <small *ngIf="registerForm.controls.firstname.touched && registerForm.controls.firstname.invalid">
+          Prénom obligatoire.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label>Nom</label>
+        <input type="text" formControlName="lastname" placeholder="Votre nom" />
+
+        <small *ngIf="registerForm.controls.lastname.touched && registerForm.controls.lastname.invalid">
+          Nom obligatoire.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" formControlName="email" placeholder="exemple@email.com" />
+
+        <small *ngIf="registerForm.controls.email.touched && registerForm.controls.email.invalid">
+          Email obligatoire et valide.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" formControlName="password" placeholder="Minimum 8 caractères" />
+
+        <small *ngIf="registerForm.controls.password.touched && registerForm.controls.password.invalid">
+          Mot de passe obligatoire, minimum 8 caractères.
+        </small>
+      </div>
+
+      <div class="error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Création...' : 'Créer mon compte' }}
+      </button>
+    </form>
+
+    <p class="switch-link">
+      Déjà un compte ?
+      <a routerLink="/login">Se connecter</a>
+    </p>
+  </div>
+</div>
