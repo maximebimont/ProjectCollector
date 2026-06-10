@@ -1,1 +1,100 @@
-<p>my-items works!</p>
+<header class="navbar">
+  <div>
+    <h1>Collector</h1>
+    <p>Marketplace d’objets vintage et de collection</p>
+  </div>
+
+  <nav>
+    <a routerLink="/items">Catalogue</a>
+
+    <a routerLink="/items/new">
+      Vendre un objet
+    </a>
+
+    <a routerLink="/my-items">
+      Mes objets
+    </a>
+
+    <a routerLink="/my-purchases">
+      Mes achats
+    </a>
+
+    <a routerLink="/my-sales">
+      Mes ventes
+    </a>
+
+    <button type="button" (click)="logout()">
+      Déconnexion
+    </button>
+  </nav>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h2>Mes objets</h2>
+    <p>Retrouvez ici les objets que vous avez mis en vente sur Collector.</p>
+  </section>
+
+  <section class="actions">
+    <a class="primary-link" routerLink="/items/new">
+      Vendre un objet
+    </a>
+
+    <a class="secondary-link" routerLink="/items">
+      Retour au catalogue
+    </a>
+  </section>
+
+  <div *ngIf="isLoading" class="state">
+    Chargement de vos objets...
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && items.length === 0" class="state">
+    Vous n’avez encore créé aucun objet.
+  </div>
+
+  <section *ngIf="!isLoading && !errorMessage && items.length > 0" class="grid">
+    <article class="card" *ngFor="let item of items; trackBy: trackByItemId">
+      <div class="image-wrapper">
+        <img
+          *ngIf="item.imageUrl; else noImage"
+          [src]="item.imageUrl"
+          [alt]="item.title || 'Image de l’objet'"
+        />
+
+        <ng-template #noImage>
+          <div class="placeholder">
+            Pas d’image
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="card-content">
+        <div class="card-header">
+          <h3>{{ item.title || 'Objet sans titre' }}</h3>
+          <span class="status" [class.sold]="item.status === 'SOLD'">
+            {{ item.status === 'AVAILABLE' ? 'Disponible' : 'Vendu' }}
+          </span>
+        </div>
+
+        <p class="price">
+          {{ item.price | currency:'EUR':'symbol':'1.2-2' }}
+        </p>
+
+        <p class="description">
+          {{ item.description || 'Aucune description disponible.' }}
+        </p>
+
+        <div class="card-footer">
+          <a class="detail-button" [routerLink]="['/items', item.id]">
+            Voir le détail
+          </a>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
