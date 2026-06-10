@@ -1,1 +1,85 @@
-<p>my-sales works!</p>
+<header class="navbar">
+  <div>
+    <h1>Collector</h1>
+    <p>Marketplace d’objets vintage et de collection</p>
+  </div>
+
+  <nav>
+    <a routerLink="/items">Catalogue</a>
+    <a routerLink="/items/new">Vendre un objet</a>
+    <a routerLink="/my-items">Mes objets</a>
+    <a routerLink="/my-purchases">Mes achats</a>
+    <a routerLink="/my-sales">Mes ventes</a>
+    <button type="button" (click)="logout()">Déconnexion</button>
+  </nav>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h2>Mes ventes</h2>
+    <p>Consultez les commandes réalisées sur les objets que vous avez vendus.</p>
+  </section>
+
+  <section class="actions">
+    <a class="secondary-link" routerLink="/items">
+      Retour au catalogue
+    </a>
+  </section>
+
+  <div *ngIf="isLoading" class="state">
+    Chargement de vos ventes...
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && orders.length === 0" class="state">
+    Vous n’avez encore réalisé aucune vente.
+  </div>
+
+  <section *ngIf="!isLoading && !errorMessage && orders.length > 0" class="grid">
+    <article class="card" *ngFor="let order of orders; trackBy: trackByOrderId">
+      <div class="image-wrapper">
+        <img
+          *ngIf="order.itemImageUrl; else noImage"
+          [src]="order.itemImageUrl"
+          [alt]="order.itemTitle || 'Image de l’objet'"
+        />
+
+        <ng-template #noImage>
+          <div class="placeholder">Pas d’image</div>
+        </ng-template>
+      </div>
+
+      <div class="card-content">
+        <div class="card-header">
+          <h3>{{ order.itemTitle || 'Objet sans titre' }}</h3>
+          <span class="status" [class.cancelled]="order.status === 'CANCELLED'">
+            {{ order.status === 'COMPLETED' ? 'Commande terminée' : 'Commande annulée' }}
+          </span>
+        </div>
+
+        <p class="amount">
+          Prix : {{ order.itemPrice | currency:'EUR':'symbol':'1.2-2' }}
+        </p>
+
+        <p class="meta">
+          Acheteur : {{ order.buyerFirstname }} {{ order.buyerLastname }}
+        </p>
+
+        <p class="meta">
+          Commission Collector : {{ order.platformFee | currency:'EUR':'symbol':'1.2-2' }}
+        </p>
+
+        <p class="meta">
+          Montant vendeur : {{ order.sellerAmount | currency:'EUR':'symbol':'1.2-2' }}
+        </p>
+
+        <p class="meta">
+          Date de vente : {{ order.createdAt | date:'dd/MM/yyyy à HH:mm' }}
+        </p>
+      </div>
+    </article>
+  </section>
+</main>
