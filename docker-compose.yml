@@ -29,5 +29,16 @@ services:
     ports:
       - "8080:8080"
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: collector_frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"
+
 volumes:
   vintage_marketplace_data:
