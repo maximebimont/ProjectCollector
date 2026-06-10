@@ -8,7 +8,7 @@ on:
     paths:
       - 'backend/**'
       - 'frontend/**'
-      - '.github/workflows/backend-ci.yml'
+      - '.github/workflows/collector-ci.yml'
 
   pull_request:
     branches:
@@ -16,7 +16,7 @@ on:
     paths:
       - 'backend/**'
       - 'frontend/**'
-      - '.github/workflows/backend-ci.yml'
+      - '.github/workflows/collector-ci.yml'
 
 jobs:
   backend-build-test-and-docker:
