@@ -55,27 +55,26 @@
     Aucun objet disponible pour le moment.
   </div>
 
-  <section *ngIf="!isLoading && items.length > 0" class="grid">
-    <article class="card" *ngFor="let item of items">
+  <section *ngIf="!isLoading && !errorMessage && items.length > 0" class="grid">
+    <article class="card" *ngFor="let item of items; trackBy: trackByItemId">
       <div class="image-wrapper">
         <img
-          *ngIf="item.imageUrl; else noImage"
+          *ngIf="item.imageUrl"
           [src]="item.imageUrl"
           [alt]="item.title"
         />
 
-        <ng-template #noImage>
-          <div class="placeholder">
-            Pas d’image
-          </div>
-        </ng-template>
+        <div *ngIf="!item.imageUrl" class="placeholder">
+          Pas d’image
+        </div>
       </div>
 
       <div class="card-content">
-        <div class="card-header">
-          <h3>{{ item.title }}</h3>
-          <span>{{ item.price | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}</span>
-        </div>
+        <h3>{{ item.title }}</h3>
+
+        <p class="price">
+          {{ item.price }} €
+        </p>
 
         <p class="description">
           {{ item.description }}
@@ -85,11 +84,9 @@
           Vendeur : {{ item.sellerFirstname }} {{ item.sellerLastname }}
         </p>
 
-        <div class="actions">
-          <a [routerLink]="['/items', item.id]">
-            Voir le détail
-          </a>
-        </div>
+        <a class="detail-button" [routerLink]="['/items', item.id]">
+          Voir le détail
+        </a>
       </div>
     </article>
   </section>
