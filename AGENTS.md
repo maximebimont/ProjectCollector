@@ -364,4 +364,4 @@ For each task:
 5. Summarize modified files.
 6. Mention any remaining issue clearly.
 
-Do not invent project files. Inspect the repository first.
+Do not invent project files, inspect the repository first.
