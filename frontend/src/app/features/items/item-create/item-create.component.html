@@ -1,1 +1,76 @@
-<p>item-create works!</p>
+<div class="page">
+  <div class="form-card">
+    <h1>Vendre un objet</h1>
+    <p class="intro">
+      Renseignez les informations principales de votre objet de collection.
+    </p>
+
+    <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="title">Titre</label>
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          placeholder="Nom de l’objet"
+        />
+        <small *ngIf="itemForm.controls.title.touched && itemForm.controls.title.invalid">
+          Le titre est obligatoire.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="5"
+          placeholder="Décrivez l’objet, son état et son histoire"
+        ></textarea>
+        <small *ngIf="itemForm.controls.description.touched && itemForm.controls.description.invalid">
+          La description est obligatoire.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="price">Prix</label>
+        <input
+          id="price"
+          type="number"
+          formControlName="price"
+          min="0.01"
+          step="0.01"
+          placeholder="59.90"
+        />
+        <small *ngIf="itemForm.controls.price.touched && itemForm.controls.price.hasError('required')">
+          Le prix est obligatoire.
+        </small>
+        <small *ngIf="itemForm.controls.price.touched && itemForm.controls.price.hasError('min')">
+          Le prix doit être supérieur à 0.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="imageUrl">URL d’image</label>
+        <input
+          id="imageUrl"
+          type="url"
+          formControlName="imageUrl"
+          placeholder="https://exemple.com/image.jpg"
+        />
+      </div>
+
+      <div class="error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Création en cours...' : 'Créer l’objet' }}
+      </button>
+    </form>
+
+    <a class="back-link" routerLink="/items">
+      Retour au catalogue
+    </a>
+  </div>
+</div>
