@@ -1,0 +1,190 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 40px;
+  background: #222;
+  color: white;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: #ccc;
+  }
+
+  nav {
+    display: flex;
+    gap: 16px;
+  }
+
+  a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+  }
+}
+
+.container {
+  padding: 40px;
+  background: #f5f5f5;
+  min-height: calc(100vh - 96px);
+}
+
+.detail-card {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 32px;
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.image-wrapper {
+  height: 420px;
+  background: #eaeaea;
+  border-radius: 12px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.placeholder {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+
+  h2 {
+    margin: 0;
+    font-size: 32px;
+  }
+}
+
+.seller {
+  color: #666;
+}
+
+.status {
+  align-self: flex-start;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #e8f6ef;
+  color: #1e8449;
+  font-weight: 700;
+
+  &.sold {
+    background: #fdecea;
+    color: #c0392b;
+  }
+}
+
+.description {
+  color: #444;
+  line-height: 1.6;
+}
+
+.price-box {
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 12px;
+
+  p {
+    margin: 0 0 4px;
+    color: #666;
+  }
+
+  strong {
+    font-size: 28px;
+  }
+}
+
+.fee-box {
+  padding: 16px;
+  background: #fafafa;
+  border-left: 4px solid #222;
+  border-radius: 8px;
+
+  p {
+    margin: 4px 0;
+    color: #555;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+
+  button,
+  a {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  button {
+    border: none;
+    background: #222;
+    color: white;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  a {
+    color: #222;
+    border: 1px solid #222;
+  }
+}
+
+.state,
+.error,
+.success,
+.order-summary {
+  padding: 16px;
+  border-radius: 12px;
+  background: white;
+}
+
+.error {
+  color: #c0392b;
+}
+
+.success {
+  background: #e8f6ef;
+  color: #1e8449;
+}
+
+.order-summary {
+  background: #f5f5f5;
+
+  h3 {
+    margin-top: 0;
+  }
+}

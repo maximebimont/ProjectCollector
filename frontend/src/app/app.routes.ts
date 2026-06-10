@@ -29,6 +29,11 @@ export const routes: Routes = [
       .then(m => m.ItemCreateComponent)
   },
   {
+    path: 'items/:id',
+    loadComponent: () => import('./features/items/item-detail/item-detail.component')
+      .then(m => m.ItemDetailComponent)
+  },
+  {
     path: 'my-items',
     canActivate: [authGuard],
     loadComponent: () => import('./features/items/my-items/my-items.component')
