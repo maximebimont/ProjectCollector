@@ -59,34 +59,38 @@
     <article class="card" *ngFor="let item of items; trackBy: trackByItemId">
       <div class="image-wrapper">
         <img
-          *ngIf="item.imageUrl"
+          *ngIf="item.imageUrl; else noImage"
           [src]="item.imageUrl"
-          [alt]="item.title"
+          [alt]="item.title || 'Image de l’objet'"
         />
 
-        <div *ngIf="!item.imageUrl" class="placeholder">
-          Pas d’image
-        </div>
+        <ng-template #noImage>
+          <div class="placeholder">
+            Pas d’image
+          </div>
+        </ng-template>
       </div>
 
       <div class="card-content">
-        <h3>{{ item.title }}</h3>
+        <h3>{{ item.title || 'Objet sans titre' }}</h3>
 
         <p class="price">
-          {{ item.price }} €
+          {{ item.price | currency:'EUR':'symbol':'1.2-2' }}
         </p>
 
         <p class="description">
-          {{ item.description }}
+          {{ item.description || 'Aucune description disponible.' }}
         </p>
 
         <p class="seller">
-          Vendeur : {{ item.sellerFirstname }} {{ item.sellerLastname }}
+          Vendeur : {{ item.sellerFirstname || 'Prénom' }} {{ item.sellerLastname || 'Nom' }}
         </p>
 
-        <a class="detail-button" [routerLink]="['/items', item.id]">
-          Voir le détail
-        </a>
+        <div class="card-footer">
+          <a class="detail-button" [routerLink]="['/items', item.id]">
+            Voir le détail
+          </a>
+        </div>
       </div>
     </article>
   </section>
