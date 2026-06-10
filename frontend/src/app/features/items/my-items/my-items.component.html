@@ -53,6 +53,10 @@
     {{ errorMessage }}
   </div>
 
+  <div *ngIf="actionErrorMessage" class="error">
+    {{ actionErrorMessage }}
+  </div>
+
   <div *ngIf="!isLoading && !errorMessage && items.length === 0" class="state">
     Vous n’avez encore créé aucun objet.
   </div>
@@ -90,9 +94,24 @@
         </p>
 
         <div class="card-footer">
-          <a class="detail-button" [routerLink]="['/items', item.id]">
-            Voir le détail
-          </a>
+          <div class="card-actions">
+            <a class="detail-button" [routerLink]="['/items', item.id]">
+              Voir le détail
+            </a>
+
+            <a class="edit-button" [routerLink]="['/items', item.id, 'edit']">
+              Modifier
+            </a>
+
+            <button
+              class="delete-button"
+              type="button"
+              [disabled]="deletingItemId === item.id"
+              (click)="deleteItem(item)"
+            >
+              {{ deletingItemId === item.id ? 'Suppression...' : 'Supprimer' }}
+            </button>
+          </div>
         </div>
       </div>
     </article>

@@ -186,6 +186,12 @@
   padding-top: 8px;
 }
 
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .detail-button {
   display: inline-block;
   width: fit-content;
@@ -195,6 +201,34 @@
   text-decoration: none;
   border-radius: 8px;
   font-weight: 600;
+}
+
+.edit-button,
+.delete-button {
+  display: inline-block;
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.edit-button {
+  border: 1px solid #222;
+  color: #222;
+  background: white;
+}
+
+.delete-button {
+  border: none;
+  background: #c0392b;
+  color: white;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .state,

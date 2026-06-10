@@ -20,6 +20,8 @@ export class MyItemsComponent implements OnInit {
   items: Item[] = [];
   isLoading = true;
   errorMessage = '';
+  actionErrorMessage = '';
+  deletingItemId: number | null = null;
 
   ngOnInit(): void {
     this.loadMyItems();
@@ -28,6 +30,7 @@ export class MyItemsComponent implements OnInit {
   loadMyItems(): void {
     this.isLoading = true;
     this.errorMessage = '';
+    this.actionErrorMessage = '';
 
     this.itemService.getMyItems().subscribe({
       next: (items) => {
@@ -48,5 +51,28 @@ export class MyItemsComponent implements OnInit {
 
   trackByItemId(index: number, item: Item): number {
     return item.id;
+  }
+
+  deleteItem(item: Item): void {
+    const confirmed = window.confirm(`Supprimer l’objet "${item.title}" ?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.deletingItemId = item.id;
+    this.actionErrorMessage = '';
+
+    this.itemService.deleteItem(item.id).subscribe({
+      next: () => {
+        this.items = this.items.filter(currentItem => currentItem.id !== item.id);
+        this.deletingItemId = null;
+      },
+      error: (error) => {
+        console.error(error);
+        this.actionErrorMessage = error.error?.message || 'Impossible de supprimer cet objet.';
+        this.deletingItemId = null;
+      }
+    });
   }
 }
