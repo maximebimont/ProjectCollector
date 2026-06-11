@@ -1,71 +1,20 @@
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px 40px;
-  background: #222;
-  color: white;
-
-  h1 {
-    margin: 0;
-    font-size: 28px;
-  }
-
-  p {
-    margin: 4px 0 0;
-    color: #ccc;
-  }
-
-  nav {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  a,
-  button {
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-  }
-
-  button {
-    padding: 8px 12px;
-    border: 1px solid white;
-    border-radius: 8px;
-  }
-}
-
 .container {
-  padding: 40px;
-  background: #f5f5f5;
+  padding: 32px 40px 48px;
+  background:
+    radial-gradient(circle at top right, rgba(148, 163, 184, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(248, 250, 252, 0.96) 0%, rgba(241, 245, 249, 0.92) 100%);
   min-height: calc(100vh - 96px);
 }
 
 .hero {
-  margin-bottom: 24px;
-
-  h2 {
-    margin: 0 0 8px;
-    font-size: 32px;
-  }
-
-  p {
-    margin: 0;
-    color: #666;
-  }
+  margin-bottom: 20px;
 }
 
 .actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .primary-link,
@@ -73,44 +22,65 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 14px;
-  border-radius: 8px;
+  padding: 11px 16px;
+  border-radius: 999px;
   text-decoration: none;
   font-weight: 600;
   line-height: 1;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .primary-link {
-  background: #222;
+  background: #0f172a;
   color: white;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.16);
 }
 
 .secondary-link {
-  border: 1px solid #222;
-  color: #222;
-  background: white;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.primary-link:hover,
+.secondary-link:hover {
+  transform: translateY(-1px);
+}
+
+.secondary-link:hover {
+  border-color: #0f172a;
+  background: #0f172a;
+  color: white;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
   align-items: stretch;
 }
 
 .card {
-  background: white;
-  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
   min-height: 420px;
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(148, 163, 184, 0.4);
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
 }
 
 .image-wrapper {
   height: 180px;
-  background: #eaeaea;
+  background: linear-gradient(135deg, #e2e8f0 0%, #f8fafc 100%);
   flex-shrink: 0;
   overflow: hidden;
 
@@ -127,17 +97,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #777;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .card-content {
-  padding: 20px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   flex: 1;
   min-height: 0;
-  color: #222;
+  color: #0f172a;
 }
 
 .card-header {
@@ -156,37 +128,38 @@
 
 .status {
   flex-shrink: 0;
-  padding: 6px 10px;
+  padding: 7px 11px;
   border-radius: 999px;
-  background: #e8f6ef;
-  color: #1e8449;
-  font-size: 13px;
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+  font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.02em;
 
   &.sold {
-    background: #fdecea;
-    color: #c0392b;
+    background: rgba(220, 38, 38, 0.1);
+    color: #b91c1c;
   }
 }
 
 .price {
   margin: 0;
   font-weight: 700;
-  font-size: 18px;
-  color: #111;
+  font-size: 20px;
+  color: #020617;
 }
 
 .description {
   margin: 0;
-  color: #555;
-  line-height: 1.4;
+  color: #475569;
+  line-height: 1.6;
   flex: 1;
   word-break: break-word;
 }
 
 .card-footer {
   margin-top: auto;
-  padding-top: 8px;
+  padding-top: 10px;
 }
 
 .card-actions {
@@ -200,13 +173,14 @@
   align-items: center;
   justify-content: center;
   width: fit-content;
-  padding: 10px 14px;
-  background: #222;
+  padding: 10px 15px;
+  background: #0f172a;
   color: white;
   text-decoration: none;
-  border-radius: 8px;
+  border-radius: 999px;
   font-weight: 600;
   line-height: 1;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 .edit-button,
@@ -215,22 +189,23 @@
   align-items: center;
   justify-content: center;
   width: fit-content;
-  padding: 10px 14px;
-  border-radius: 8px;
+  padding: 10px 15px;
+  border-radius: 999px;
   font-weight: 600;
   text-decoration: none;
   line-height: 1;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .edit-button {
-  border: 1px solid #222;
-  color: #222;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #0f172a;
   background: white;
 }
 
 .delete-button {
   border: none;
-  background: #c0392b;
+  background: #dc2626;
   color: white;
   cursor: pointer;
 
@@ -240,27 +215,47 @@
   }
 }
 
+.detail-button:hover,
+.edit-button:hover,
+.delete-button:hover {
+  transform: translateY(-1px);
+}
+
+.detail-button:hover {
+  background: #020617;
+  box-shadow: 0 14px 24px rgba(15, 23, 42, 0.18);
+}
+
+.edit-button:hover {
+  border-color: #0f172a;
+  background: #0f172a;
+  color: white;
+}
+
+.delete-button:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
 .state,
 .error {
-  padding: 20px;
-  background: white;
-  border-radius: 12px;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
 }
 
 .error {
-  color: #c0392b;
+  color: #b91c1c;
 }
 
 @media (max-width: 768px) {
-  .navbar,
   .container {
     padding: 24px;
   }
 
-  .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+  .actions {
+    margin-bottom: 18px;
   }
 
   .card-header {

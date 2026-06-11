@@ -29,9 +29,11 @@ export class ItemDetailComponent implements OnInit {
   isBuying = false;
   errorMessage = '';
   successMessage = '';
+  returnToMyItems = false;
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
+    this.returnToMyItems = this.route.snapshot.queryParamMap.get('from') === 'my-items';
 
     if (!id) {
       this.router.navigate(['/items']);
@@ -62,6 +64,10 @@ export class ItemDetailComponent implements OnInit {
       return;
     }
 
+    if (this.isOwnItem()) {
+      return;
+    }
+
     if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/login']);
       return;
@@ -86,5 +92,13 @@ export class ItemDetailComponent implements OnInit {
         this.isBuying = false;
       }
     });
+  }
+
+  isOwnItem(): boolean {
+    if (!this.item) {
+      return false;
+    }
+
+    return this.authService.getCurrentUserId() === this.item.sellerId;
   }
 }

@@ -3,7 +3,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { Order } from '../../../core/models/order.model';
-import { AuthService } from '../../../core/services/auth.service';
 import { OrderService } from '../../../core/services/order.service';
 
 @Component({
@@ -15,7 +14,6 @@ import { OrderService } from '../../../core/services/order.service';
 })
 export class MySalesComponent implements OnInit {
   private orderService = inject(OrderService);
-  authService = inject(AuthService);
 
   orders: Order[] = [];
   isLoading = true;
@@ -40,10 +38,6 @@ export class MySalesComponent implements OnInit {
         this.isLoading = false;
       }
     });
-  }
-
-  logout(): void {
-    this.authService.logout();
   }
 
   trackByOrderId(index: number, order: Order): number {

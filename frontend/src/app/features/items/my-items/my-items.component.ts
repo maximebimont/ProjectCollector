@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { AuthService } from '../../../core/services/auth.service';
 import { Item } from '../../../core/models/item.model';
 import { ItemService } from '../../../core/services/item.service';
 
@@ -15,7 +14,6 @@ import { ItemService } from '../../../core/services/item.service';
 })
 export class MyItemsComponent implements OnInit {
   private itemService = inject(ItemService);
-  authService = inject(AuthService);
 
   items: Item[] = [];
   isLoading = true;
@@ -43,10 +41,6 @@ export class MyItemsComponent implements OnInit {
         this.isLoading = false;
       }
     });
-  }
-
-  logout(): void {
-    this.authService.logout();
   }
 
   trackByItemId(index: number, item: Item): number {

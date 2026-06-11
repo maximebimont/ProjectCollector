@@ -1,7 +1,8 @@
 <main class="container">
   <section class="hero">
-    <h2>Mes objets</h2>
-    <p>Retrouvez ici les objets que vous avez mis en vente sur Collector.</p>
+    <p class="page-kicker">Mon espace / Mes objets</p>
+    <h1 class="section-title">Mes objets</h1>
+    <p class="section-copy">Retrouvez ici les objets que vous avez mis en vente sur Collector.</p>
   </section>
 
   <section class="actions">
@@ -9,8 +10,8 @@
       Vendre un objet
     </a>
 
-    <a class="secondary-link" routerLink="/items">
-      Retour au catalogue
+    <a class="secondary-link" routerLink="/profile">
+      Retour à mon espace
     </a>
   </section>
 
@@ -64,7 +65,7 @@
 
         <div class="card-footer">
           <div class="card-actions">
-            <a class="detail-button" [routerLink]="['/items', item.id]">
+            <a class="detail-button" [routerLink]="['/items', item.id]" [queryParams]="{ from: 'my-items' }">
               Voir le détail
             </a>
 

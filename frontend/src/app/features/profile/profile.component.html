@@ -1,0 +1,117 @@
+<main class="page-shell profile-page">
+  <section class="section-heading profile-heading">
+    <div>
+      <p class="mb-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Espace utilisateur</p>
+      <h1 class="section-title">Mon espace</h1>
+      <p class="section-copy">
+        Centralisez ici vos objets, vos achats et vos ventes pour naviguer plus facilement dans Collector.shop.
+      </p>
+    </div>
+
+    <a routerLink="/items/new">
+      <button pButton type="button" icon="pi pi-plus" label="Vendre un objet" severity="contrast" styleClass="profile-cta-button"></button>
+    </a>
+  </section>
+
+  <div *ngIf="isLoading" class="state-card">
+    <p-progressSpinner strokeWidth="4" ariaLabel="Chargement"></p-progressSpinner>
+    <p class="m-0 text-sm text-slate-600">Chargement de votre espace...</p>
+  </div>
+
+  <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage" styleClass="mb-3 block"></p-message>
+
+  <section *ngIf="!isLoading && !errorMessage" class="grid gap-3 lg:grid-cols-2">
+    <div class="flex flex-col gap-3">
+      <p-card styleClass="content-card overflow-hidden">
+        <ng-template pTemplate="header">
+          <div class="bg-gradient-to-r from-amber-100 via-white to-emerald-50 px-5 pb-3 pt-4">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="mb-1 text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Compte</p>
+                <h2 class="m-0 text-xl font-semibold text-slate-900">Informations du compte</h2>
+                <p class="mb-0 mt-1 text-sm leading-5 text-slate-600">Consultez ici les informations principales liées à votre compte.</p>
+              </div>
+
+              <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-sm">
+                <i class="pi pi-user"></i>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+
+        <dl class="profile-account-list px-4 pb-4">
+          <div class="profile-account-row">
+            <dt>Prénom</dt>
+            <dd>{{ getDisplayValue(user?.firstname) }}</dd>
+          </div>
+
+          <div class="profile-account-row">
+            <dt>Nom</dt>
+            <dd>{{ getDisplayValue(user?.lastname) }}</dd>
+          </div>
+
+          <div class="profile-account-row">
+            <dt>Email</dt>
+            <dd>{{ getDisplayValue(user?.email) }}</dd>
+          </div>
+
+          <div class="profile-account-row">
+            <dt>Date de création</dt>
+            <dd>{{ user?.createdAt ? (user?.createdAt | date:'dd/MM/yyyy') : fallbackValue }}</dd>
+          </div>
+        </dl>
+      </p-card>
+
+      <p-card styleClass="content-card">
+        <div class="space-y-2.5">
+          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 text-white">
+            <i class="pi pi-shield"></i>
+          </div>
+
+          <div class="space-y-1.5">
+            <h2 class="m-0 text-xl font-semibold text-slate-900">Sécurité du compte</h2>
+            <p class="m-0 text-sm leading-5 text-slate-600">
+              La modification du mot de passe sera disponible prochainement. L’action est préparée côté interface.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <button pButton type="button" label="Modifier le mot de passe" icon="pi pi-lock" [disabled]="true"></button>
+            <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-amber-800">
+              À venir
+            </span>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="flex flex-col gap-3 lg:h-full">
+      <p-card *ngFor="let link of quickLinks" styleClass="content-card quick-link-card h-full lg:flex-1">
+        <div class="flex h-full flex-col gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 text-white">
+            <i [class]="link.icon"></i>
+          </div>
+
+          <div class="space-y-1.5">
+            <h2 class="m-0 text-xl font-semibold text-slate-900">{{ link.title }}</h2>
+            <p class="m-0 text-sm leading-5 text-slate-600">{{ link.description }}</p>
+          </div>
+
+          <div class="mt-auto pt-2">
+            <a [routerLink]="link.route" class="quick-link-action" [attr.aria-label]="link.actionLabel">
+              <button
+                pButton
+                type="button"
+                [label]="link.actionLabel"
+                icon="pi pi-arrow-right"
+                severity="contrast"
+                iconPos="right"
+                styleClass="quick-link-button"
+              ></button>
+            </a>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </section>
+</main>

@@ -65,14 +65,24 @@
         <button
           type="button"
           (click)="buyItem()"
-          [disabled]="isBuying || item.status === 'SOLD'"
+          [disabled]="isBuying || item.status === 'SOLD' || isOwnItem()"
         >
-          {{ isBuying ? 'Achat en cours...' : 'Acheter cet objet' }}
+          {{
+            isOwnItem()
+              ? 'Vous êtes le vendeur'
+              : (isBuying ? 'Achat en cours...' : 'Acheter cet objet')
+          }}
         </button>
 
-        <a routerLink="/items">
-          Retour au catalogue
+        <a *ngIf="returnToMyItems; else catalogueLink" routerLink="/my-items">
+          Retour à mes objets
         </a>
+
+        <ng-template #catalogueLink>
+          <a routerLink="/items">
+            Retour au catalogue
+          </a>
+        </ng-template>
       </div>
     </div>
   </section>

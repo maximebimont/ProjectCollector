@@ -58,6 +58,12 @@ export const routes: Routes = [
       .then(m => m.MySalesComponent)
   },
   {
+    path: 'profile',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/profile/profile.component')
+      .then(m => m.ProfileComponent)
+  },
+  {
     path: '**',
     redirectTo: 'items'
   }

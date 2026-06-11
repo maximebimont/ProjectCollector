@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -15,6 +15,7 @@ import { AuthService } from './core/services/auth.service';
 })
 export class AppComponent {
   authService = inject(AuthService);
+  private router = inject(Router);
   mobileMenuOpen = signal(false);
 
   logout(): void {
@@ -28,5 +29,12 @@ export class AppComponent {
 
   toggleMenu(): void {
     this.mobileMenuOpen.update((value) => !value);
+  }
+
+  isUserSpaceRoute(): boolean {
+    const currentPath = this.router.url.split('?')[0];
+
+    return ['/profile', '/my-items', '/my-purchases', '/my-sales']
+      .some((route) => currentPath === route || currentPath.startsWith(`${route}/`));
   }
 }
