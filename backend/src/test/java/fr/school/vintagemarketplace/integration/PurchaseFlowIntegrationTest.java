@@ -2,7 +2,6 @@ package fr.school.vintagemarketplace.integration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.school.vintagemarketplace.auth.dto.LoginRequest;
 import fr.school.vintagemarketplace.auth.dto.RegisterRequest;
 import fr.school.vintagemarketplace.item.dto.ItemRequest;
 import org.junit.jupiter.api.Test;
