@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import fr.school.vintagemarketplace.common.dto.MessageResponse;
-import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/api/items")
