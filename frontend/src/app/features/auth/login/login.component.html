@@ -1,39 +1,47 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <h1>Connexion</h1>
-    <p>Connectez-vous pour acheter ou vendre des objets de collection.</p>
+<main class="page-shell flex min-h-[calc(100vh-6rem)] items-center justify-center">
+  <p-card styleClass="content-card w-full max-w-md overflow-hidden">
+    <ng-template pTemplate="header">
+      <div class="bg-gradient-to-r from-amber-100 via-white to-emerald-50 px-8 pb-4 pt-8">
+        <p class="mb-2 text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">Bienvenue</p>
+        <h1 class="m-0 text-3xl font-semibold text-slate-900">Connexion</h1>
+        <p class="mb-0 mt-3 text-sm leading-6 text-slate-600">
+          Connectez-vous pour acheter ou vendre des objets de collection.
+        </p>
+      </div>
+    </ng-template>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" formControlName="email" placeholder="exemple@email.com" />
-
-        <small *ngIf="loginForm.controls.email.touched && loginForm.controls.email.invalid">
+    <form class="space-y-5 px-8 pb-8" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="space-y-2">
+        <label class="text-sm font-medium text-slate-700" for="email">Email</label>
+        <input pInputText id="email" type="email" formControlName="email" placeholder="exemple@email.com" />
+        <small class="block text-sm text-red-600" *ngIf="loginForm.controls.email.touched && loginForm.controls.email.invalid">
           Email obligatoire et valide.
         </small>
       </div>
 
-      <div class="form-group">
-        <label>Mot de passe</label>
-        <input type="password" formControlName="password" placeholder="Votre mot de passe" />
-
-        <small *ngIf="loginForm.controls.password.touched && loginForm.controls.password.invalid">
+      <div class="space-y-2">
+        <label class="text-sm font-medium text-slate-700" for="password">Mot de passe</label>
+        <input pInputText id="password" type="password" formControlName="password" placeholder="Votre mot de passe" />
+        <small class="block text-sm text-red-600" *ngIf="loginForm.controls.password.touched && loginForm.controls.password.invalid">
           Mot de passe obligatoire.
         </small>
       </div>
 
-      <div class="error" *ngIf="errorMessage">
-        {{ errorMessage }}
-      </div>
+      <p-message *ngIf="errorMessage" severity="error" [text]="errorMessage" styleClass="w-full"></p-message>
 
-      <button type="submit" [disabled]="isLoading">
-        {{ isLoading ? 'Connexion...' : 'Se connecter' }}
-      </button>
+      <button
+        pButton
+        type="submit"
+        class="w-full"
+        icon="pi pi-sign-in"
+        [loading]="isLoading"
+        label="Se connecter"
+      ></button>
+
+      <p class="mb-0 text-center text-sm text-slate-600">
+        Pas encore de compte ?
+        <a routerLink="/register" class="font-semibold text-slate-900">Créer un compte</a>
+      </p>
     </form>
-
-    <p class="switch-link">
-      Pas encore de compte ?
-      <a routerLink="/register">Créer un compte</a>
-    </p>
-  </div>
-</div>
+  </p-card>
+</main>

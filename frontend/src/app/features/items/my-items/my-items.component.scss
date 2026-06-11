@@ -70,11 +70,14 @@
 
 .primary-link,
 .secondary-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 10px 14px;
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
+  line-height: 1;
 }
 
 .primary-link {
@@ -193,7 +196,9 @@
 }
 
 .detail-button {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: fit-content;
   padding: 10px 14px;
   background: #222;
@@ -201,16 +206,20 @@
   text-decoration: none;
   border-radius: 8px;
   font-weight: 600;
+  line-height: 1;
 }
 
 .edit-button,
 .delete-button {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: fit-content;
   padding: 10px 14px;
   border-radius: 8px;
   font-weight: 600;
   text-decoration: none;
+  line-height: 1;
 }
 
 .edit-button {

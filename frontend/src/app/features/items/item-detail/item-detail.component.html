@@ -1,17 +1,3 @@
-<header class="navbar">
-  <div>
-    <h1>Collector</h1>
-    <p>Détail d’un objet de collection</p>
-  </div>
-
-  <nav>
-    <a routerLink="/items">Catalogue</a>
-    <a *ngIf="authService.isAuthenticated()" routerLink="/items/new">Vendre un objet</a>
-    <a *ngIf="authService.isAuthenticated()" routerLink="/my-purchases">Mes achats</a>
-    <a *ngIf="!authService.isAuthenticated()" routerLink="/login">Connexion</a>
-  </nav>
-</header>
-
 <main class="container">
   <div *ngIf="isLoading" class="state">
     Chargement de l’objet...

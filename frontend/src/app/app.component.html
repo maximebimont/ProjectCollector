@@ -1,1 +1,86 @@
-<router-outlet></router-outlet>
+<div class="app-shell">
+  <p-toast position="top-right"></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <header class="sticky top-0 z-40 border-b border-white/60 bg-white/80 backdrop-blur-xl">
+    <div class="grid w-full grid-cols-[1fr_auto] items-center gap-4 px-4 py-4 sm:px-6 md:grid-cols-[1fr_auto_1fr] lg:px-8">
+      <a routerLink="/items" class="flex items-center gap-3 justify-self-start no-underline" (click)="closeMenu()">
+        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900 text-lg font-bold text-white shadow-lg shadow-amber-900/20">
+          C
+        </div>
+        <div>
+          <p class="m-0 text-lg font-semibold tracking-tight text-slate-900">Collector.shop</p>
+          <p class="m-0 text-xs uppercase tracking-[0.3em] text-slate-500">Vintage marketplace</p>
+        </div>
+      </a>
+
+      <button
+        pButton
+        type="button"
+        class="md:hidden"
+        [text]="true"
+        [rounded]="true"
+        [icon]="mobileMenuOpen() ? 'pi pi-times' : 'pi pi-bars'"
+        (click)="toggleMenu()"
+      ></button>
+
+      <nav class="hidden items-center justify-center gap-2 md:flex">
+        <a
+          routerLink="/items"
+          routerLinkActive="nav-link-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="nav-link"
+        >
+          Catalogue
+        </a>
+
+        <ng-container *ngIf="authService.isAuthenticated(); else guestLinks">
+          <a routerLink="/items/new" routerLinkActive="nav-link-active" class="nav-link">Vendre un objet</a>
+          <a routerLink="/my-items" routerLinkActive="nav-link-active" class="nav-link">Mes objets</a>
+          <a routerLink="/my-purchases" routerLinkActive="nav-link-active" class="nav-link">Mes achats</a>
+          <a routerLink="/my-sales" routerLinkActive="nav-link-active" class="nav-link">Mes ventes</a>
+        </ng-container>
+
+        <ng-template #guestLinks>
+          <a routerLink="/login" routerLinkActive="nav-link-active" class="nav-link">Connexion</a>
+          <a routerLink="/register" routerLinkActive="nav-link-active" class="nav-link">Inscription</a>
+        </ng-template>
+      </nav>
+
+      <div class="hidden justify-self-end md:flex">
+        <button
+          *ngIf="authService.isAuthenticated()"
+          pButton
+          type="button"
+          severity="contrast"
+          [rounded]="true"
+          [text]="true"
+          icon="pi pi-sign-out"
+          aria-label="Déconnexion"
+          (click)="logout()"
+        ></button>
+      </div>
+    </div>
+
+    <nav *ngIf="mobileMenuOpen()" class="border-t border-slate-200/80 bg-white/95 px-4 py-4 md:hidden">
+      <div class="flex flex-col gap-2">
+        <a routerLink="/items" class="inline-flex items-center rounded-2xl px-4 py-3 text-sm font-medium leading-none text-slate-700 no-underline hover:bg-slate-100" (click)="closeMenu()">Catalogue</a>
+
+        <ng-container *ngIf="authService.isAuthenticated(); else guestLinksMobile">
+          <a routerLink="/items/new" class="inline-flex items-center rounded-2xl px-4 py-3 text-sm font-medium leading-none text-slate-700 no-underline hover:bg-slate-100" (click)="closeMenu()">Vendre un objet</a>
+          <a routerLink="/my-items" class="inline-flex items-center rounded-2xl px-4 py-3 text-sm font-medium leading-none text-slate-700 no-underline hover:bg-slate-100" (click)="closeMenu()">Mes objets</a>
+          <a routerLink="/my-purchases" class="inline-flex items-center rounded-2xl px-4 py-3 text-sm font-medium leading-none text-slate-700 no-underline hover:bg-slate-100" (click)="closeMenu()">Mes achats</a>
+          <a routerLink="/my-sales" class="inline-flex items-center rounded-2xl px-4 py-3 text-sm font-medium leading-none text-slate-700 no-underline hover:bg-slate-100" (click)="closeMenu()">Mes ventes</a>
+          <button pButton type="button" severity="contrast" icon="pi pi-sign-out" label="Déconnexion" (click)="logout()"></button>
+        </ng-container>
+
+        <ng-template #guestLinksMobile>
+          <a routerLink="/login" class="inline-flex items-center rounded-2xl px-4 py-3 text-sm font-medium leading-none text-slate-700 no-underline hover:bg-slate-100" (click)="closeMenu()">Connexion</a>
+          <a routerLink="/register" class="inline-flex items-center rounded-2xl px-4 py-3 text-sm font-medium leading-none text-slate-700 no-underline hover:bg-slate-100" (click)="closeMenu()">Inscription</a>
+        </ng-template>
+      </div>
+    </nav>
+  </header>
+
+  <router-outlet></router-outlet>
+</div>
