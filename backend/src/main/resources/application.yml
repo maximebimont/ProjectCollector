@@ -27,7 +27,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics
 
   endpoint:
     health:
@@ -42,3 +42,4 @@ info:
     name: Collector Backend
     description: Backend Spring Boot pour la marketplace Collector
     version: 1.0.0
+    environment: local-dev
