@@ -33,7 +33,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Run Trivy scan for GitHub Security
-        uses: aquasecurity/trivy-action@v0.33.1
+        uses: aquasecurity/trivy-action@0.27.0
         with:
           image-ref: ${{ secrets.DEPLOY_APPLI_NAME }}:${{ github.sha }}
           format: 'sarif'
@@ -48,7 +48,7 @@ jobs:
           category: trivy-container-scan
 
       - name: Run Trivy scan (display results)
-        uses: aquasecurity/trivy-action@v0.33.1
+        uses: aquasecurity/trivy-action@0.27.0
         continue-on-error: true
         with:
           image-ref: ${{ secrets.DEPLOY_APPLI_NAME }}:${{ github.sha }}
@@ -58,7 +58,7 @@ jobs:
           trivyignores: .trivyignore
 
       - name: Run Trivy scan (blocking on non-ignored vulns)
-        uses: aquasecurity/trivy-action@v0.33.1
+        uses: aquasecurity/trivy-action@0.27.0
         with:
           image-ref: ${{ secrets.DEPLOY_APPLI_NAME }}:${{ github.sha }}
           format: 'table'

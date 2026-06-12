@@ -81,7 +81,7 @@ jobs:
           retention-days: 7
 
       - name: Run Trivy SCA filesystem scan
-        uses: aquasecurity/trivy-action@v0.33.1
+        uses: aquasecurity/trivy-action@0.27.0
         with:
           scan-type: fs
           scan-ref: .
