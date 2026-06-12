@@ -6,6 +6,7 @@ on:
 permissions:
   security-events: write
   contents: read
+  actions: read
 
 jobs:
   secure-iac-dockerfile-scan:
@@ -31,3 +32,4 @@ jobs:
         with:
           sarif_file: checkov-report.sarif/results_sarif.sarif
           category: checkov-dockerfile
+        continue-on-error: true
