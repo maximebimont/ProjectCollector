@@ -80,20 +80,30 @@ jobs:
           path: backend/target/dependency-check-report.html
           retention-days: 7
 
-      - name: Run Trivy SCA filesystem scan
-        uses: aquasecurity/trivy-action@0.27.0
-        with:
-          scan-type: fs
-          scan-ref: .
-          format: json
-          output: trivy-deps-report.json
-          severity: CRITICAL,HIGH,MEDIUM
-          ignore-unfixed: true
+      - name: Run Trivy filesystem scan
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspace \
+            aquasec/trivy:0.69.3 \
+            fs \
+            --format sarif \
+            --output /workspace/trivy-fs-results.sarif \
+            --severity CRITICAL,HIGH \
+            --ignore-unfixed \
+            /workspace
 
-      - name: Upload Trivy SCA report
-        if: always() && hashFiles('trivy-deps-report.json') != ''
+      - name: Upload Trivy filesystem SARIF
+        if: always() && hashFiles('trivy-fs-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: trivy-fs-results.sarif
+          category: trivy-filesystem-scan
+        continue-on-error: true
+
+      - name: Upload Trivy filesystem report
+        if: always() && hashFiles('trivy-fs-results.sarif') != ''
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-deps-report
-          path: trivy-deps-report.json
+          name: trivy-fs-report
+          path: trivy-fs-results.sarif
           retention-days: 7

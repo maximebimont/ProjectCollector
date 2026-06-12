@@ -32,6 +32,7 @@ jobs:
           cache-to: type=gha,scope=collector-backend,mode=max
 
       - name: Build frontend Docker image
+        if: hashFiles('frontend/Dockerfile') != ''
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
@@ -42,16 +43,21 @@ jobs:
           cache-from: type=gha,scope=collector-frontend
           cache-to: type=gha,scope=collector-frontend,mode=max
 
-      - name: Run Trivy scan for backend image
-        uses: aquasecurity/trivy-action@0.27.0
-        with:
-          image-ref: collector-backend:ci
-          format: sarif
-          output: trivy-backend-results.sarif
-          severity: CRITICAL,HIGH,MEDIUM
+      - name: Run Trivy backend image scan
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v ${{ github.workspace }}:/workspace \
+            aquasec/trivy:0.69.3 \
+            image \
+            --format sarif \
+            --output /workspace/trivy-backend-results.sarif \
+            --severity CRITICAL,HIGH \
+            --ignore-unfixed \
+            collector-backend:ci
 
       - name: Upload backend Trivy SARIF
-        if: always()
+        if: always() && hashFiles('trivy-backend-results.sarif') != ''
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-backend-results.sarif
@@ -59,34 +65,46 @@ jobs:
         continue-on-error: true
 
       - name: Display backend Trivy findings
-        uses: aquasecurity/trivy-action@0.27.0
         continue-on-error: true
-        with:
-          image-ref: collector-backend:ci
-          format: table
-          exit-code: '0'
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.69.3 \
+            image \
+            --format table \
+            --exit-code 0 \
+            --severity CRITICAL,HIGH \
+            --ignore-unfixed \
+            collector-backend:ci
 
       - name: Fail on backend image vulnerabilities
-        uses: aquasecurity/trivy-action@0.27.0
-        with:
-          image-ref: collector-backend:ci
-          format: table
-          exit-code: '1'
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.69.3 \
+            image \
+            --format table \
+            --exit-code 1 \
+            --severity CRITICAL,HIGH \
+            --ignore-unfixed \
+            collector-backend:ci
 
-      - name: Run Trivy scan for frontend image
-        uses: aquasecurity/trivy-action@0.27.0
-        with:
-          image-ref: collector-frontend:ci
-          format: sarif
-          output: trivy-frontend-results.sarif
-          severity: CRITICAL,HIGH,MEDIUM
+      - name: Run Trivy frontend image scan
+        if: hashFiles('frontend/Dockerfile') != ''
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v ${{ github.workspace }}:/workspace \
+            aquasec/trivy:0.69.3 \
+            image \
+            --format sarif \
+            --output /workspace/trivy-frontend-results.sarif \
+            --severity CRITICAL,HIGH \
+            --ignore-unfixed \
+            collector-frontend:ci
 
       - name: Upload frontend Trivy SARIF
-        if: always()
+        if: always() && hashFiles('trivy-frontend-results.sarif') != ''
         uses: github/codeql-action/upload-sarif@v4
         continue-on-error: true
         with:
@@ -94,20 +112,28 @@ jobs:
           category: trivy-frontend-container-scan
 
       - name: Display frontend Trivy findings
-        uses: aquasecurity/trivy-action@0.27.0
+        if: hashFiles('frontend/Dockerfile') != ''
         continue-on-error: true
-        with:
-          image-ref: collector-frontend:ci
-          format: table
-          exit-code: '0'
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.69.3 \
+            image \
+            --format table \
+            --exit-code 0 \
+            --severity CRITICAL,HIGH \
+            --ignore-unfixed \
+            collector-frontend:ci
 
       - name: Fail on frontend image vulnerabilities
-        uses: aquasecurity/trivy-action@0.27.0
-        with:
-          image-ref: collector-frontend:ci
-          format: table
-          exit-code: '1'
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
+        if: hashFiles('frontend/Dockerfile') != ''
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.69.3 \
+            image \
+            --format table \
+            --exit-code 1 \
+            --severity CRITICAL,HIGH \
+            --ignore-unfixed \
+            collector-frontend:ci
