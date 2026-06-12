@@ -22,15 +22,37 @@ on:
 
   workflow_dispatch:
 
+  schedule:
+    - cron: '0 2 * * 1'
+
+permissions:
+  security-events: write
+  contents: read
+  actions: read
+
 jobs:
   backend-tests:
-    uses: ./.github/workflows/reusable-backend-tests.yml
+    uses: ./.github/workflows/backend-tests.yml
 
   frontend-build:
-    uses: ./.github/workflows/reusable-frontend-build.yml
+    uses: ./.github/workflows/frontend-build.yml
+
+  code-quality-sast:
+    uses: ./.github/workflows/code-quality-sast.yml
+    secrets: inherit
+
+  sca-dependency-scan:
+    uses: ./.github/workflows/sca-dependency-scan.yml
+    secrets: inherit
+
+  secret-scanning:
+    uses: ./.github/workflows/secret-scanning.yml
+
+  secure-iac-dockerfile-scan:
+    uses: ./.github/workflows/iac-dockerfile-scan.yml
 
   docker-build:
     needs:
       - backend-tests
       - frontend-build
-    uses: ./.github/workflows/reusable-docker-build.yml
+    uses: ./.github/workflows/docker-build.yml
