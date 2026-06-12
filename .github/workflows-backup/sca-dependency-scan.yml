@@ -1,0 +1,71 @@
+on:
+  workflow_call:
+    secrets:
+      NVD_API_KEY:
+        required: false
+        description: 'NVD API Key for faster dependency database download (optional)'
+permissions:
+  security-events: write
+  contents: read
+jobs:
+  sca-dependency-scan:
+    name: SCA - Dependency Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup JDK for dependency scan
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'liberica'
+          cache: 'maven'
+      - name: Check NVD API Key availability
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          if [ -n "${NVD_API_KEY}" ]; then
+            echo "✅ NVD API Key is configured (length: ${#NVD_API_KEY} chars)"
+            echo "🔑 First 8 chars: ${NVD_API_KEY:0:8}..."
+          else
+            echo "⚠️ NVD API Key not configured - download will be slower"
+            echo "💡 Configure it in: Settings → Secrets → Actions → NVD_API_KEY"
+            echo "💡 Get your key at: https://nvd.nist.gov/developers/request-an-api-key"
+          fi
+
+      - name: Run OWASP Dependency-Check
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          if [ -n "${NVD_API_KEY}" ]; then
+            echo "🚀 Running with NVD API Key for faster download"
+            mvn org.owasp:dependency-check-maven:check \
+              -DfailBuildOnCVSS=7 \
+              -DsuppressionFiles=.owasp-suppressions.xml \
+              -DnvdApiKey=${NVD_API_KEY}
+          else
+            echo "🐌 Running without NVD API Key (slower download)"
+            mvn org.owasp:dependency-check-maven:check \
+              -DfailBuildOnCVSS=7 \
+              -DsuppressionFiles=.owasp-suppressions.xml
+          fi
+      - name: Upload OWASP Dependency-Check SARIF
+        uses: github/codeql-action/upload-sarif@v4
+        if: always() && hashFiles('target/dependency-check-report.sarif') != ''
+        with:
+          sarif_file: target/dependency-check-report.sarif
+          category: owasp-dependency-check
+      - name: Run Trivy SCA (filesystem scan)
+        uses: aquasecurity/trivy-action@0.27.0
+        with:
+          scan-type: 'fs'
+          format: 'json'
+          output: 'trivy-deps-report.json'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          ignore-unfixed: true
+      - name: Upload Trivy SCA report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-deps-report
+          path: trivy-deps-report.json
+          retention-days: 7

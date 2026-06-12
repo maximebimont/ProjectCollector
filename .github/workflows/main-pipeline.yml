@@ -1,0 +1,36 @@
+name: main-pipeline
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/**'
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/**'
+
+  workflow_dispatch:
+
+jobs:
+  backend-tests:
+    uses: ./.github/workflows/reusable-backend-tests.yml
+
+  frontend-build:
+    uses: ./.github/workflows/reusable-frontend-build.yml
+
+  docker-build:
+    needs:
+      - backend-tests
+      - frontend-build
+    uses: ./.github/workflows/reusable-docker-build.yml
