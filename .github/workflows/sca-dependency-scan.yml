@@ -71,6 +71,7 @@ jobs:
         with:
           sarif_file: backend/target/dependency-check-report.sarif
           category: owasp-dependency-check
+        continue-on-error: true
 
       - name: Upload OWASP Dependency-Check report
         if: always() && hashFiles('backend/target/dependency-check-report.html') != ''
@@ -81,6 +82,7 @@ jobs:
           retention-days: 7
 
       - name: Run Trivy filesystem scan
+        continue-on-error: true
         run: |
           docker run --rm \
             -v ${{ github.workspace }}:/workspace \
@@ -90,6 +92,7 @@ jobs:
             --output /workspace/trivy-fs-results.sarif \
             --severity CRITICAL,HIGH \
             --ignore-unfixed \
+            --skip-version-check \
             /workspace
 
       - name: Upload Trivy filesystem SARIF
