@@ -20,7 +20,8 @@
   </div>
 
   <div *ngIf="!isLoading && !errorMessage && orders.length === 0" class="state">
-    Vous n’avez encore effectué aucun achat.
+    <p class="state-title">Vous n'avez pas encore effectué d'achat.</p>
+    <a class="action-link mt-4" routerLink="/items">Voir le catalogue</a>
   </div>
 
   <section *ngIf="!isLoading && !errorMessage && orders.length > 0" class="grid">
@@ -29,12 +30,10 @@
         <img
           *ngIf="order.itemImageUrl; else noImage"
           [src]="order.itemImageUrl"
-          [alt]="order.itemTitle || 'Image de l’objet'"
+          [alt]="order.itemTitle || 'Image de l\'objet'"
         />
 
-        <ng-template #noImage>
-          <div class="placeholder">Pas d’image</div>
-        </ng-template>
+        <ng-template #noImage><div class="placeholder">Pas d'image</div></ng-template>
       </div>
 
       <div class="card-content">

@@ -60,11 +60,7 @@ export class ItemDetailComponent implements OnInit {
   }
 
   buyItem(): void {
-    if (!this.item) {
-      return;
-    }
-
-    if (this.isOwnItem()) {
+    if (!this.item || this.item.status === 'SOLD' || this.isOwnItem()) {
       return;
     }
 
@@ -80,7 +76,7 @@ export class ItemDetailComponent implements OnInit {
     this.orderService.buyItem(this.item.id).subscribe({
       next: (order) => {
         this.order = order;
-        this.successMessage = 'Achat effectué avec succès.';
+        this.successMessage = 'Achat réalisé avec succès.';
         this.isBuying = false;
 
         if (this.item) {
@@ -88,7 +84,7 @@ export class ItemDetailComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.errorMessage = error.error?.message || 'Impossible d’acheter cet objet.';
+        this.errorMessage = error.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
         this.isBuying = false;
       }
     });
@@ -100,5 +96,38 @@ export class ItemDetailComponent implements OnInit {
     }
 
     return this.authService.getCurrentUserId() === this.item.sellerId;
+  }
+
+  getStatusLabel(): string {
+    return this.item?.status === 'AVAILABLE' ? 'Disponible' : 'Vendu';
+  }
+
+  getSellerName(): string {
+    if (!this.item) {
+      return 'Vendeur non renseigné';
+    }
+
+    const sellerName = `${this.item.sellerFirstname?.trim() ?? ''} ${this.item.sellerLastname?.trim() ?? ''}`.trim();
+    return sellerName || 'Vendeur non renseigné';
+  }
+
+  getPurchaseHint(): string {
+    if (!this.item) {
+      return '';
+    }
+
+    if (this.item.status === 'SOLD') {
+      return 'Cet objet a déjà été vendu.';
+    }
+
+    if (!this.authService.isAuthenticated()) {
+      return 'Connectez-vous pour acheter cet objet.';
+    }
+
+    if (this.isOwnItem()) {
+      return 'Vous êtes le vendeur de cet objet.';
+    }
+
+    return 'Cet objet est disponible à l\'achat.';
   }
 }

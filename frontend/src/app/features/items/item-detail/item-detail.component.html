@@ -1,6 +1,6 @@
 <main class="container">
   <div *ngIf="isLoading" class="state">
-    Chargement de l’objet...
+    Chargement de l'objet...
   </div>
 
   <div *ngIf="errorMessage" class="error">
@@ -17,7 +17,7 @@
 
       <ng-template #noImage>
         <div class="placeholder">
-          Pas d’image
+          Pas d'image
         </div>
       </ng-template>
     </div>
@@ -25,14 +25,15 @@
     <div class="content">
       <div class="title-row">
         <div>
+          <p class="page-kicker">Détail de l'objet</p>
           <h2>{{ item.title }}</h2>
           <p class="seller">
-            Vendeur : {{ item.sellerFirstname }} {{ item.sellerLastname }}
+            Vendeur : {{ getSellerName() }}
           </p>
         </div>
 
         <span class="status" [class.sold]="item.status === 'SOLD'">
-          {{ item.status === 'AVAILABLE' ? 'Disponible' : 'Vendu' }}
+          {{ getStatusLabel() }}
         </span>
       </div>
 
@@ -41,8 +42,12 @@
       </p>
 
       <div class="price-box">
-        <p>Prix de l’objet</p>
+        <p>Prix de l'objet</p>
         <strong>{{ item.price | currency:'EUR':'symbol':'1.2-2' }}</strong>
+      </div>
+
+      <div class="purchase-hint" [class.purchase-hint-warning]="item.status === 'SOLD' || isOwnItem() || !authService.isAuthenticated()">
+        {{ getPurchaseHint() }}
       </div>
 
       <div class="fee-box">

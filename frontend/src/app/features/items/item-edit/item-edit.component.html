@@ -1,5 +1,5 @@
-<div class="page">
-  <div class="form-card">
+<main class="page-shell form-page">
+  <section class="content-card form-card">
     <p class="page-kicker">Mon espace / Modifier un objet</p>
     <h1 class="section-title">Modifier un objet</h1>
     <p class="intro section-copy">
@@ -7,21 +7,21 @@
     </p>
 
     <div *ngIf="isPageLoading" class="state">
-      Chargement de l’objet...
+      Chargement de l'objet...
     </div>
 
-    <div *ngIf="errorMessage" class="error">
-      {{ errorMessage }}
+    <div *ngIf="loadErrorMessage" class="error">
+      {{ loadErrorMessage }}
     </div>
 
-    <form *ngIf="!isPageLoading && !errorMessage" [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+    <form *ngIf="!isPageLoading && !loadErrorMessage" [formGroup]="itemForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="title">Titre</label>
         <input
           id="title"
           type="text"
           formControlName="title"
-          placeholder="Nom de l’objet"
+          placeholder="Nom de l'objet"
         />
         <small *ngIf="itemForm.controls.title.touched && itemForm.controls.title.invalid">
           Le titre est obligatoire.
@@ -34,7 +34,7 @@
           id="description"
           formControlName="description"
           rows="5"
-          placeholder="Décrivez l’objet, son état et son histoire"
+          placeholder="Décrivez l'objet, son état et son histoire"
         ></textarea>
         <small *ngIf="itemForm.controls.description.touched && itemForm.controls.description.invalid">
           La description est obligatoire.
@@ -60,7 +60,7 @@
       </div>
 
       <div class="form-group">
-        <label for="imageUrl">URL d’image</label>
+        <label for="imageUrl">URL d'image</label>
         <input
           id="imageUrl"
           type="url"
@@ -69,13 +69,19 @@
         />
       </div>
 
-      <button type="submit" [disabled]="isSaving">
-        {{ isSaving ? 'Enregistrement...' : 'Enregistrer les modifications' }}
-      </button>
-    </form>
+      <div class="error" *ngIf="formErrorMessage">
+        {{ formErrorMessage }}
+      </div>
 
-    <a class="back-link" routerLink="/my-items">
-      Retour à mes objets
-    </a>
-  </div>
-</div>
+      <div class="form-actions">
+        <a class="back-link" routerLink="/my-items">
+          Retour à mes objets
+        </a>
+
+        <button type="submit" [disabled]="isSaving">
+          {{ isSaving ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</main>

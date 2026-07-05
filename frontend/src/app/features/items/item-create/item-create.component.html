@@ -1,8 +1,8 @@
-<div class="page">
-  <div class="form-card">
-    <p class="page-kicker">MachatsNouvelle annonce</p>
+<main class="page-shell form-page">
+  <section class="content-card form-card">
+    <p class="page-kicker">Mon espace / Nouvelle annonce</p>
     <h1 class="section-title">Vendre un objet</h1>
-    <p class="intro section-copy">
+    <p class="section-copy intro">
       Renseignez les informations principales de votre objet de collection.
     </p>
 
@@ -13,7 +13,7 @@
           id="title"
           type="text"
           formControlName="title"
-          placeholder="Nom de l’objet"
+          placeholder="Nom de l'objet"
         />
         <small *ngIf="itemForm.controls.title.touched && itemForm.controls.title.invalid">
           Le titre est obligatoire.
@@ -26,7 +26,7 @@
           id="description"
           formControlName="description"
           rows="5"
-          placeholder="Décrivez l’objet, son état et son histoire"
+          placeholder="Décrivez l'objet, son état et son histoire"
         ></textarea>
         <small *ngIf="itemForm.controls.description.touched && itemForm.controls.description.invalid">
           La description est obligatoire.
@@ -47,12 +47,12 @@
           Le prix est obligatoire.
         </small>
         <small *ngIf="itemForm.controls.price.touched && itemForm.controls.price.hasError('min')">
-          Le prix doit être supérieur à 0.
+          Le prix doit être supérieure à 0.
         </small>
       </div>
 
       <div class="form-group">
-        <label for="imageUrl">URL d’image</label>
+        <label for="imageUrl">URL d'image</label>
         <input
           id="imageUrl"
           type="url"
@@ -65,13 +65,15 @@
         {{ errorMessage }}
       </div>
 
-      <button type="submit" [disabled]="isLoading">
-        {{ isLoading ? 'Création en cours...' : 'Créer l’objet' }}
-      </button>
-    </form>
+      <div class="form-actions">
+        <a class="back-link" routerLink="/profile">
+          Retour à mon espace
+        </a>
 
-    <a class="back-link" routerLink="/items">
-      Retour au catalogue
-    </a>
-  </div>
-</div>
+        <button type="submit" [disabled]="isLoading">
+          {{ isLoading ? 'Création en cours...' : 'Créer l\'objet' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</main>

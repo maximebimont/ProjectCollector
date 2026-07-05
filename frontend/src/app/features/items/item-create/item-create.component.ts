@@ -30,6 +30,7 @@ export class ItemCreateComponent {
   onSubmit(): void {
     if (this.itemForm.invalid) {
       this.itemForm.markAllAsTouched();
+      this.errorMessage = 'Une erreur est survenue. Veuillez vérifier le formulaire.';
       return;
     }
 
@@ -47,10 +48,10 @@ export class ItemCreateComponent {
 
     this.itemService.createItem(request).subscribe({
       next: () => {
-        this.router.navigate(['/items']);
+        this.router.navigate(['/my-items'], { queryParams: { feedback: 'created' } });
       },
       error: (error) => {
-        this.errorMessage = error.error?.message || 'Erreur lors de la crÃ©ation de lâ€™objet.';
+        this.errorMessage = error.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
         this.isLoading = false;
       }
     });

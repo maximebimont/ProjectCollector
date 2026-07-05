@@ -23,12 +23,17 @@
     {{ errorMessage }}
   </div>
 
+  <div *ngIf="successMessage" class="success">
+    {{ successMessage }}
+  </div>
+
   <div *ngIf="actionErrorMessage" class="error">
     {{ actionErrorMessage }}
   </div>
 
   <div *ngIf="!isLoading && !errorMessage && items.length === 0" class="state">
-    Vous n’avez encore créé aucun objet.
+    <p class="state-title">Vous n'avez pas encore publié d'objet.</p>
+    <a class="primary-link mt-4" routerLink="/items/new">Publier un objet</a>
   </div>
 
   <section *ngIf="!isLoading && !errorMessage && items.length > 0" class="grid">
@@ -37,12 +42,12 @@
         <img
           *ngIf="item.imageUrl; else noImage"
           [src]="item.imageUrl"
-          [alt]="item.title || 'Image de l’objet'"
+          [alt]="item.title || 'Image de l\'objet'"
         />
 
         <ng-template #noImage>
           <div class="placeholder">
-            Pas d’image
+            Pas d'image
           </div>
         </ng-template>
       </div>

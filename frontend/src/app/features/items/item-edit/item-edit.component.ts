@@ -21,7 +21,8 @@ export class ItemEditComponent implements OnInit {
   itemId: number | null = null;
   isPageLoading = true;
   isSaving = false;
-  errorMessage = '';
+  loadErrorMessage = '';
+  formErrorMessage = '';
 
   itemForm = this.formBuilder.group({
     title: ['', [Validators.required]],
@@ -44,7 +45,7 @@ export class ItemEditComponent implements OnInit {
 
   loadItem(id: number): void {
     this.isPageLoading = true;
-    this.errorMessage = '';
+    this.loadErrorMessage = '';
 
     this.itemService.getItemById(id).subscribe({
       next: (item) => {
@@ -58,7 +59,7 @@ export class ItemEditComponent implements OnInit {
       },
       error: (error) => {
         console.error(error);
-        this.errorMessage = error.error?.message || 'Impossible de charger cet objet.';
+        this.loadErrorMessage = error.error?.message || 'Impossible de charger cet objet.';
         this.isPageLoading = false;
       }
     });
@@ -67,11 +68,12 @@ export class ItemEditComponent implements OnInit {
   onSubmit(): void {
     if (this.itemForm.invalid || !this.itemId) {
       this.itemForm.markAllAsTouched();
+      this.formErrorMessage = 'Une erreur est survenue. Veuillez vérifier le formulaire.';
       return;
     }
 
     this.isSaving = true;
-    this.errorMessage = '';
+    this.formErrorMessage = '';
 
     const imageUrlValue = this.itemForm.value.imageUrl?.trim();
 
@@ -84,11 +86,11 @@ export class ItemEditComponent implements OnInit {
 
     this.itemService.updateItem(this.itemId, request).subscribe({
       next: () => {
-        this.router.navigate(['/my-items']);
+        this.router.navigate(['/my-items'], { queryParams: { feedback: 'updated' } });
       },
       error: (error) => {
         console.error(error);
-        this.errorMessage = error.error?.message || 'Erreur lors de la modification de lâ€™objet.';
+        this.formErrorMessage = error.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
         this.isSaving = false;
       }
     });

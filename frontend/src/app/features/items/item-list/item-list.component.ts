@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 import { ItemService } from '../../../core/services/item.service';
-import { AuthService } from '../../../core/services/auth.service';
 import { Item } from '../../../core/models/item.model';
 
 @Component({
@@ -15,7 +14,6 @@ import { Item } from '../../../core/models/item.model';
 })
 export class ItemListComponent implements OnInit {
   private itemService = inject(ItemService);
-  authService = inject(AuthService);
 
   items: Item[] = [];
   isLoading = true;
@@ -31,23 +29,36 @@ export class ItemListComponent implements OnInit {
 
     this.itemService.getAvailableItems().subscribe({
       next: (items) => {
-        console.log('Items reÃ§us :', items);
         this.items = items;
         this.isLoading = false;
       },
       error: (error) => {
         console.error(error);
-        this.errorMessage = 'Impossible de rÃ©cupÃ©rer les objets.';
+        this.errorMessage = 'Impossible de récupérer les objets.';
         this.isLoading = false;
       }
     });
   }
 
-  logout(): void {
-    this.authService.logout();
-  }
-
   trackByItemId(index: number, item: Item): number {
     return item.id;
+  }
+
+  getShortDescription(description: string | null | undefined): string {
+    if (!description?.trim()) {
+      return 'Aucune description disponible.';
+    }
+
+    return description.length > 120
+      ? `${description.slice(0, 117).trim()}...`
+      : description;
+  }
+
+  getSellerName(item: Item): string {
+    const firstname = item.sellerFirstname?.trim();
+    const lastname = item.sellerLastname?.trim();
+    const sellerName = `${firstname ?? ''} ${lastname ?? ''}`.trim();
+
+    return sellerName || 'Vendeur non renseigné';
   }
 }

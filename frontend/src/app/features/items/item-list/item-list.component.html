@@ -14,7 +14,8 @@
   </div>
 
   <div *ngIf="!isLoading && !errorMessage && items.length === 0" class="state">
-    Aucun objet disponible pour le moment.
+    <p class="state-title">Aucun objet n'est disponible pour le moment.</p>
+    <p class="state-copy">Revenez bientôt pour découvrir de nouvelles annonces.</p>
   </div>
 
   <section *ngIf="!isLoading && !errorMessage && items.length > 0" class="grid">
@@ -23,14 +24,18 @@
         <img
           *ngIf="item.imageUrl; else noImage"
           [src]="item.imageUrl"
-          [alt]="item.title || 'Image de l’objet'"
+          [alt]="item.title || 'Image de l\'objet'"
         />
 
         <ng-template #noImage>
           <div class="placeholder">
-            Pas d’image
+            Pas d'image
           </div>
         </ng-template>
+
+        <span class="status-badge" [class.status-badge-sold]="item.status === 'SOLD'">
+          {{ item.status === 'AVAILABLE' ? 'Disponible' : 'Vendu' }}
+        </span>
       </div>
 
       <div class="card-content">
@@ -41,11 +46,11 @@
         </p>
 
         <p class="description">
-          {{ item.description || 'Aucune description disponible.' }}
+          {{ getShortDescription(item.description) }}
         </p>
 
         <p class="seller">
-          Vendeur : {{ item.sellerFirstname || 'Prénom' }} {{ item.sellerLastname || 'Nom' }}
+          Vendeur : {{ getSellerName(item) }}
         </p>
 
         <div class="card-footer">
