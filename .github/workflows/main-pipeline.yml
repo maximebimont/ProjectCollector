@@ -1,4 +1,4 @@
-name: main-pipeline
+name: 🚀 CollectorShop DevSecOps Pipeline
 
 on:
   push:
@@ -32,22 +32,28 @@ permissions:
 
 jobs:
   backend-tests:
+    name: 🧪 Backend tests
     uses: ./.github/workflows/backend-tests.yml
 
   frontend-build:
+    name: 🎨 Frontend build
     uses: ./.github/workflows/frontend-build.yml
 
   code-quality-sast:
+    name: 🔍 Code quality & SAST
     uses: ./.github/workflows/code-quality-sast.yml
     secrets: inherit
 
   secret-scanning:
+    name: 🔐 Secret scanning
     uses: ./.github/workflows/secret-scanning.yml
 
   secure-iac-dockerfile-scan:
+    name: 🛡️ Dockerfile / IaC scan
     uses: ./.github/workflows/iac-dockerfile-scan.yml
 
   docker-build:
+    name: 🐳 Docker build & image scan
     needs:
       - backend-tests
       - frontend-build
