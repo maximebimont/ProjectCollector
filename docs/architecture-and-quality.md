@@ -1,37 +1,32 @@
-# Architecture and Quality
+﻿# Architecture et qualité logicielle
 
-## Contexte fonctionnel
+## 1. Contexte et objectif
 
-Collector.shop est une marketplace entre particuliers orientee objets vintage et de collection.
+Collector.shop est un projet scolaire individuel qui démontre la supervision et l'assurance qualité du développement d'une application web. Le périmètre métier est volontairement simple : une marketplace d'objets de collection entre particuliers.
 
-Le POC permet de demontrer un parcours metier simple mais complet :
+Le POC doit montrer un flux métier complet :
 
-1. Un utilisateur cree un compte.
-2. Il se connecte.
-3. Un vendeur cree une annonce.
-4. Un acheteur consulte le catalogue.
-5. L’acheteur achete un objet.
-6. L’objet passe en `SOLD`.
-7. Une commande est creee.
-8. La commission Collector de 5 % est calculee.
-9. L’acheteur voit ses achats.
-10. Le vendeur voit ses ventes.
+1. un vendeur crée un article ;
+2. un acheteur consulte le catalogue ;
+3. il ouvre le détail ;
+4. il achète l'article ;
+5. l'article devient `SOLD` ;
+6. une commande est créée ;
+7. la plateforme calcule une commission de 5 % ;
+8. le vendeur voit la vente ;
+9. l'acheteur voit l'achat.
 
-L’objectif du projet n’est pas de livrer une vraie marketplace de production, mais de proposer une base demonstrable pour une evaluation de qualite logicielle, de securite et de supervision du developpement.
+L'objectif n'est pas de produire une marketplace industrielle, mais un socle technique clair, maintenable et démontrable.
 
-## Architecture applicative
+## 2. Architecture fonctionnelle
 
-L’application repose sur une architecture web classique separee en trois blocs :
+Le système repose sur trois blocs principaux :
 
-- frontend Angular
-- backend Spring Boot expose en API REST
-- base de donnees PostgreSQL
+- un frontend Angular ;
+- un backend Spring Boot exposé en API REST ;
+- une base PostgreSQL.
 
-Le frontend communique avec le backend en HTTP/JSON.
-L’authentification repose sur JWT.
-L’environnement local peut etre lance avec Docker Compose.
-
-Schema simplifie :
+Schéma simplifié :
 
 ```txt
 Navigateur
@@ -40,7 +35,7 @@ Navigateur
    v
 Frontend Angular
    |
-   | API REST + JWT
+   | REST JSON + JWT
    v
 Backend Spring Boot
    |
@@ -49,9 +44,9 @@ Backend Spring Boot
 PostgreSQL
 ```
 
-## Architecture backend
+## 3. Architecture technique du backend
 
-Le backend suit une organisation par domaines fonctionnels, ce qui facilite la lisibilite du code :
+Le backend est structuré par domaines fonctionnels :
 
 - `auth`
 - `user`
@@ -60,277 +55,181 @@ Le backend suit une organisation par domaines fonctionnels, ce qui facilite la l
 - `config`
 - `common`
 
-### Role des couches backend
+### Rôle des couches
 
-- `Controller` : expose les endpoints REST et gere l’entree HTTP
-- `Service` : porte la logique metier et les regles fonctionnelles
-- `Repository` : gere l’acces aux donnees avec Spring Data JPA
-- `DTO` : definit les objets d’entree et de sortie de l’API
-- `Entity` : represente les donnees persistantes
-- `Security Filter` : valide le JWT sur les requetes protegees
-- `GlobalExceptionHandler` : centralise la gestion des erreurs et uniformise les reponses
+- `controller` : exposition des endpoints REST ;
+- `service` : logique métier et règles de gestion ;
+- `repository` : accès aux données ;
+- `dto` : contrats d'entrée et de sortie ;
+- `entity` : persistence JPA ;
+- `config` : sécurité, CORS et configuration transverse ;
+- `common` : gestion des erreurs et composants mutualisés.
 
-Cette separation permet de garder :
+Cette organisation aide à garder des contrôleurs fins, une logique métier lisible et une persistance relativement isolée.
 
-- des controllers relativement fins
-- une logique metier concentree dans les services
-- une persistence isolee dans les repositories
+## 4. Architecture technique du frontend
 
-## Architecture frontend
+Le frontend est une application Angular organisée par fonctionnalités. Les routes observées dans le dépôt couvrent :
 
-Le frontend Angular est organise par features pour rester simple a comprendre.
+- `/login`
+- `/register`
+- `/items`
+- `/items/new`
+- `/items/:id`
+- `/items/:id/edit`
+- `/my-items`
+- `/my-purchases`
+- `/my-sales`
+- `/profile`
 
-Il utilise :
+Le frontend utilise :
 
-- des composants standalone
-- des services Angular pour les appels API
-- un `authGuard` pour proteger les routes privees
-- un interceptor pour ajouter automatiquement le token JWT
-- des modeles TypeScript pour typer les donnees
+- des composants standalone ;
+- Angular Router ;
+- des services HTTP ;
+- un guard d'authentification ;
+- un interceptor JWT ;
+- des modèles TypeScript ;
+- PrimeNG et Tailwind pour l'interface.
 
-### Pages principales
-
-- login
-- register
-- catalogue
-- detail objet
-- creation objet
-- profil / mon espace
-- mes objets
-- mes achats
-- mes ventes
-
-Cette organisation par fonctionnalite rend l’application plus lisible qu’une structure tres centralisee, tout en restant adaptee a un projet etudiant.
-
-## Cycle de developpement
-
-Le projet suit un cycle simple inspire d’une logique DevSecOps :
-
-1. Analyse du besoin
-2. Conception de la fonctionnalite
-3. Developpement backend / frontend
-4. Tests locaux
-5. Commit sur la branche `dev`
-6. Execution de la CI GitHub Actions
-7. Verification des builds et des tests
-8. Merge vers `main` quand la fonctionnalite est stable
-9. Analyse securite / dependances
-10. Deploiement local avec Docker
-
-Schema simplifie :
-
-```txt
-Besoin → Développement → Tests → CI → Analyse sécurité → Build Docker → Déploiement local → Observabilité
-```
-
-Ce cycle reste volontairement simple, mais il permet deja de montrer :
-
-- une logique d’integration continue
-- une validation reguliere
-- une prise en compte de la securite et de l’observabilite
-
-## Qualite logicielle
-
-Le projet peut etre lu avec une logique proche d’ISO 25010, sans chercher une couverture theorique exhaustive.
-
-### Maintenabilite
-
-Le projet favorise la maintenabilite grace a :
-
-- l’architecture par domaines
-- la separation controller / service / repository
-- l’usage de DTO
-- une structure frontend par features
-- des composants Angular standalone lisibles
-
-### Securite
-
-La securite s’appuie notamment sur :
-
-- JWT pour l’authentification
-- Spring Security pour proteger les routes sensibles
-- `authGuard` et interceptor cote frontend
-- controles metier sur la propriete des objets
-- interdiction d’acheter son propre objet
-- interdiction d’acheter un objet deja vendu
-
-### Fiabilite
-
-La fiabilite est soutenue par :
-
-- des tests automatises backend
-- des tests d’integration sur le parcours d’achat
-- une gestion globale des erreurs
-- des validations d’entrees cote backend
-
-### Performance
-
-La performance n’est pas poussee au niveau d’une production, mais une base de validation existe :
-
-- endpoints publics simples
-- preparation de tests de charge avec Siege
-- exposition des metriques via Actuator
-
-### Utilisabilite
-
-L’utilisabilite a ete amelioree cote frontend par :
-
-- une navigation plus claire
-- une page profil / mon espace
-- une interface modernisee avec PrimeNG et Tailwind
-- une separation lisible des parcours vendeur / acheteur
-
-## Indicateurs qualite
-
-| Indicateur | Objectif | Mesure | Utilité |
-| ---------- | -------- | ------ | ------- |
-| Taux de reussite de la CI | Verifier que les changements n’introduisent pas de regression evidente | Statut des jobs GitHub Actions | Mesurer la stabilite globale du projet |
-| Nombre de tests backend reussis | Valider les regles metier critiques | Resultat de `mvn test` | Confirmer la fiabilite du backend |
-| Temps de reponse moyen sur `GET /api/items` | Verifier que le catalogue reste repondant | Resultats Siege en local | Donner un premier indicateur de performance |
-| Nombre de vulnerabilites critiques detectees | Identifier les dependances a risque | Rapport OWASP Dependency-Check | Suivre la securite des librairies |
-| Etat de l’application | Verifier que le service est operationnel | `/actuator/health` | Fournir un indicateur simple d’observabilite |
-
-## Politique de tests
-
-La politique de tests du projet reste pragmatique.
+## 5. Stack réellement constatée dans le dépôt
 
 ### Backend
 
-- tests unitaires backend
-- tests d’integration backend sur le parcours d’achat si presents
-- verification reguliere via `mvn test`
+- Spring Boot `3.5.14`
+- Java configuré en `21` dans `backend/pom.xml`
+- Spring Security
+- Spring Data JPA / Hibernate
+- PostgreSQL
+- JWT via `jjwt`
+- Bean Validation
+- Spring Boot Actuator
+- Lombok
+- Maven
 
 ### Frontend
 
-- build Angular comme validation technique minimale
-- verification du bon typage et de la compilation via `npm run build`
+- Angular `19`
+- Node `20` dans la CI
+- PrimeNG `19`
+- Tailwind CSS
+- SCSS
 
-### Charge
+### Containerisation
 
-- tests de charge simples avec Siege sur des endpoints publics
+- backend conteneurisé avec un build Maven puis une image JRE ;
+- frontend conteneurisé avec build Node puis service Nginx ;
+- base PostgreSQL dans Docker Compose.
 
-### Tests manuels
+## 6. Point d'attention de cohérence technique
 
-Le parcours utilisateur complet doit etre verifie manuellement :
+Le fichier `AGENTS.md` mentionne Java 17 comme cible attendue, mais l'état réel du dépôt montre actuellement Java 21 dans :
 
-- creation vendeur
-- creation objet
-- creation acheteur
-- achat
-- objet en `SOLD`
-- achat visible cote acheteur
-- vente visible cote vendeur
+- `backend/pom.xml`
+- les workflows GitHub Actions backend
+- le `Dockerfile` backend
 
-## CI/CD
+Pour la soutenance, il faut présenter honnêtement cet état réel comme un point de cohérence à surveiller. Cette documentation ne le masque pas, et ne prétend pas que l'alignement Java 17 est déjà appliqué.
 
-La pipeline principale s’appelle `CollectorShop CI`.
+## 7. Qualité logicielle
 
-### Declenchement
+## Maintenabilité
 
-- push sur `dev`
-- push sur `main`
-- pull request vers `main`
+Les éléments favorables à la maintenabilité sont :
 
-### Job backend
+- séparation claire frontend / backend / base ;
+- organisation backend par domaines ;
+- découpage controller / service / repository ;
+- usage de DTO ;
+- structure frontend par features ;
+- lancement local homogène avec Docker Compose.
 
-- setup Java 21
-- compilation
-- tests
-- package
-- build Docker du backend
+## Lisibilité et simplicité
 
-### Job frontend
+Le projet reste volontairement modeste :
 
-- setup Node 20
-- `npm ci`
-- `npm run build`
+- peu de services techniques complexes ;
+- flux métier central facile à expliquer ;
+- API REST limitée à l'essentiel ;
+- interface utilisateur orientée démonstration.
 
-Le projet contient egalement un workflow de securite distinct pour le backend, afin de garder la CI principale raisonnablement rapide :
+## Fiabilité
 
-- scan OWASP Dependency-Check
-- execution separee de la pipeline principale
+La fiabilité s'appuie sur :
 
-Cette separation est utile dans un projet etudiant, car elle permet de montrer une logique DevSecOps sans ralentir chaque push de maniere excessive.
+- tests unitaires backend sur le service de commande ;
+- test d'intégration backend sur le parcours d'achat complet ;
+- validations d'entrée côté backend ;
+- gestion globale des erreurs ;
+- compilation et build automatisés en CI.
 
-## Deploiement local
+## Sécurité fonctionnelle
 
-Le deploiement local repose sur Docker Compose.
+La sécurité fonctionnelle repose notamment sur :
 
-Dans l’etat actuel du projet, `docker-compose.yml` permet de lancer :
+- authentification JWT ;
+- routes protégées côté backend ;
+- guard et interceptor côté frontend ;
+- impossibilité d'acheter son propre objet ;
+- impossibilité d'acheter un objet déjà vendu ;
+- contrôle de propriété pour la modification et la suppression d'un objet.
 
-- PostgreSQL
-- backend Spring Boot
-- frontend
+## Observabilité minimale
 
-Le backend utilise des variables d’environnement pour la connexion base de donnees et le secret JWT.
-PostgreSQL est isole dans un conteneur dedie avec un volume Docker.
-Le frontend est construit dans son conteneur et servi sur le port `4200`, via une image de production basee sur Nginx.
-
-Cette approche permet de demontrer :
-
-- un environnement local reproductible
-- une separation claire des services
-- une premiere logique de deploiement technique
-
-## Observabilite
-
-Le projet integre une observabilite minimale via Spring Boot Actuator.
-
-Endpoints exposes :
+Le backend expose :
 
 - `/actuator/health`
 - `/actuator/info`
 - `/actuator/metrics`
 
-Cette base permet deja de demontrer :
+Cette observabilité est simple mais utile pour une démo et pour le suivi du conteneur backend.
 
-- le controle de l’etat applicatif
-- l’exposition d’informations techniques utiles
-- une capacite de supervision simple pour le developpement et la soutenance
+## 8. Processus qualité et cycle de développement
 
-## Choix techniques
+Le cycle projet visible dans le dépôt est le suivant :
 
-Les choix techniques principaux sont coherents avec l’objectif du projet :
+1. développement sur le code applicatif ;
+2. vérifications locales ;
+3. exécution des workflows GitHub Actions ;
+4. scans qualité et sécurité ;
+5. builds Docker ;
+6. exécution intégrée avec Docker Compose ;
+7. tests manuels et démonstration.
 
-- Angular pour un frontend web clair et structure
-- Spring Boot pour accelerer la creation d’une API securisee
-- PostgreSQL pour une base relationnelle adaptee aux objets, utilisateurs et commandes
-- JWT pour une authentification stateless simple
-- Docker pour standardiser l’execution locale
-- GitHub Actions pour automatiser les verifications
+La pipeline principale orchestre plusieurs workflows réutilisables :
 
-Ces choix privilegient un bon equilibre entre :
+- tests backend ;
+- build frontend ;
+- qualité de code et SAST ;
+- scan de secrets ;
+- scan Dockerfile ;
+- build Docker et scan d'images.
 
-- lisibilite
-- rapidite de mise en oeuvre
-- demonstrabilite
-- adequation avec un niveau mastère / lead developer
+## 9. Réalisé, simulé, perspective
 
-## Limites et ameliorations
+### Réalisé
 
-Le projet presente encore des limites normales pour un POC :
+- architecture frontend/backend/base fonctionnelle ;
+- flux métier principal complet ;
+- dockerisation des trois services ;
+- CI/CD GitHub Actions ;
+- tests backend automatisés ;
+- observabilité de base avec Actuator.
 
-- pas de paiement reel
-- pas de refresh token
-- pas de MFA
-- pas de monitoring avance type Prometheus / Grafana
-- pas d’environnement cloud reel
-- pas de SAST complet integre a la chaine
+### Simulé ou limité volontairement
 
-Ameliorations possibles :
+- aucun paiement réel ;
+- aucun environnement cloud réel ;
+- charge testée localement seulement ;
+- observabilité sans stack dédiée type Prometheus/Grafana.
 
-- renforcement des tests frontend
-- ajout de scans SAST et container
-- mise en place d’un systeme de secrets plus robuste
-- supervision plus avancee
-- gestion plus complete des tokens et de la securite session
+### Perspectives
 
-## Resume oral
+- aligner définitivement la cible Java entre documentation, CI et packaging ;
+- renforcer les tests frontend automatisés ;
+- enrichir l'observabilité et les alertes ;
+- préparer un déploiement hors poste local si nécessaire.
 
-L’architecture de Collector.shop a ete choisie pour rester simple, lisible et demonstrable. Le frontend Angular est separe du backend Spring Boot, qui expose une API REST securisee par JWT, avec PostgreSQL comme base relationnelle. Cette separation permet de montrer une architecture moderne classique, facile a expliquer a l’oral.
+## 10. Message clé pour l'oral
 
-La qualite logicielle est assuree par plusieurs mecanismes concrets : organisation du code par domaines, separation des responsabilites, tests backend, build frontend, gestion des erreurs et integration continue avec GitHub Actions. Le projet montre ainsi une demarche de developpement structuree, et pas seulement un resultat fonctionnel.
-
-La CI/CD aide a securiser le developpement en automatisant la compilation, les tests et les builds Docker. En complement, le projet prepare aussi l’analyse de dependances et une base de tests de charge, ce qui montre une logique DevSecOps adaptee au contexte du projet.
-
-Enfin, l’observabilite minimale via Actuator et les tests de charge avec Siege permettent de verifier l’etat et le comportement du systeme. Les limites actuelles sont clairement identifiees : il s’agit d’un POC etudiant, pas d’une application de production. Cet aspect est important a l’oral, car il montre une analyse lucide du niveau de maturite du projet.
+Collector.shop montre une architecture web classique, moderne et facile à expliquer. La qualité ne repose pas seulement sur le fait que l'application fonctionne, mais sur un ensemble cohérent : structure du code, tests, CI/CD, scans de sécurité, conteneurisation et documentation. Le projet reste un POC étudiant, ce qui est assumé et explicitement documenté.

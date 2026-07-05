@@ -34,10 +34,10 @@ export class MyItemsComponent implements OnInit {
 
     switch (feedback) {
       case 'created':
-        this.successMessage = 'Objet créé avec succès.';
+        this.successMessage = 'Objet crÃ©Ã© avec succÃ¨s.';
         break;
       case 'updated':
-        this.successMessage = 'Objet modifié avec succès.';
+        this.successMessage = 'Objet modifiÃ© avec succÃ¨s.';
         break;
       default:
         this.successMessage = '';
@@ -64,7 +64,7 @@ export class MyItemsComponent implements OnInit {
       },
       error: (error) => {
         console.error(error);
-        this.errorMessage = 'Impossible de récupérer vos objets.';
+        this.errorMessage = 'Impossible de rÃ©cupÃ©rer vos objets.';
         this.isLoading = false;
       }
     });
@@ -75,7 +75,7 @@ export class MyItemsComponent implements OnInit {
   }
 
   deleteItem(item: Item): void {
-    const confirmed = window.confirm(`Supprimer l’objet "${item.title}" ?`);
+    const confirmed = window.confirm(`Supprimer l'objet "${item.title}" ?`);
 
     if (!confirmed) {
       return;
@@ -87,12 +87,12 @@ export class MyItemsComponent implements OnInit {
     this.itemService.deleteItem(item.id).subscribe({
       next: () => {
         this.items = this.items.filter(currentItem => currentItem.id !== item.id);
-        this.successMessage = 'Objet supprimé avec succès.';
+        this.successMessage = 'Objet supprimÃ© avec succÃ¨s.';
         this.deletingItemId = null;
       },
       error: (error) => {
         console.error(error);
-        this.actionErrorMessage = error.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
+        this.actionErrorMessage = error.error?.message || 'Une erreur est survenue. Veuillez rÃ©essayer.';
         this.deletingItemId = null;
       }
     });

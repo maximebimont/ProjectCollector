@@ -58,7 +58,7 @@ The backend is located in `backend/`.
 
 Use:
 
-* Java 17;
+* Java 21;
 * Spring Boot 3.x;
 * Maven;
 * PostgreSQL;
