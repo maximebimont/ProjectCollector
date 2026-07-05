@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   docker-build:
-    name: Docker Build
     runs-on: ubuntu-latest
 
     steps:

@@ -13,7 +13,6 @@ permissions:
 
 jobs:
   code-quality-sast:
-    name: Code Quality and SAST
     runs-on: ubuntu-latest
 
     defaults:
