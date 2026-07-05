@@ -1,4 +1,4 @@
-﻿# Architecture et qualité logicielle
+﻿# 🧭 Architecture et qualité logicielle
 
 ## 1. Contexte et objectif
 
@@ -18,7 +18,7 @@ Le POC doit montrer un flux métier complet :
 
 L'objectif n'est pas de produire une marketplace industrielle, mais un socle technique clair, maintenable et démontrable.
 
-## 2. Architecture fonctionnelle
+## 🧭 2. Architecture fonctionnelle
 
 Le système repose sur trois blocs principaux :
 
@@ -44,7 +44,7 @@ Backend Spring Boot
 PostgreSQL
 ```
 
-## 3. Architecture technique du backend
+## ☕ 3. Architecture technique du backend
 
 Le backend est structuré par domaines fonctionnels :
 
@@ -55,7 +55,7 @@ Le backend est structuré par domaines fonctionnels :
 - `config`
 - `common`
 
-### Rôle des couches
+### 🧭 Rôle des couches
 
 - `controller` : exposition des endpoints REST ;
 - `service` : logique métier et règles de gestion ;
@@ -67,7 +67,7 @@ Le backend est structuré par domaines fonctionnels :
 
 Cette organisation aide à garder des contrôleurs fins, une logique métier lisible et une persistance relativement isolée.
 
-## 4. Architecture technique du frontend
+## 🎨 4. Architecture technique du frontend
 
 Le frontend est une application Angular organisée par fonctionnalités. Les routes observées dans le dépôt couvrent :
 
@@ -92,9 +92,9 @@ Le frontend utilise :
 - des modèles TypeScript ;
 - PrimeNG et Tailwind pour l'interface.
 
-## 5. Stack réellement constatée dans le dépôt
+## ✅ 5. Stack réellement constatée dans le dépôt
 
-### Backend
+### ☕ Backend
 
 - Spring Boot `3.5.14`
 - Java configuré en `21` dans `backend/pom.xml`
@@ -107,7 +107,7 @@ Le frontend utilise :
 - Lombok
 - Maven
 
-### Frontend
+### 🎨 Frontend
 
 - Angular `19`
 - Node `20` dans la CI
@@ -115,25 +115,15 @@ Le frontend utilise :
 - Tailwind CSS
 - SCSS
 
-### Containerisation
+### 🐳 Containerisation
 
 - backend conteneurisé avec un build Maven puis une image JRE ;
 - frontend conteneurisé avec build Node puis service Nginx ;
 - base PostgreSQL dans Docker Compose.
 
-## 6. Point d'attention de cohérence technique
+## ✅ 6. Qualité logicielle
 
-Le fichier `AGENTS.md` mentionne Java 17 comme cible attendue, mais l'état réel du dépôt montre actuellement Java 21 dans :
-
-- `backend/pom.xml`
-- les workflows GitHub Actions backend
-- le `Dockerfile` backend
-
-Pour la soutenance, il faut présenter honnêtement cet état réel comme un point de cohérence à surveiller. Cette documentation ne le masque pas, et ne prétend pas que l'alignement Java 17 est déjà appliqué.
-
-## 7. Qualité logicielle
-
-## Maintenabilité
+## ✅ Maintenabilité
 
 Les éléments favorables à la maintenabilité sont :
 
@@ -144,7 +134,7 @@ Les éléments favorables à la maintenabilité sont :
 - structure frontend par features ;
 - lancement local homogène avec Docker Compose.
 
-## Lisibilité et simplicité
+## 🧭 Lisibilité et simplicité
 
 Le projet reste volontairement modeste :
 
@@ -153,7 +143,7 @@ Le projet reste volontairement modeste :
 - API REST limitée à l'essentiel ;
 - interface utilisateur orientée démonstration.
 
-## Fiabilité
+## ✅ Fiabilité
 
 La fiabilité s'appuie sur :
 
@@ -163,7 +153,7 @@ La fiabilité s'appuie sur :
 - gestion globale des erreurs ;
 - compilation et build automatisés en CI.
 
-## Sécurité fonctionnelle
+## 🔐 Sécurité fonctionnelle
 
 La sécurité fonctionnelle repose notamment sur :
 
@@ -174,7 +164,7 @@ La sécurité fonctionnelle repose notamment sur :
 - impossibilité d'acheter un objet déjà vendu ;
 - contrôle de propriété pour la modification et la suppression d'un objet.
 
-## Observabilité minimale
+## 📊 Observabilité minimale
 
 Le backend expose :
 
@@ -184,7 +174,7 @@ Le backend expose :
 
 Cette observabilité est simple mais utile pour une démo et pour le suivi du conteneur backend.
 
-## 8. Processus qualité et cycle de développement
+## 🚀 7. Processus qualité et cycle de développement
 
 Le cycle projet visible dans le dépôt est le suivant :
 
@@ -205,9 +195,9 @@ La pipeline principale orchestre plusieurs workflows réutilisables :
 - scan Dockerfile ;
 - build Docker et scan d'images.
 
-## 9. Réalisé, simulé, perspective
+## 🧭 8. Réalisé, simulé, perspective
 
-### Réalisé
+### ✅ Réalisé
 
 - architecture frontend/backend/base fonctionnelle ;
 - flux métier principal complet ;
@@ -216,20 +206,17 @@ La pipeline principale orchestre plusieurs workflows réutilisables :
 - tests backend automatisés ;
 - observabilité de base avec Actuator.
 
-### Simulé ou limité volontairement
+### ⚠️ Simulé ou limité volontairement
 
 - aucun paiement réel ;
 - aucun environnement cloud réel ;
 - charge testée localement seulement ;
 - observabilité sans stack dédiée type Prometheus/Grafana.
 
-### Perspectives
+### 🔮 Perspectives
 
 - aligner définitivement la cible Java entre documentation, CI et packaging ;
 - renforcer les tests frontend automatisés ;
 - enrichir l'observabilité et les alertes ;
 - préparer un déploiement hors poste local si nécessaire.
 
-## 10. Message clé pour l'oral
-
-Collector.shop montre une architecture web classique, moderne et facile à expliquer. La qualité ne repose pas seulement sur le fait que l'application fonctionne, mais sur un ensemble cohérent : structure du code, tests, CI/CD, scans de sécurité, conteneurisation et documentation. Le projet reste un POC étudiant, ce qui est assumé et explicitement documenté.

@@ -1,4 +1,4 @@
-﻿# Guide de démonstration Collector.shop
+﻿# 🧭 Guide de démonstration Collector.shop
 
 ## Objectif de la démo
 
@@ -16,7 +16,7 @@ La démonstration doit prouver que le POC couvre un flux métier complet de mark
 
 La démo ne cherche pas à montrer une marketplace de production. Elle vise à montrer un POC propre, cohérent et démontrable techniquement.
 
-## Prérequis
+## ✅ Prérequis
 
 - Docker Desktop ou Docker Engine installé et démarré
 - Docker Compose disponible
@@ -24,13 +24,13 @@ La démo ne cherche pas à montrer une marketplace de production. Elle vise à m
 - dépôt cloné localement
 - terminal positionné à la racine du projet
 
-## Commande de lancement
+## 🚀 Commande de lancement
 
 ```bash
 docker compose up --build
 ```
 
-## Services attendus
+## ✅ Services attendus
 
 Après démarrage, l'environnement local doit exposer :
 
@@ -40,15 +40,15 @@ Après démarrage, l'environnement local doit exposer :
 - Actuator health : `http://localhost:8080/actuator/health`
 - Actuator info : `http://localhost:8080/actuator/info`
 
-## Vérifications rapides avant la démo
+## ✅ Vérifications rapides avant la démo
 
 1. Ouvrir `http://localhost:4200/items` et vérifier que le catalogue s'affiche.
 2. Ouvrir `http://localhost:8080/actuator/health` et vérifier que le backend répond.
 3. Vérifier dans les logs Docker que les conteneurs `collector_frontend`, `collector_backend` et `collector_postgres` sont démarrés.
 
-## Scénario de démonstration recommandé
+## 🧭 Scénario de démonstration recommandé
 
-### Étape 1 - Présenter l'architecture en 30 secondes
+### 🧭 Étape 1 - Présenter l'architecture en 30 secondes
 
 À l'oral :
 
@@ -57,7 +57,7 @@ Après démarrage, l'environnement local doit exposer :
 - authentification JWT ;
 - lancement complet avec Docker Compose.
 
-### Étape 2 - Créer le compte vendeur
+### 👤 Étape 2 - Créer le compte vendeur
 
 1. Aller sur `http://localhost:4200/register`.
 2. Créer un compte vendeur avec une adresse email dédiée.
@@ -70,7 +70,7 @@ Exemple de données :
 - email : `vendeur.demo@collector.local`
 - mot de passe : `password123`
 
-### Étape 3 - Créer une annonce
+### 📦 Étape 3 - Créer une annonce
 
 1. Aller sur la page de création d'objet.
 2. Saisir un titre, une description, un prix et éventuellement une image.
@@ -86,13 +86,13 @@ Exemple de données :
 - prix : `100.00`
 - image : URL publique facultative
 
-### Étape 4 - Déconnexion vendeur
+### 👤 Étape 4 - Déconnexion vendeur
 
 1. Utiliser le bouton de déconnexion.
 2. Revenir sur le catalogue public.
 3. Expliquer que le catalogue reste visible sans authentification.
 
-### Étape 5 - Créer le compte acheteur
+### 🛒 Étape 5 - Créer le compte acheteur
 
 1. Aller sur `http://localhost:4200/register`.
 2. Créer un second compte.
@@ -105,14 +105,14 @@ Exemple de données :
 - email : `acheteur.demo@collector.local`
 - mot de passe : `password123`
 
-### Étape 6 - Parcours d'achat
+### 🛒 Étape 6 - Parcours d'achat
 
 1. Depuis le catalogue, ouvrir le détail de l'objet créé par le vendeur.
 2. Vérifier que le détail affiche le prix et les informations vendeur.
 3. Lancer l'achat depuis la page détail.
 4. Montrer le message de succès et le résumé de commande si affiché.
 
-## Contrôles à montrer pendant l'achat
+## 🔐 Contrôles à montrer pendant l'achat
 
 Les points suivants sont importants à verbaliser :
 
@@ -127,7 +127,7 @@ Exemple attendu pour un article à `100.00` euros :
 - commission plateforme : `5.00`
 - montant vendeur : `95.00`
 
-## Vérifications après achat
+## ✅ Vérifications après achat
 
 1. Revenir au détail de l'objet et montrer le statut `SOLD`.
 2. Aller dans les achats de l'acheteur et montrer la commande.
@@ -135,7 +135,7 @@ Exemple attendu pour un article à `100.00` euros :
 4. Se reconnecter avec le compte vendeur.
 5. Aller dans les ventes et montrer la vente correspondante.
 
-## Points techniques à citer pendant la soutenance
+## 🧭 Points techniques à citer pendant la soutenance
 
 - l'authentification est gérée par JWT ;
 - les règles métier critiques sont côté backend ;
@@ -143,7 +143,7 @@ Exemple attendu pour un article à `100.00` euros :
 - la CI/CD et les scans de sécurité sont automatisés dans GitHub Actions ;
 - la charge a été testée en local avec Siege sur des endpoints publics.
 
-## Ce qui est réellement réalisé
+## ✅ Ce qui est réellement réalisé
 
 - flux métier complet de vente/achat jusqu'à la création de commande ;
 - passage de l'objet en `SOLD` ;
@@ -152,22 +152,23 @@ Exemple attendu pour un article à `100.00` euros :
 - exécution complète avec Docker Compose ;
 - CI/CD et scans DevSecOps dans le dépôt.
 
-## Ce qui est simulé ou simplifié
+## ⚠️ Ce qui est simulé ou simplifié
 
 - aucun paiement réel n'est intégré ;
 - les tests de charge restent des tests locaux de démonstration ;
 - l'observabilité reste limitée à Spring Boot Actuator ;
 - la sécurité reste adaptée à un POC, pas à une production Internet.
 
-## Ce qui reste en perspective
+## 🔮 Ce qui reste en perspective
 
 - test manuel final complet de bout en bout à rejouer juste avant la soutenance ;
 - préparation du support PowerPoint ;
 - renforcement éventuel des tests frontend automatisés ;
 - durcissement sécurité si le projet devait dépasser le cadre scolaire.
 
-## Arrêt de l'environnement
+## 🐳 Arrêt de l'environnement
 
 ```bash
 docker compose down
 ```
+

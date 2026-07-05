@@ -1,4 +1,4 @@
-﻿# Sécurité et démarche DevSecOps
+﻿# 🛡️ Sécurité et démarche DevSecOps
 
 ## 1. Positionnement
 
@@ -12,9 +12,9 @@ L'application manipule tout de même des données et actions sensibles :
 - annonces d'objets ;
 - commandes d'achat.
 
-## 2. Mesures de sécurité applicative réellement présentes
+## 🔐 2. Mesures de sécurité applicative réellement présentes
 
-### Authentification et contrôle d'accès
+### 🔐 Authentification et contrôle d'accès
 
 Le dépôt montre les mécanismes suivants :
 
@@ -24,7 +24,7 @@ Le dépôt montre les mécanismes suivants :
 - guard Angular pour bloquer certaines routes côté frontend ;
 - interceptor Angular pour envoyer le bearer token automatiquement.
 
-### Protection des routes et des ressources
+### 🛡️ Protection des routes et des ressources
 
 La configuration de sécurité backend autorise publiquement :
 
@@ -37,21 +37,21 @@ La configuration de sécurité backend autorise publiquement :
 
 Le reste nécessite une authentification.
 
-### Règles métier qui renforcent la sécurité
+### 🔐 Règles métier qui renforcent la sécurité
 
 - seul le vendeur peut modifier ou supprimer son objet ;
 - un utilisateur ne peut pas acheter son propre objet ;
 - un objet déjà vendu ne peut pas être acheté une seconde fois ;
 - les pages frontend adaptent l'expérience utilisateur, mais la règle de blocage reste côté backend.
 
-### Validation et gestion des erreurs
+### ✅ Validation et gestion des erreurs
 
 - DTO côté backend ;
 - Bean Validation ;
 - gestion globale des exceptions ;
 - séparation controller / service / repository pour limiter les effets de bord.
 
-### CORS
+### 🔐 CORS
 
 La configuration actuelle autorise explicitement l'origine :
 
@@ -59,11 +59,11 @@ La configuration actuelle autorise explicitement l'origine :
 
 Cela est cohérent avec le mode de fonctionnement local du projet.
 
-## 3. DevSecOps dans le dépôt
+## 🛡️ 3. DevSecOps dans le dépôt
 
 Le dépôt contient une pipeline principale et plusieurs workflows réutilisables.
 
-### Pipeline principale
+### 🚀 Pipeline principale
 
 Le workflow principal `main-pipeline.yml` orchestre :
 
@@ -82,7 +82,7 @@ Il est déclenché sur :
 - déclenchement manuel ;
 - planification hebdomadaire.
 
-### Contrôles automatisés réellement présents
+### ✅ Contrôles automatisés réellement présents
 
 - `backend-tests.yml` : compilation, tests et packaging Maven ;
 - `frontend-build.yml` : `npm ci` puis `npm run build` ;
@@ -92,7 +92,7 @@ Il est déclenché sur :
 - `sca-dependency-scan.yml` : OWASP Dependency-Check + Trivy filesystem ;
 - `docker-build.yml` : build des images backend/frontend + scans Trivy.
 
-### Dépendances et mises à jour
+### ✅ Dépendances et mises à jour
 
 Le dépôt contient aussi un `dependabot.yml` pour :
 
@@ -101,7 +101,7 @@ Le dépôt contient aussi un `dependabot.yml` pour :
 
 Les mises à jour sont planifiées chaque semaine sur la branche `dev`.
 
-## 4. Analyse de risques simple
+## ⚠️ 4. Analyse de risques simple
 
 | Risque | Niveau | Mesure actuelle | Limite actuelle | Perspective |
 | --- | --- | --- | --- | --- |
@@ -114,7 +114,7 @@ Les mises à jour sont planifiées chaque semaine sur la branche `dev`.
 | Exposition excessive d'endpoints techniques | Moyen | Actuator limité à health/info/metrics | endpoints tout de même publics en local | filtrage réseau selon environnement |
 | Mots de passe insuffisamment robustes | Moyen | hashage et validation de base | pas de politique forte, pas de MFA | politique plus stricte, MFA, reset sécurisé |
 
-## 5. Observabilité et sécurité opérationnelle
+## 📊 5. Observabilité et sécurité opérationnelle
 
 Le backend expose une observabilité minimale avec Actuator :
 
@@ -130,7 +130,7 @@ Cette observabilité aide à :
 
 Elle ne constitue pas une supervision de production complète.
 
-## 6. Charge et résilience
+## 📊 6. Charge et résilience
 
 Le dépôt contient un dossier `load-tests/` avec un jeu d'URLs Siege :
 
@@ -145,9 +145,9 @@ Cette démarche montre une validation de base sous petite charge concurrente. En
 - les chiffres dépendent fortement du poste local ;
 - aucun historique chiffré détaillé n'est versionné dans ce dépôt.
 
-## 7. Ce qui est réalisé, simulé et prévu
+## 🧭 7. Ce qui est réalisé, simulé et prévu
 
-### Réalisé
+### ✅ Réalisé
 
 - authentification JWT ;
 - règles métier de sécurité côté backend ;
@@ -156,7 +156,7 @@ Cette démarche montre une validation de base sous petite charge concurrente. En
 - build Docker des images applicatives ;
 - tests backend automatisés.
 
-### Simulé ou limité volontairement
+### ⚠️ Simulé ou limité volontairement
 
 - pas de paiement réel ;
 - pas de MFA ;
@@ -165,7 +165,7 @@ Cette démarche montre une validation de base sous petite charge concurrente. En
 - pas d'infrastructure cloud ni de WAF ;
 - sécurité calibrée pour un POC de soutenance.
 
-### Prévu ou pertinent en perspective
+### 🔮 Prévu ou pertinent en perspective
 
 - centralisation des secrets ;
 - rotation des secrets et durée de vie JWT plus fine ;
@@ -177,6 +177,3 @@ Cette démarche montre une validation de base sous petite charge concurrente. En
 
 La présence de workflows DevSecOps dans le dépôt est réelle et démontrable. En revanche, il ne faut pas prétendre que cela équivaut à une chaîne de sécurité complète de production. Le projet montre une démarche crédible de sécurisation du développement, pas une conformité exhaustive.
 
-## 9. Message clé pour l'oral
-
-La sécurité de Collector.shop ne repose pas sur un seul mécanisme. Elle combine authentification, contrôles métier, validation, scans automatisés et conteneurisation contrôlée. Pour une soutenance, la force du projet est de montrer une démarche DevSecOps cohérente et honnête, avec des limites identifiées.

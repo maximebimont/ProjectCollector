@@ -1,4 +1,4 @@
-﻿# Stratégie de test
+﻿# 🧪 Stratégie de test
 
 ## 1. Objectif
 
@@ -22,16 +22,16 @@ Le périmètre prioritaire de test est le scénario métier central :
 7. création de commande ;
 8. visibilité côté acheteur et côté vendeur.
 
-## 3. Tests automatisés réellement présents
+## 🧪 3. Tests automatisés réellement présents
 
-### Backend
+### ☕ Backend
 
 Deux niveaux de tests backend sont présents dans le dépôt :
 
 - `OrderServiceTest` : tests unitaires du service de commande ;
 - `PurchaseFlowIntegrationTest` : test d'intégration du parcours d'achat.
 
-### Ce que couvre le test unitaire
+### 🧪 Ce que couvre le test unitaire
 
 Le test unitaire du service de commande vérifie notamment :
 
@@ -43,7 +43,7 @@ Le test unitaire du service de commande vérifie notamment :
 - le refus d'achat d'un objet déjà vendu ;
 - le refus d'achat d'un objet inexistant.
 
-### Ce que couvre le test d'intégration
+### 🧪 Ce que couvre le test d'intégration
 
 Le test d'intégration backend vérifie un enchaînement proche du métier réel :
 
@@ -55,7 +55,7 @@ Le test d'intégration backend vérifie un enchaînement proche du métier réel
 - vérification des achats côté acheteur ;
 - refus d'achat sans token.
 
-## 4. Vérifications automatisées côté frontend
+## 🎨 4. Vérifications automatisées côté frontend
 
 L'état actuel du dépôt montre surtout une validation technique frontend par build :
 
@@ -68,7 +68,7 @@ Cette stratégie ne constitue pas une couverture fonctionnelle frontend complèt
 - la cohérence des imports et templates Angular ;
 - la capacité à produire l'artefact de build.
 
-## 5. CI comme filet de sécurité
+## 🚀 5. CI comme filet de sécurité
 
 La stratégie de test s'appuie aussi sur GitHub Actions :
 
@@ -79,11 +79,11 @@ La stratégie de test s'appuie aussi sur GitHub Actions :
 
 La CI ne remplace pas tous les tests métier, mais elle réduit le risque d'intégrer une régression évidente.
 
-## 6. Tests manuels
+## 🧪 6. Tests manuels
 
 Un test manuel de bout en bout reste indispensable pour la soutenance.
 
-### Scénario manuel recommandé
+### ✅ Scénario manuel recommandé
 
 1. lancer l'application avec `docker compose up --build` ;
 2. créer un compte vendeur ;
@@ -95,25 +95,25 @@ Un test manuel de bout en bout reste indispensable pour la soutenance.
 8. vérifier l'achat dans `my-purchases` ;
 9. vérifier la vente dans `my-sales`.
 
-### Statut honnête à documenter
+### ✅ Statut honnête à documenter
 
 - les tests automatisés backend sont présents ;
 - le build frontend est automatisé ;
 - le test manuel final complet est à rejouer avant la soutenance ;
 - cette documentation ne prétend pas qu'une recette exhaustive déjà figée est archivée dans le dépôt.
 
-## 7. Tests de charge
+## 📊 7. Tests de charge
 
 Le projet contient un dossier `load-tests/` avec une base de test Siege.
 
-### Endpoints visés
+### 📦 Endpoints visés
 
 - `GET /api/items`
 - `GET /actuator/health`
 - `GET /actuator/info`
 - `GET /actuator/metrics`
 
-### Exemple de commandes
+### 🚀 Exemple de commandes
 
 ```bash
 cd load-tests
@@ -125,19 +125,19 @@ cd load-tests
 siege -c 10 -t 30S -f siege-urls.txt
 ```
 
-### Ce que ces tests apportent
+### ✅ Ce que ces tests apportent
 
 - une première vérification de disponibilité ;
 - un indicateur simple de réactivité ;
 - une préparation à la discussion sur la performance.
 
-### Ce qu'ils n'apportent pas
+### ⚠️ Ce qu'ils n'apportent pas
 
 - aucun engagement de performance de production ;
 - aucune simulation avancée de charge métier authentifiée ;
 - aucune campagne historisée automatiquement dans le dépôt.
 
-## 8. Limites actuelles de la stratégie de test
+## ⚠️ 8. Limites actuelles de la stratégie de test
 
 - peu de tests frontend automatisés ;
 - pas de test E2E automatisé navigateur ;
@@ -145,7 +145,7 @@ siege -c 10 -t 30S -f siege-urls.txt
 - pas de tests de concurrence avancés sur l'achat simultané ;
 - pas de métriques de couverture consolidées dans la documentation actuelle.
 
-## 9. Améliorations pertinentes en perspective
+## 🔮 9. Améliorations pertinentes en perspective
 
 - ajouter des tests frontend ciblés sur les composants critiques ;
 - ajouter un scénario E2E automatisé sur le parcours d'achat ;
@@ -153,6 +153,3 @@ siege -c 10 -t 30S -f siege-urls.txt
 - conserver les résultats des tests de charge dans des artefacts ;
 - introduire des tests de non-régression sur les routes principales.
 
-## 10. Synthèse pour l'évaluation
-
-La stratégie de test est pragmatique : elle sécurise le cœur métier sans prétendre couvrir tous les cas d'une marketplace réelle. Pour la soutenance, il faut assumer ce niveau de maturité : la base qualité est réelle, mais elle reste proportionnée à un POC étudiant.
