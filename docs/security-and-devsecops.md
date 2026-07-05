@@ -173,7 +173,3 @@ Cette démarche montre une validation de base sous petite charge concurrente. En
 - logs de sécurité plus détaillés ;
 - HTTPS et durcissement réseau dans un environnement cible.
 
-## 8. Point d'honnêteté important pour la soutenance
-
-La présence de workflows DevSecOps dans le dépôt est réelle et démontrable. En revanche, il ne faut pas prétendre que cela équivaut à une chaîne de sécurité complète de production. Le projet montre une démarche crédible de sécurisation du développement, pas une conformité exhaustive.
-

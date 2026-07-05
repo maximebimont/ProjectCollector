@@ -1,11 +1,12 @@
-# Load Tests
+﻿# Load Tests
 
-Ce dossier contient une base simple pour demontrer une demarche de test de charge sur Collector.shop.
+Ce dossier contient une base simple et reproductible pour demontrer une demarche de test de charge locale sur Collector.shop.
 
 ## Prerequis
 
 - backend Spring Boot lance sur `http://localhost:8080`
 - Siege installe localement
+- idealement l'application complete demarree avec `docker compose up --build`
 
 Exemple Ubuntu / Debian :
 
@@ -20,72 +21,87 @@ sudo apt-get install siege
 
 ## URLs testees
 
-Les premiers tests visent uniquement des endpoints publics pour une demonstration rapide :
+Les premiers tests visent volontairement des endpoints publics et stables :
 
-- catalogue public
-- endpoint de sante
-- endpoint d'information
+- `GET /api/items`
+- `GET /actuator/health`
+- `GET /actuator/info`
+- `GET /actuator/metrics`
+
+Ce choix permet de lancer un test de demonstration rapide, sans dependre d'une authentification ou d'un scenario metier complet.
 
 ## Commandes Siege
 
-Demonstration rapide :
+Demonstration courte :
 
 ```bash
 cd load-tests
 siege -c 5 -t 15S -f siege-urls.txt
 ```
 
-Test un peu plus representatif :
+Demonstration un peu plus representative :
 
 ```bash
 cd load-tests
 siege -c 10 -t 30S -f siege-urls.txt
 ```
 
-Explication des options :
+Lecture rapide des options :
 
 - `-c 5` ou `-c 10` : nombre d'utilisateurs concurrents
 - `-t 15S` ou `-t 30S` : duree du test
-- `-f siege-urls.txt` : liste des endpoints a appeler
+- `-f siege-urls.txt` : fichier listant les URLs a appeler
 
-## Exemple d'usage pour le projet
+## Comment interpreter les resultats
 
-Ces commandes permettent de verifier rapidement que :
+Les indicateurs les plus utiles a commenter sont :
 
-- le catalogue reste accessible
-- les endpoints Actuator repondent correctement
-- le backend local supporte une petite charge concurrente
+- `Availability` : taux de reponses obtenues
+- `Transactions` : nombre total de requetes executees
+- `Elapsed time` : duree totale mesuree
+- `Response time` : temps de reponse moyen
+- `Transaction rate` : nombre moyen de transactions par seconde
+- `Throughput` : volume moyen traite sur la periode
+- `Successful transactions` : requetes reussies
+- `Failed transactions` : requetes en erreur
 
-## Comment lire les resultats
+## Ce que les resultats permettent de montrer
 
-Les metriques les plus utiles a regarder sont :
+A l'oral et dans la documentation, ces tests permettent de montrer :
 
-- disponibilite : pourcentage de reponses obtenues
-- transactions : nombre total de requetes executees
-- temps de reponse : vitesse moyenne de reponse du backend
-- throughput / debit : volume traite sur la duree du test
-- successful transactions : nombre de requetes reussies
-- failed transactions : nombre d'erreurs constatees
+- que les endpoints publics restent joignables sous une petite charge locale ;
+- que le catalogue et les endpoints Actuator repondent de facon coherente ;
+- qu'une demarche de test de charge simple existe deja dans le projet ;
+- qu'il est possible de rejouer rapidement les tests sur le poste de demonstration.
 
-Dans le dossier et a l'oral, ces resultats peuvent servir a :
+## Limites du test local
 
-- verifier que le catalogue public reste disponible sous une petite charge
-- identifier les premieres limites du backend en local
-- montrer une demarche de validation performance simple et reproductible
+Ces tests ont des limites importantes qu'il faut assumer clairement :
 
-## Limites
+- ils ne representent pas un environnement de production ;
+- ils dependent fortement du poste developpeur ;
+- Docker, PostgreSQL local et les autres processus machine influencent fortement les chiffres ;
+- ils ne couvrent pas les parcours authentifies ;
+- ils ne mesurent pas les cas de concurrence metier avancee comme l'achat simultane.
 
-- un test local ne represente pas un environnement de production
-- les performances dependent fortement du poste developpeur
-- PostgreSQL local peut devenir un facteur limitant
-- le reseau local, Docker et les autres processus machine influencent les chiffres
-- une vraie validation production demanderait des scenarios plus complets, des donnees plus realistes et un environnement dedie
+## Pourquoi ces tests ne sont pas lances a chaque push
+
+Les tests Siege ne sont pas executes automatiquement dans la CI pour plusieurs raisons pragmatiques :
+
+- ils necessitent un environnement d'execution complet et stable ;
+- les resultats seraient trop dependants de la machine GitHub Runner ;
+- ils allongeraient la duree de pipeline pour une valeur limitee sur un POC ;
+- ils servent surtout de demonstration reproductible locale, pas de garde-fou fonctionnel principal.
+
+## Usage recommande dans le projet
+
+La bonne strategie actuelle est :
+
+1. lancer l'application localement ;
+2. verifier le fonctionnement fonctionnel ;
+3. rejouer Siege avec les commandes documentees ;
+4. commenter les resultats de maniere qualitative, pas comme un benchmark industriel.
 
 ## Alternatives
 
-Si Siege n'est pas disponible, il est possible de reproduire la meme logique avec JMeter :
-
-- creer un plan de test simple
-- ajouter plusieurs requetes HTTP GET vers les URLs publiques
-- definir un petit nombre d'utilisateurs virtuels
-- observer le temps de reponse et le taux d'erreur
+Si Siege n'est pas disponible, la meme logique peut etre reproduite avec JMeter ou un autre outil HTTP simple, mais Siege reste le choix le plus leger pour ce projet.
