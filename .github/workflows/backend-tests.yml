@@ -5,6 +5,7 @@ on:
 
 jobs:
   backend-tests:
+    name: Backend Build and Tests
     runs-on: ubuntu-latest
 
     defaults:
