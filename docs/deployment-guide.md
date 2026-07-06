@@ -1,27 +1,25 @@
-﻿# 🐳 Guide de déploiement
+# Guide de deploiement
 
-## 1. Objectif
+## Objectif
 
-Ce guide décrit le déploiement local réellement supporté par le projet Collector.shop. Il est volontairement centré sur l'environnement Docker Compose utilisé pour la démonstration, les tests intégrés et la soutenance.
+Ce document explique comment lancer Collector.shop localement dans son mode de deploiement reellement supporte par le projet : Docker Compose.
 
-Il ne décrit pas un déploiement cloud de production.
+## Prerequis
 
-## 🧭 2. Architecture déployée
+- Docker installe
+- Docker Compose disponible
+- Ports `4200`, `8080` et `5433` disponibles
+- Depot present localement
 
-Le fichier `docker-compose.yml` lance trois services :
+## Services lances
 
-- `postgres` : base de données PostgreSQL 16 ;
-- `backend` : API Spring Boot ;
-- `frontend` : application Angular servie par Nginx.
+Le `docker-compose.yml` demarre :
 
-## ✅ 3. Prérequis
+- PostgreSQL ;
+- le backend Spring Boot ;
+- le frontend Angular servi par Nginx.
 
-- Docker installé ;
-- Docker Compose disponible ;
-- ports libres : `4200`, `8080`, `5433` ;
-- dépôt présent localement.
-
-## 🚀 4. Lancement
+## Commande principale
 
 Depuis la racine du projet :
 
@@ -29,100 +27,59 @@ Depuis la racine du projet :
 docker compose up --build
 ```
 
-## ✅ 5. Exposition des services
+## Ports exposes
 
-Une fois l'environnement démarré :
+- frontend : `4200`
+- backend : `8080`
+- PostgreSQL : `5433`
 
-- frontend : `http://localhost:4200`
-- backend : `http://localhost:8080`
-- base PostgreSQL : `localhost:5433`
-
-Endpoints utiles :
-
-- catalogue : `http://localhost:4200/items`
-- health backend : `http://localhost:8080/actuator/health`
-- info backend : `http://localhost:8080/actuator/info`
-
-## ✅ 6. Variables et configuration réellement utilisées
-
-### 🗄️ Base PostgreSQL
-
-Le service PostgreSQL est lancé avec :
-
-- base : `vintage_marketplace`
-- utilisateur : `vintage_user`
-- mot de passe : `vintage_password`
-
-### ☕ Backend
-
-Le backend lit notamment :
-
-- `SPRING_DATASOURCE_URL`
-- `SPRING_DATASOURCE_USERNAME`
-- `SPRING_DATASOURCE_PASSWORD`
-- `APP_JWT_SECRET`
-- `APP_JWT_EXPIRATION`
-
-Le port exposé est `8080`.
-
-### 🎨 Frontend
-
-Le frontend est construit dans une image Node, puis servi via Nginx sur le port `80` du conteneur, mappé en `4200` côté hôte.
-
-## 🐳 7. Détail de la containerisation
-
-### ☕ Backend
-
-Le `Dockerfile` backend est un build en deux étapes :
-
-1. image Maven avec Temurin 21 pour construire le jar ;
-2. image `eclipse-temurin:21-jre` pour l'exécution.
-
-### 🎨 Frontend
-
-Le `Dockerfile` frontend est aussi en deux étapes :
-
-1. image `node:20-alpine` pour exécuter `npm ci` puis `npm run build` ;
-2. image `nginx:1.27-alpine` pour servir le build Angular.
-
-## ✅ 8. Vérifications post-déploiement
-
-Après `docker compose up --build`, vérifier :
-
-1. que les trois conteneurs sont démarrés ;
-2. que `http://localhost:4200/items` est accessible ;
-3. que `http://localhost:8080/actuator/health` répond ;
-4. que le flux de démonstration peut être joué.
-
-## 🐳 9. Arrêt et nettoyage
-
-Arrêt simple :
+## Commande d'arret
 
 ```bash
 docker compose down
 ```
 
-Le volume de données PostgreSQL est conservé par défaut via :
+## Commandes utiles
 
-- `vintage_marketplace_data`
+```bash
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f postgres
+curl http://localhost:8080/actuator/health
+curl http://localhost:8080/api/items
+```
 
-Pour rejouer une démo sur une base propre, il peut être pertinent de supprimer explicitement les volumes, mais cette opération doit être décidée volontairement car elle efface les données locales.
+## Validation du deploiement local
 
-## 🧭 10. Ce que ce guide couvre réellement
+Apres le demarrage :
 
-### ✅ Réalisé
+1. verifier que le frontend est accessible sur `http://localhost:4200` ;
+2. verifier que `http://localhost:8080/actuator/health` retourne `UP` ;
+3. verifier que `http://localhost:8080/api/items` retourne le catalogue ;
+4. verifier que le parcours manuel complet a ete realise avec succes.
 
-- déploiement local complet avec Docker Compose ;
-- démarrage coordonné frontend/backend/PostgreSQL ;
-- conteneurisation des applications ;
-- endpoints d'observabilité backend.
+## Configuration utile
 
-### ⚠️ Non couvert ou non terminé
+Le compose actuel s'appuie notamment sur :
 
-- déploiement cloud ;
+- une base PostgreSQL `vintage_marketplace` ;
+- un backend connecte a `postgres:5432` ;
+- un frontend expose en `4200` via Nginx ;
+- un volume `vintage_marketplace_data` pour la persistance locale.
+
+## Ce que couvre ce guide
+
+Realise :
+
+- lancement local complet et reproductible ;
+- demarrage coordonne frontend/backend/PostgreSQL ;
+- containerisation des applications ;
+- verification de base via Actuator et catalogue.
+
+Non couvert :
+
+- deploiement cloud ;
+- haute disponibilite ;
 - orchestration Kubernetes ;
-- gestion centralisée des secrets ;
-- reverse proxy de production ;
 - TLS/HTTPS de production ;
-- haute disponibilité.
-
+- gestion centralisee des secrets.

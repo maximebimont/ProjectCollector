@@ -1,175 +1,146 @@
-﻿# 🛡️ Sécurité et démarche DevSecOps
+# Securite et demarche DevSecOps
 
-## 1. Positionnement
+## Objectifs de securite
 
-Collector.shop est un POC scolaire. La sécurité mise en place vise à montrer une démarche sérieuse et structurée, sans prétendre atteindre le niveau d'une application de production exposée sur Internet.
+Collector.shop manipule des comptes utilisateurs, des articles, des achats et un calcul de commission. Meme dans un POC, il est donc important de proteger :
 
-L'application manipule tout de même des données et actions sensibles :
+- l'authentification ;
+- l'acces aux operations sensibles ;
+- la coherence des transactions ;
+- la surface de code et de dependances.
 
-- comptes utilisateurs ;
-- mots de passe hashés ;
-- authentification par token ;
-- annonces d'objets ;
-- commandes d'achat.
+## Securite applicative
 
-## 🔐 2. Mesures de sécurité applicative réellement présentes
+### Authentification JWT
 
-### 🔐 Authentification et contrôle d'accès
+Le backend expose :
 
-Le dépôt montre les mécanismes suivants :
+- `POST /api/auth/register`
+- `POST /api/auth/login`
 
-- endpoints publics `POST /api/auth/register` et `POST /api/auth/login` ;
-- génération et validation de JWT côté backend ;
-- backend stateless avec Spring Security ;
-- guard Angular pour bloquer certaines routes côté frontend ;
-- interceptor Angular pour envoyer le bearer token automatiquement.
+Apres connexion, un JWT est genere puis verifie par le backend sur les routes protegees. Le frontend stocke et rejoue ce token via un interceptor HTTP.
 
-### 🛡️ Protection des routes et des ressources
+### Routes publiques et protegees
 
-La configuration de sécurité backend autorise publiquement :
+Les routes publiques couvrent principalement :
 
-- `/api/auth/**`
-- `GET /api/items`
-- `GET /api/items/*`
-- `/actuator/health`
-- `/actuator/info`
-- `/actuator/metrics`
+- l'inscription et la connexion ;
+- le catalogue public ;
+- le detail d'un article disponible ;
+- les endpoints Actuator de base utiles a la demo.
 
-Le reste nécessite une authentification.
+Les operations sensibles restent protegees par authentification, par exemple :
 
-### 🔐 Règles métier qui renforcent la sécurité
+- creation d'article ;
+- modification et suppression d'un article ;
+- achat ;
+- consultation des espaces personnels.
 
-- seul le vendeur peut modifier ou supprimer son objet ;
-- un utilisateur ne peut pas acheter son propre objet ;
-- un objet déjà vendu ne peut pas être acheté une seconde fois ;
-- les pages frontend adaptent l'expérience utilisateur, mais la règle de blocage reste côté backend.
+### Protection des operations sensibles
 
-### ✅ Validation et gestion des erreurs
+Les regles critiques sont appliquees cote backend :
 
-- DTO côté backend ;
+- seul le proprietaire peut modifier ou supprimer son article ;
+- un utilisateur ne peut pas acheter son propre article ;
+- un article deja vendu ne peut pas etre achete une seconde fois ;
+- la commande et le passage au statut `SOLD` sont geres dans la logique metier.
+
+### Validation backend
+
+Le backend s'appuie sur :
+
+- des DTO ;
 - Bean Validation ;
-- gestion globale des exceptions ;
-- séparation controller / service / repository pour limiter les effets de bord.
+- une separation controller / service / repository.
 
-### 🔐 CORS
+Cela permet de filtrer les donnees d'entree et de centraliser les regles importantes dans la couche metier.
 
-La configuration actuelle autorise explicitement l'origine :
+### CORS
 
-- `http://localhost:4200`
+La configuration CORS autorise le frontend local sur `http://localhost:4200`, ce qui est coherent avec le mode de demonstration retenu.
 
-Cela est cohérent avec le mode de fonctionnement local du projet.
+### Gestion des erreurs
 
-## 🛡️ 3. DevSecOps dans le dépôt
+Une gestion globale des erreurs est en place pour renvoyer des reponses comprehensibles et eviter de laisser remonter des comportements techniques bruts a l'utilisateur.
 
-Le dépôt contient une pipeline principale et plusieurs workflows réutilisables.
+## CI/CD DevSecOps
 
-### 🚀 Pipeline principale
+Le depot contient les workflows suivants :
 
-Le workflow principal `main-pipeline.yml` orchestre :
+- `backend-tests.yml`
+- `frontend-build.yml`
+- `code-quality-sast.yml`
+- `secret-scanning.yml`
+- `iac-dockerfile-scan.yml`
+- `docker-build.yml`
+- `backend-security.yml`
+- `sca-dependency-scan.yml`
 
-- tests backend ;
-- build frontend ;
-- SAST et qualité de code ;
-- scan de secrets ;
-- scan Dockerfile ;
-- build Docker et scan d'images.
+### Role des workflows
 
-Il est déclenché sur :
+- `backend-tests.yml` : compilation, tests et packaging Maven
+- `frontend-build.yml` : installation des dependances frontend puis build Angular
+- `code-quality-sast.yml` : analyse Semgrep et CodeQL
+- `secret-scanning.yml` : detection de secrets avec Gitleaks
+- `iac-dockerfile-scan.yml` : scan des Dockerfiles avec Checkov
+- `docker-build.yml` : build des images backend/frontend et scan Trivy des images
+- `backend-security.yml` : lancement manuel ou planifie du workflow de scans de dependances
+- `sca-dependency-scan.yml` : OWASP Dependency-Check et scan Trivy filesystem
 
-- push sur `dev` ;
-- push sur `main` ;
-- pull request vers `main` ;
-- déclenchement manuel ;
-- planification hebdomadaire.
+## Outils utilises
 
-### ✅ Contrôles automatisés réellement présents
+### CodeQL
 
-- `backend-tests.yml` : compilation, tests et packaging Maven ;
-- `frontend-build.yml` : `npm ci` puis `npm run build` ;
-- `code-quality-sast.yml` : Semgrep + CodeQL ;
-- `secret-scanning.yml` : Gitleaks ;
-- `iac-dockerfile-scan.yml` : Checkov sur les Dockerfiles ;
-- `sca-dependency-scan.yml` : OWASP Dependency-Check + Trivy filesystem ;
-- `docker-build.yml` : build des images backend/frontend + scans Trivy.
+Analyse statique de securite et de qualite pour remonter des problemes dans le code.
 
-### ✅ Dépendances et mises à jour
+### Semgrep
 
-Le dépôt contient aussi un `dependabot.yml` pour :
+SAST rapide oriente regles, utile pour identifier des motifs de code a risque.
 
-- les dépendances Maven du backend ;
-- les GitHub Actions.
+### Gitleaks
 
-Les mises à jour sont planifiées chaque semaine sur la branche `dev`.
+Detection de secrets commits par erreur dans le depot.
 
-## ⚠️ 4. Analyse de risques simple
+### Checkov
 
-| Risque | Niveau | Mesure actuelle | Limite actuelle | Perspective |
-| --- | --- | --- | --- | --- |
-| Vol ou fuite de JWT | Élevé | JWT, routes protégées, interceptor, guard | pas de refresh token | rotation et gestion plus robuste des sessions |
-| Accès non autorisé à une ressource métier | Élevé | contrôles backend sur achat et propriété | couverture perfectible sur tous les cas négatifs | davantage de tests d'autorisation |
-| Achat incohérent d'un objet vendu | Moyen | règle métier backend + statut `SOLD` | pas de test de concurrence avancé | scénarios de concurrence et verrouillage si besoin |
-| Dépendance vulnérable | Élevé | Dependabot, OWASP Dependency-Check, Trivy | traitement manuel des alertes | routine de correction et suivi régulier |
-| Secret commité par erreur | Élevé | Gitleaks | dépend de la discipline projet | revue régulière et secrets centralisés |
-| Mauvaise configuration Dockerfile | Moyen | Checkov | couverture limitée au périmètre scanné | durcissement des images et règles supplémentaires |
-| Exposition excessive d'endpoints techniques | Moyen | Actuator limité à health/info/metrics | endpoints tout de même publics en local | filtrage réseau selon environnement |
-| Mots de passe insuffisamment robustes | Moyen | hashage et validation de base | pas de politique forte, pas de MFA | politique plus stricte, MFA, reset sécurisé |
+Analyse de securite appliquee ici aux Dockerfiles.
 
-## 📊 5. Observabilité et sécurité opérationnelle
+### Trivy
 
-Le backend expose une observabilité minimale avec Actuator :
+Scan de vulnerabilites sur le filesystem du projet et sur les images Docker construites.
 
-- `/actuator/health`
-- `/actuator/info`
-- `/actuator/metrics`
+### SARIF
 
-Cette observabilité aide à :
+Format standardise permettant de conserver et publier les rapports de scan dans GitHub.
 
-- vérifier qu'un conteneur backend est vivant ;
-- montrer un début de supervision ;
-- appuyer les tests de charge sur des endpoints techniques simples.
+### OWASP Dependency-Check
 
-Elle ne constitue pas une supervision de production complète.
+Analyse des dependances backend pour identifier des CVE connues. Le workflow est present et utilisable.
 
-## 📊 6. Charge et résilience
+## Politique de scans dans la pipeline
 
-Le dépôt contient un dossier `load-tests/` avec un jeu d'URLs Siege :
+- les scans sont conserves ;
+- plusieurs scans sont non bloquants dans la pipeline principale ;
+- les rapports restent generes pour permettre une analyse ulterieure ;
+- les vulnerabilites detectees doivent etre analysees et priorisees ;
+- les scans les plus lourds peuvent etre lances manuellement ou planifies via `backend-security.yml`.
 
-- `http://localhost:8080/api/items`
-- `http://localhost:8080/actuator/health`
-- `http://localhost:8080/actuator/info`
-- `http://localhost:8080/actuator/metrics`
+Cette approche est adaptee a un POC scolaire : elle montre une demarche DevSecOps sans rendre la pipeline principale trop lente ou trop fragile.
 
-Cette démarche montre une validation de base sous petite charge concurrente. En revanche :
+## Limites et remediations futures
 
-- ce n'est pas un benchmark de production ;
-- les chiffres dépendent fortement du poste local ;
-- aucun historique chiffré détaillé n'est versionné dans ce dépôt.
+Limites actuelles :
 
-## 🧭 7. Ce qui est réalisé, simulé et prévu
+- paiement reel non integre ;
+- pas de gestion complete des roles administrateur ;
+- pas de monitoring Prometheus/Grafana ;
+- pas encore de politique complete de gestion d'incident ;
+- vulnerabilites detectees par les scans encore a traiter selon leur priorite.
 
-### ✅ Réalisé
+Remediations futures pertinentes :
 
-- authentification JWT ;
-- règles métier de sécurité côté backend ;
-- CORS configuré pour le frontend local ;
-- SAST, SCA, secret scanning et scans container/IaC dans GitHub Actions ;
-- build Docker des images applicatives ;
-- tests backend automatisés.
-
-### ⚠️ Simulé ou limité volontairement
-
-- pas de paiement réel ;
-- pas de MFA ;
-- pas de refresh token ;
-- pas de coffre à secrets externe ;
-- pas d'infrastructure cloud ni de WAF ;
-- sécurité calibrée pour un POC de soutenance.
-
-### 🔮 Prévu ou pertinent en perspective
-
-- centralisation des secrets ;
-- rotation des secrets et durée de vie JWT plus fine ;
-- scans complémentaires côté frontend ;
-- logs de sécurité plus détaillés ;
-- HTTPS et durcissement réseau dans un environnement cible.
-
+- durcir la gestion des secrets et des sessions ;
+- etendre la couverture de tests de securite ;
+- renforcer l'observabilite et la supervision ;
+- corriger progressivement les vulnerabilites remontees par les outils ;
+- preparer, si necessaire, une trajectoire vers un environnement cible plus proche de la production.
