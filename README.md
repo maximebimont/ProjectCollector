@@ -2,7 +2,7 @@
 
 Collector.shop est un POC de marketplace d'objets de collection entre particuliers, realise dans le cadre d'une evaluation sur la supervision et l'assurance qualite du developpement logiciel.
 
-Le parcours metier principal est couvert de bout en bout :
+Le parcours metier principal est couvre de bout en bout :
 
 ```txt
 Vendeur cree un article
@@ -19,10 +19,10 @@ Le projet reste volontairement simple, demonstrable et maintenable. L'objectif n
 
 ## Fonctionnel
 
-- Backend Spring Boot avec API REST, JWT, JPA et PostgreSQL
-- Frontend Angular avec parcours vendeur et acheteur
-- Docker Compose fonctionnel pour lancer PostgreSQL, backend et frontend
-- Endpoints Actuator pour la verification de base
+- backend Spring Boot avec API REST, JWT, JPA et PostgreSQL ;
+- frontend Angular avec parcours vendeur et acheteur ;
+- Docker Compose fonctionnel pour lancer PostgreSQL, backend et frontend ;
+- endpoints Actuator pour la verification de base.
 
 Le test manuel complet du parcours principal a ete realise avec succes.
 
@@ -36,9 +36,9 @@ docker compose up --build
 
 URLs utiles :
 
-- Frontend : `http://localhost:4200`
-- Health backend : `http://localhost:8080/actuator/health`
-- Catalogue API : `http://localhost:8080/api/items`
+- frontend : `http://localhost:4200`
+- health backend : `http://localhost:8080/actuator/health`
+- catalogue API : `http://localhost:8080/api/items`
 
 Arret :
 
@@ -50,6 +50,7 @@ docker compose down
 
 Les workflows GitHub Actions principaux presents dans le depot sont :
 
+- `main-pipeline.yml`
 - `backend-tests.yml`
 - `frontend-build.yml`
 - `code-quality-sast.yml`
@@ -66,9 +67,9 @@ Ils couvrent notamment :
 - SAST avec Semgrep et CodeQL ;
 - secret scanning avec Gitleaks ;
 - scans Dockerfile avec Checkov ;
-- scans SCA et fichiers/images avec OWASP Dependency-Check et Trivy.
+- scans SCA et scans Trivy sur filesystem et images Docker.
 
-Plusieurs scans sont conserves meme lorsqu'ils sont non bloquants dans la pipeline principale, afin de garder les rapports pour analyse et priorisation.
+Plusieurs scans sont conserves meme lorsqu'ils sont non bloquants dans la pipeline principale, afin de garder les rapports et de pouvoir analyser les vulnerabilites detectees.
 
 ## Tests
 
@@ -83,8 +84,8 @@ Le projet s'appuie sur :
 
 Resultats Siege documentes :
 
-- Test leger : 5 utilisateurs concurrents, environ 15 secondes, 12 870 transactions, 100 % de disponibilite, 0 echec, temps de reponse moyen 0.01 s, transaction la plus longue 0.59 s
-- Test renforce : 10 utilisateurs concurrents, environ 30 secondes, 69 109 transactions, 100 % de disponibilite, 0 echec, 2317.54 transactions/seconde, transaction la plus longue 0.12 s
+- test leger : 5 utilisateurs concurrents, environ 15 secondes, 12 870 transactions, 100 % de disponibilite, 0 echec, temps de reponse moyen 0.01 s, transaction la plus longue 0.59 s
+- test renforce : 10 utilisateurs concurrents, environ 30 secondes, 69 109 transactions, 100 % de disponibilite, 0 echec, 2317.54 transactions/seconde, transaction la plus longue 0.12 s
 
 Ces resultats sont satisfaisants pour un test local de POC, sans valoir une campagne complete de preproduction.
 

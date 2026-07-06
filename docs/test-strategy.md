@@ -18,8 +18,8 @@ Ce test manuel complet a ete realise avec succes.
 
 Les tests backend reellement presents dans le depot couvrent deux niveaux :
 
-- `OrderServiceTest` : tests unitaires sur la logique de commande
-- `PurchaseFlowIntegrationTest` : test d'integration sur le parcours d'achat
+- `OrderServiceTest` : tests unitaires sur la logique de commande ;
+- `PurchaseFlowIntegrationTest` : test d'integration sur le parcours d'achat.
 
 Ils verifient notamment :
 
@@ -51,9 +51,9 @@ Cette etape valide la compilation de l'application Angular et sert de garde-fou 
 
 Le depot contient quelques tests frontend automatises, mais leur couverture reste limitee :
 
-- `app.component.spec.ts`
-- `auth.service.spec.ts`
-- `item-list.component.spec.ts`
+- `app.component.spec.ts` ;
+- `auth.service.spec.ts` ;
+- `item-list.component.spec.ts`.
 
 Ils apportent un premier niveau de verification sur :
 
@@ -72,7 +72,7 @@ npm run test:ci
 
 Le projet contient un smoke test Playwright :
 
-- `frontend/e2e/catalogue-smoke.spec.ts`
+- `frontend/e2e/catalogue-smoke.spec.ts`.
 
 Il verifie seulement le chargement du shell principal et de la page catalogue. Il s'agit d'un premier filet E2E, pas d'une recette complete du parcours metier.
 
@@ -116,23 +116,23 @@ siege -c 5 -t 15S -f siege-urls.txt
 
 Test leger :
 
-- 5 utilisateurs concurrents
-- environ 15 secondes
-- 12 870 transactions
-- 100 % disponibilite
-- 0 transaction echouee
-- temps de reponse moyen 0.01 s
-- transaction la plus longue 0.59 s
+- 5 utilisateurs concurrents ;
+- environ 15 secondes ;
+- 12 870 transactions ;
+- 100 % disponibilite ;
+- 0 transaction echouee ;
+- temps de reponse moyen 0.01 s ;
+- transaction la plus longue 0.59 s.
 
 Test renforce :
 
-- 10 utilisateurs concurrents
-- environ 30 secondes
-- 69 109 transactions
-- 100 % disponibilite
-- 0 transaction echouee
-- transaction rate 2317.54 transactions/seconde
-- transaction la plus longue 0.12 s
+- 10 utilisateurs concurrents ;
+- environ 30 secondes ;
+- 69 109 transactions ;
+- 100 % disponibilite ;
+- 0 transaction echouee ;
+- transaction rate 2317.54 transactions/seconde ;
+- transaction la plus longue 0.12 s.
 
 Interpretation :
 
