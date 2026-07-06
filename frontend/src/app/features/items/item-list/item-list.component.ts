@@ -34,7 +34,7 @@ export class ItemListComponent implements OnInit {
       },
       error: (error) => {
         console.error(error);
-        this.errorMessage = 'Impossible de récupérer les objets.';
+        this.errorMessage = 'Impossible de rÃ©cupÃ©rer les objets.';
         this.isLoading = false;
       }
     });
@@ -59,6 +59,6 @@ export class ItemListComponent implements OnInit {
     const lastname = item.sellerLastname?.trim();
     const sellerName = `${firstname ?? ''} ${lastname ?? ''}`.trim();
 
-    return sellerName || 'Vendeur non renseigné';
+    return sellerName || 'Vendeur non renseignï¿½';
   }
 }

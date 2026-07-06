@@ -1,222 +1,216 @@
-﻿# 🧭 Architecture et qualité logicielle
+# Architecture et qualite logicielle
 
-## 1. Contexte et objectif
+## Contexte Collector.shop
 
-Collector.shop est un projet scolaire individuel qui démontre la supervision et l'assurance qualité du développement d'une application web. Le périmètre métier est volontairement simple : une marketplace d'objets de collection entre particuliers.
+Collector.shop est un POC de marketplace d'objets de collection entre particuliers. Le projet sert a demontrer un developpement logiciel maitrise, avec qualite, securite, CI/CD, tests et deploiement local reproductible.
 
-Le POC doit montrer un flux métier complet :
+Le perimetre fonctionnel volontairement retenu est le parcours principal suivant :
 
-1. un vendeur crée un article ;
-2. un acheteur consulte le catalogue ;
-3. il ouvre le détail ;
-4. il achète l'article ;
-5. l'article devient `SOLD` ;
-6. une commande est créée ;
-7. la plateforme calcule une commission de 5 % ;
-8. le vendeur voit la vente ;
-9. l'acheteur voit l'achat.
+```txt
+Vendeur cree un article
+-> Acheteur consulte le catalogue
+-> Acheteur achete l'article
+-> Commande creee
+-> Article passe en SOLD
+-> Commission Collector de 5 % calculee
+-> Achat visible cote acheteur
+-> Vente visible cote vendeur
+```
 
-L'objectif n'est pas de produire une marketplace industrielle, mais un socle technique clair, maintenable et démontrable.
+## Perimetre du POC
 
-## 🧭 2. Architecture fonctionnelle
+Le projet cherche a etre simple, lisible et demonstrable. Il ne vise pas une couverture complete d'une marketplace de production.
 
-Le système repose sur trois blocs principaux :
+Le POC couvre :
 
-- un frontend Angular ;
-- un backend Spring Boot exposé en API REST ;
-- une base PostgreSQL.
+- l'authentification ;
+- le catalogue public ;
+- la gestion des articles cote vendeur ;
+- l'achat cote acheteur ;
+- la creation de commande ;
+- le calcul de la commission ;
+- l'historique d'achats et de ventes ;
+- la containerisation locale.
 
-Schéma simplifié :
+## Architecture logique
+
+L'application repose sur trois briques principales :
 
 ```txt
 Navigateur
    |
-   | HTTP
    v
 Frontend Angular
    |
-   | REST JSON + JWT
    v
 Backend Spring Boot
    |
-   | JPA / Hibernate
    v
 PostgreSQL
 ```
 
-## ☕ 3. Architecture technique du backend
+## Architecture technique
 
-Le backend est structuré par domaines fonctionnels :
+### Frontend Angular
 
-- `auth`
-- `user`
-- `item`
-- `order`
-- `config`
-- `common`
+Le frontend fournit l'interface utilisateur et consomme l'API REST du backend. Il gere notamment :
 
-### 🧭 Rôle des couches
+- les pages de connexion et d'inscription ;
+- le catalogue public ;
+- le detail d'un article ;
+- la creation, la modification et la suppression d'articles cote vendeur ;
+- les vues "Mes objets", "Mes achats" et "Mes ventes" ;
+- l'envoi du JWT via un interceptor ;
+- la protection de certaines routes via un guard.
 
-- `controller` : exposition des endpoints REST ;
-- `service` : logique métier et règles de gestion ;
-- `repository` : accès aux données ;
-- `dto` : contrats d'entrée et de sortie ;
-- `entity` : persistence JPA ;
-- `config` : sécurité, CORS et configuration transverse ;
-- `common` : gestion des erreurs et composants mutualisés.
+### Backend Spring Boot
 
-Cette organisation aide à garder des contrôleurs fins, une logique métier lisible et une persistance relativement isolée.
+Le backend porte les regles metier et expose les endpoints REST. Il gere notamment :
 
-## 🎨 4. Architecture technique du frontend
+- l'inscription et la connexion ;
+- la generation et la validation des JWT ;
+- la gestion des articles ;
+- la logique d'achat ;
+- la creation des commandes ;
+- le calcul de la commission de 5 % ;
+- les endpoints Actuator de base.
 
-Le frontend est une application Angular organisée par fonctionnalités. Les routes observées dans le dépôt couvrent :
+La structure est separee par responsabilites, avec des packages de type `auth`, `user`, `item`, `order`, `config` et `common`.
 
-- `/login`
-- `/register`
-- `/items`
-- `/items/new`
-- `/items/:id`
-- `/items/:id/edit`
-- `/my-items`
-- `/my-purchases`
-- `/my-sales`
-- `/profile`
+### PostgreSQL
 
-Le frontend utilise :
+PostgreSQL stocke les utilisateurs, les articles et les commandes. Cette base est suffisante pour un POC transactionnel simple, tout en restant classique et facile a expliquer.
 
-- des composants standalone ;
-- Angular Router ;
-- des services HTTP ;
-- un guard d'authentification ;
-- un interceptor JWT ;
-- des modèles TypeScript ;
-- PrimeNG et Tailwind pour l'interface.
+### Docker Compose
 
-## ✅ 5. Stack réellement constatée dans le dépôt
+Docker Compose orchestre le frontend, le backend et PostgreSQL. Il apporte :
 
-### ☕ Backend
+- un lancement unique pour la demonstration ;
+- une execution locale reproductible ;
+- une reduction des ecarts entre postes de travail.
 
-- Spring Boot `3.5.14`
-- Java configuré en `21` dans `backend/pom.xml`
-- Spring Security
-- Spring Data JPA / Hibernate
-- PostgreSQL
-- JWT via `jjwt`
-- Bean Validation
-- Spring Boot Actuator
-- Lombok
-- Maven
+## Separation des responsabilites
 
-### 🎨 Frontend
+Le projet reste lisible grace a une separation simple :
 
-- Angular `19`
-- Node `20` dans la CI
-- PrimeNG `19`
-- Tailwind CSS
-- SCSS
+- le frontend gere l'experience utilisateur ;
+- le backend gere la securite et les regles metier ;
+- la base gere la persistance ;
+- Docker Compose gere l'assemblage local des services.
 
-### 🐳 Containerisation
+Cette separation facilite la maintenance, les tests et la demonstration.
 
-- backend conteneurisé avec un build Maven puis une image JRE ;
-- frontend conteneurisé avec build Node puis service Nginx ;
-- base PostgreSQL dans Docker Compose.
+## Endpoints principaux
 
-## ✅ 6. Qualité logicielle
+### Authentification
 
-## ✅ Maintenabilité
+- `POST /api/auth/register`
+- `POST /api/auth/login`
 
-Les éléments favorables à la maintenabilité sont :
+### Utilisateur
 
-- séparation claire frontend / backend / base ;
-- organisation backend par domaines ;
-- découpage controller / service / repository ;
-- usage de DTO ;
-- structure frontend par features ;
-- lancement local homogène avec Docker Compose.
+- `GET /api/users/me`
 
-## 🧭 Lisibilité et simplicité
+### Articles
 
-Le projet reste volontairement modeste :
+- `GET /api/items`
+- `GET /api/items/{id}`
+- `GET /api/items/me`
+- `POST /api/items`
+- `PUT /api/items/{id}`
+- `DELETE /api/items/{id}`
 
-- peu de services techniques complexes ;
-- flux métier central facile à expliquer ;
-- API REST limitée à l'essentiel ;
-- interface utilisateur orientée démonstration.
+### Commandes
 
-## ✅ Fiabilité
+- `POST /api/orders/items/{itemId}`
+- `GET /api/orders/me`
+- `GET /api/orders/sales`
 
-La fiabilité s'appuie sur :
+### Observabilite minimale
 
-- tests unitaires backend sur le service de commande ;
-- test d'intégration backend sur le parcours d'achat complet ;
-- validations d'entrée côté backend ;
-- gestion globale des erreurs ;
-- compilation et build automatisés en CI.
+- `GET /actuator/health`
+- `GET /actuator/info`
 
-## 🔐 Sécurité fonctionnelle
+## Pourquoi un monorepo
 
-La sécurité fonctionnelle repose notamment sur :
+Le choix du monorepo est adapte a ce projet scolaire car il permet :
 
-- authentification JWT ;
-- routes protégées côté backend ;
-- guard et interceptor côté frontend ;
-- impossibilité d'acheter son propre objet ;
-- impossibilité d'acheter un objet déjà vendu ;
-- contrôle de propriété pour la modification et la suppression d'un objet.
+- de centraliser frontend, backend, documentation et CI/CD ;
+- de lancer l'application plus facilement ;
+- de garder une vision simple du POC ;
+- de simplifier la soutenance et la demonstration technique.
 
-## 📊 Observabilité minimale
+## Alignement qualite selon ISO/IEC 25010
 
-Le backend expose :
+### Adequation fonctionnelle
 
-- `/actuator/health`
-- `/actuator/info`
-- `/actuator/metrics`
+Definition courte : le logiciel couvre correctement les besoins attendus.
 
-Cette observabilité est simple mais utile pour une démo et pour le suivi du conteneur backend.
+Collector.shop y repond par un parcours vendeur/acheteur complet, teste manuellement avec succes.
 
-## 🚀 7. Processus qualité et cycle de développement
+Limite ou perspective : le perimetre reste volontairement restreint aux fonctions essentielles du POC.
 
-Le cycle projet visible dans le dépôt est le suivant :
+### Performance
 
-1. développement sur le code applicatif ;
-2. vérifications locales ;
-3. exécution des workflows GitHub Actions ;
-4. scans qualité et sécurité ;
-5. builds Docker ;
-6. exécution intégrée avec Docker Compose ;
-7. tests manuels et démonstration.
+Definition courte : le logiciel fournit un niveau de reponse acceptable pour la charge visee.
 
-La pipeline principale orchestre plusieurs workflows réutilisables :
+Collector.shop y repond par des tests Siege locaux avec 100 % de disponibilite sur les scenarios documentes.
 
-- tests backend ;
-- build frontend ;
-- qualité de code et SAST ;
-- scan de secrets ;
-- scan Dockerfile ;
-- build Docker et scan d'images.
+Limite ou perspective : ces tests restent locaux et ne remplacent pas une campagne de preproduction.
 
-## 🧭 8. Réalisé, simulé, perspective
+### Compatibilite
 
-### ✅ Réalisé
+Definition courte : le logiciel interagit correctement avec ses autres composants.
 
-- architecture frontend/backend/base fonctionnelle ;
-- flux métier principal complet ;
-- dockerisation des trois services ;
-- CI/CD GitHub Actions ;
-- tests backend automatisés ;
-- observabilité de base avec Actuator.
+Collector.shop y repond via une API REST consommee par Angular et une execution coordonnee avec Docker Compose.
 
-### ⚠️ Simulé ou limité volontairement
+Limite ou perspective : la compatibilite est verifiee surtout dans le cadre local du projet.
 
-- aucun paiement réel ;
-- aucun environnement cloud réel ;
-- charge testée localement seulement ;
-- observabilité sans stack dédiée type Prometheus/Grafana.
+### Facilite d'utilisation
 
-### 🔮 Perspectives
+Definition courte : le logiciel reste facile a comprendre et a utiliser.
 
-- aligner définitivement la cible Java entre documentation, CI et packaging ;
-- renforcer les tests frontend automatisés ;
-- enrichir l'observabilité et les alertes ;
-- préparer un déploiement hors poste local si nécessaire.
+Collector.shop y repond par une UX simplifiee et un parcours manuel vendeur/acheteur valide.
 
+Limite ou perspective : l'ergonomie reste celle d'un POC et peut encore etre polie.
+
+### Fiabilite
+
+Definition courte : le logiciel reste stable et produit des resultats coherents.
+
+Collector.shop y repond par des tests backend, un test manuel complet et une gestion globale des erreurs.
+
+Limite ou perspective : les tests de concurrence avances restent a completer.
+
+### Securite
+
+Definition courte : le logiciel protege l'acces, les donnees et les operations sensibles.
+
+Collector.shop y repond par JWT, routes protegees, controle proprietaire et regles metier cote backend.
+
+Limite ou perspective : pas de MFA, pas de paiement reel et pas de dispositif de securite de production avance.
+
+### Maintenabilite
+
+Definition courte : le logiciel peut etre compris, corrige et faire evoluer.
+
+Collector.shop y repond par la separation frontend/backend, une architecture backend structuree et une documentation dediee.
+
+Limite ou perspective : la couverture de tests frontend reste encore modeste.
+
+### Portabilite
+
+Definition courte : le logiciel peut etre installe et execute facilement dans un autre environnement.
+
+Collector.shop y repond par Docker Compose et des Dockerfiles pour les applications.
+
+Limite ou perspective : le projet documente surtout le deploiement local, pas un environnement cloud complet.
+
+## Limites actuelles
+
+- pas de paiement reel ;
+- pas de role administrateur complet ;
+- observabilite limitee a Actuator ;
+- tests frontend et E2E encore partiels ;
+- pas de gestion avancee de la concurrence sur achat simultane ;
+- pas de deploiement de production cible dans le depot.

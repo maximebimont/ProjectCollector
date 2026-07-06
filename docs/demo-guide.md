@@ -1,174 +1,160 @@
-﻿# 🧭 Guide de démonstration Collector.shop
+# Guide de demonstration Collector.shop
 
-## Objectif de la démo
+## Objectif de la demo
 
-La démonstration doit prouver que le POC couvre un flux métier complet de marketplace entre particuliers :
+La demonstration doit montrer que Collector.shop couvre un parcours metier complet et coherent pour un POC de marketplace :
 
-1. un vendeur s'inscrit et se connecte ;
-2. il crée un article ;
-3. un acheteur consulte le catalogue public ;
-4. l'acheteur ouvre le détail de l'article ;
-5. l'acheteur achète l'article ;
-6. l'article passe au statut `SOLD` ;
-7. une commande est créée avec une commission plateforme de 5 % ;
-8. le vendeur voit la vente ;
-9. l'acheteur voit l'achat.
+1. creation d'un compte vendeur ;
+2. connexion vendeur ;
+3. creation d'un article ;
+4. verification dans le catalogue ;
+5. verification dans "Mes objets" ;
+6. creation d'un compte acheteur ;
+7. connexion acheteur ;
+8. consultation du detail de l'article ;
+9. achat de l'article ;
+10. passage automatique au statut `SOLD` ;
+11. verification dans "Mes achats" ;
+12. verification dans "Mes ventes" ;
+13. verification de la commission Collector de 5 %.
 
-La démo ne cherche pas à montrer une marketplace de production. Elle vise à montrer un POC propre, cohérent et démontrable techniquement.
+Ce scenario a ete teste manuellement avec succes.
 
-## ✅ Prérequis
+## Prerequis
 
-- Docker Desktop ou Docker Engine installé et démarré
+- Docker installe et demarre
 - Docker Compose disponible
-- ports libres : `4200`, `8080`, `5433`
-- dépôt cloné localement
-- terminal positionné à la racine du projet
+- Depot present en local
+- Ports `4200`, `8080` et `5433` disponibles
 
-## 🚀 Commande de lancement
+## Commande de lancement
 
 ```bash
 docker compose up --build
 ```
 
-## ✅ Services attendus
+## URLs utiles
 
-Après démarrage, l'environnement local doit exposer :
+- Frontend : `http://localhost:4200`
+- Health backend : `http://localhost:8080/actuator/health`
+- Catalogue API : `http://localhost:8080/api/items`
 
-- frontend Angular : `http://localhost:4200`
-- backend Spring Boot : `http://localhost:8080`
-- PostgreSQL : `localhost:5433`
-- Actuator health : `http://localhost:8080/actuator/health`
-- Actuator info : `http://localhost:8080/actuator/info`
+## Verification rapide avant la soutenance
 
-## ✅ Vérifications rapides avant la démo
+1. Ouvrir `http://localhost:4200`
+2. Verifier que `http://localhost:8080/actuator/health` retourne `UP`
+3. Verifier que `http://localhost:8080/api/items` retourne le catalogue
+4. Verifier que les conteneurs `collector_frontend`, `collector_backend` et `collector_postgres` sont demarres
 
-1. Ouvrir `http://localhost:4200/items` et vérifier que le catalogue s'affiche.
-2. Ouvrir `http://localhost:8080/actuator/health` et vérifier que le backend répond.
-3. Vérifier dans les logs Docker que les conteneurs `collector_frontend`, `collector_backend` et `collector_postgres` sont démarrés.
+## Scenario de demonstration valide
 
-## 🧭 Scénario de démonstration recommandé
+### 1. Creation du vendeur
 
-### 🧭 Étape 1 - Présenter l'architecture en 30 secondes
+1. Aller sur `http://localhost:4200/register`
+2. Creer un compte vendeur
+3. Se connecter avec ce compte
 
-À l'oral :
+### 2. Creation de l'article
 
-- frontend Angular séparé du backend Spring Boot ;
-- backend connecté à PostgreSQL ;
-- authentification JWT ;
-- lancement complet avec Docker Compose.
+1. Aller sur la page de creation d'article
+2. Saisir un titre, une description, un prix et, si besoin, une image
+3. Valider la creation
 
-### 👤 Étape 2 - Créer le compte vendeur
-
-1. Aller sur `http://localhost:4200/register`.
-2. Créer un compte vendeur avec une adresse email dédiée.
-3. Se connecter si l'application ne le fait pas automatiquement.
-
-Exemple de données :
-
-- prénom : `Paul`
-- nom : `Vendeur`
-- email : `vendeur.demo@collector.local`
-- mot de passe : `password123`
-
-### 📦 Étape 3 - Créer une annonce
-
-1. Aller sur la page de création d'objet.
-2. Saisir un titre, une description, un prix et éventuellement une image.
-3. Valider la création.
-4. Montrer que l'objet apparaît dans :
-   - le catalogue public ;
-   - l'espace du vendeur.
-
-Exemple de données :
+Exemple simple :
 
 - titre : `Figurine Star Wars vintage`
-- description : `Figurine originale en bon état, années 1980.`
+- description : `Figurine originale en bon etat, annees 1980`
 - prix : `100.00`
-- image : URL publique facultative
 
-### 👤 Étape 4 - Déconnexion vendeur
+### 3. Verification cote vendeur
 
-1. Utiliser le bouton de déconnexion.
-2. Revenir sur le catalogue public.
-3. Expliquer que le catalogue reste visible sans authentification.
+1. Ouvrir le catalogue
+2. Verifier que l'article apparait bien dans la liste publique
+3. Ouvrir la page "Mes objets"
+4. Verifier que l'article apparait aussi dans l'espace vendeur
 
-### 🛒 Étape 5 - Créer le compte acheteur
+### 4. Creation de l'acheteur
 
-1. Aller sur `http://localhost:4200/register`.
-2. Créer un second compte.
-3. Se connecter avec ce compte.
+1. Se deconnecter
+2. Aller sur `http://localhost:4200/register`
+3. Creer un compte acheteur
+4. Se connecter avec ce second compte
 
-Exemple de données :
+### 5. Achat de l'article
 
-- prénom : `Alice`
-- nom : `Acheteur`
-- email : `acheteur.demo@collector.local`
-- mot de passe : `password123`
+1. Ouvrir le catalogue
+2. Acceder au detail de l'article cree par le vendeur
+3. Verifier les informations affichees
+4. Lancer l'achat
 
-### 🛒 Étape 6 - Parcours d'achat
+### 6. Verification apres achat
 
-1. Depuis le catalogue, ouvrir le détail de l'objet créé par le vendeur.
-2. Vérifier que le détail affiche le prix et les informations vendeur.
-3. Lancer l'achat depuis la page détail.
-4. Montrer le message de succès et le résumé de commande si affiché.
+1. Verifier que l'article passe automatiquement au statut `SOLD`
+2. Aller dans "Mes achats" et verifier la presence de la commande cote acheteur
+3. Se deconnecter puis se reconnecter en vendeur
+4. Aller dans "Mes ventes" et verifier la presence de la vente
 
-## 🔐 Contrôles à montrer pendant l'achat
+### 7. Verification de la commission
 
-Les points suivants sont importants à verbaliser :
+Pour un article a `100.00` :
 
-- l'acheteur ne peut pas acheter son propre objet ;
-- un objet déjà vendu ne peut pas être acheté une seconde fois ;
-- le backend calcule automatiquement la commission de 5 % ;
-- le montant vendeur correspond au prix moins la commission.
-
-Exemple attendu pour un article à `100.00` euros :
-
-- prix total : `100.00`
-- commission plateforme : `5.00`
+- montant total : `100.00`
+- commission Collector : `5.00`
 - montant vendeur : `95.00`
 
-## ✅ Vérifications après achat
+Cette verification a elle aussi ete validee lors du test manuel complet.
 
-1. Revenir au détail de l'objet et montrer le statut `SOLD`.
-2. Aller dans les achats de l'acheteur et montrer la commande.
-3. Se déconnecter.
-4. Se reconnecter avec le compte vendeur.
-5. Aller dans les ventes et montrer la vente correspondante.
+## Ce qu'il faut verbaliser pendant la demo
 
-## 🧭 Points techniques à citer pendant la soutenance
+- le catalogue est public ;
+- la creation d'article et l'achat necessitent une authentification ;
+- les regles critiques sont controlees par le backend ;
+- un utilisateur ne peut pas acheter son propre article ;
+- un article deja vendu ne peut pas etre achete une seconde fois ;
+- le calcul de la commission de 5 % est automatique ;
+- Docker Compose permet un lancement local reproductible.
 
-- l'authentification est gérée par JWT ;
-- les règles métier critiques sont côté backend ;
-- le backend expose aussi des endpoints Actuator ;
-- la CI/CD et les scans de sécurité sont automatisés dans GitHub Actions ;
-- la charge a été testée en local avec Siege sur des endpoints publics.
+## Plan B demo
 
-## ✅ Ce qui est réellement réalisé
+Si la demonstration frontend rencontre un probleme :
 
-- flux métier complet de vente/achat jusqu'à la création de commande ;
-- passage de l'objet en `SOLD` ;
-- calcul de commission à 5 % ;
-- pages frontend vendeur et acheteur ;
-- exécution complète avec Docker Compose ;
-- CI/CD et scans DevSecOps dans le dépôt.
+1. verifier l'etat des conteneurs Docker ;
+2. verifier les logs backend, frontend et postgres ;
+3. verifier `http://localhost:8080/actuator/health` ;
+4. utiliser Postman pour montrer les endpoints backend si besoin.
 
-## ⚠️ Ce qui est simulé ou simplifié
-
-- aucun paiement réel n'est intégré ;
-- les tests de charge restent des tests locaux de démonstration ;
-- l'observabilité reste limitée à Spring Boot Actuator ;
-- la sécurité reste adaptée à un POC, pas à une production Internet.
-
-## 🔮 Ce qui reste en perspective
-
-- test manuel final complet de bout en bout à rejouer juste avant la soutenance ;
-- préparation du support PowerPoint ;
-- renforcement éventuel des tests frontend automatisés ;
-- durcissement sécurité si le projet devait dépasser le cadre scolaire.
-
-## 🐳 Arrêt de l'environnement
+Commandes utiles :
 
 ```bash
-docker compose down
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f postgres
 ```
 
+## Ce qui est realise, teste et limite
+
+Realise :
+
+- parcours vendeur -> acheteur -> achat -> `SOLD` ;
+- creation de commande ;
+- calcul de la commission ;
+- pages "Mes objets", "Mes achats" et "Mes ventes" ;
+- lancement complet avec Docker Compose.
+
+Teste :
+
+- test manuel complet du parcours principal, realise avec succes ;
+- verifications backend automatisees ;
+- build frontend automatise ;
+- tests de charge locaux documentes.
+
+Simule ou simplifie :
+
+- aucun paiement reel ;
+- pas d'administration complete ;
+- observabilite limitee a Actuator.
+
+Perspective :
+
+- rejouer le scenario juste avant la soutenance ;
+- preparer les captures et le support PowerPoint.
