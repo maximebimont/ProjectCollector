@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { AppComponent } from './app.component';
 import { AuthService } from './core/services/auth.service';
 
@@ -13,6 +14,8 @@ describe('AppComponent', () => {
       imports: [AppComponent],
       providers: [
         provideRouter([]),
+        MessageService,
+        ConfirmationService,
         { provide: AuthService, useValue: authServiceSpy }
       ]
     }).compileComponents();
