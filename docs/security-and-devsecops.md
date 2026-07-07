@@ -116,7 +116,9 @@ Scan de vulnerabilites sur le filesystem du projet et sur les images Docker cons
 
 ### SARIF
 
-Format standardise permettant de conserver et publier les rapports de scan dans GitHub.
+Format standardise permettant de conserver et publier les rapports de scan dans GitHub (onglet Security > Code scanning).
+
+Les rapports Semgrep et Checkov sont en plus publies comme artefacts de build telechargeables (7 jours de retention), pour rester consultables meme sans acces a l'onglet Security du depot.
 
 ### OWASP Dependency-Check
 

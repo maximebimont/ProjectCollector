@@ -33,3 +33,11 @@ jobs:
           sarif_file: checkov-report.sarif/results_sarif.sarif
           category: checkov-dockerfile
         continue-on-error: true
+
+      - name: Upload Checkov report artifact
+        if: always() && hashFiles('checkov-report.sarif/results_sarif.sarif') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkov-report
+          path: checkov-report.sarif/results_sarif.sarif
+          retention-days: 7
