@@ -59,6 +59,6 @@ export class ItemListComponent implements OnInit {
     const lastname = item.sellerLastname?.trim();
     const sellerName = `${firstname ?? ''} ${lastname ?? ''}`.trim();
 
-    return sellerName || 'Vendeur non renseign�';
+    return sellerName || 'Vendeur non renseigné';
   }
 }
