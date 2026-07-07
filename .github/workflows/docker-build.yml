@@ -66,6 +66,12 @@ jobs:
           category: trivy-backend-container-scan
         continue-on-error: true
 
+      - name: Publish backend Trivy summary
+        if: always() && hashFiles('trivy-backend-results.sarif') != ''
+        run: |
+          COUNT=$(jq '[.runs[].results[]] | length' trivy-backend-results.sarif)
+          echo "**Trivy image backend (CRITICAL/HIGH) : ${COUNT} vulnerabilite(s)**" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Display backend Trivy findings
         continue-on-error: true
         run: |
@@ -117,6 +123,12 @@ jobs:
         with:
           sarif_file: trivy-frontend-results.sarif
           category: trivy-frontend-container-scan
+
+      - name: Publish frontend Trivy summary
+        if: always() && hashFiles('trivy-frontend-results.sarif') != ''
+        run: |
+          COUNT=$(jq '[.runs[].results[]] | length' trivy-frontend-results.sarif)
+          echo "**Trivy image frontend (CRITICAL/HIGH) : ${COUNT} vulnerabilite(s)**" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Display frontend Trivy findings
         if: hashFiles('frontend/Dockerfile') != ''

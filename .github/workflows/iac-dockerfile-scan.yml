@@ -41,3 +41,9 @@ jobs:
           name: checkov-report
           path: checkov-report.sarif/results_sarif.sarif
           retention-days: 7
+
+      - name: Publish Checkov summary
+        if: always() && hashFiles('checkov-report.sarif/results_sarif.sarif') != ''
+        run: |
+          COUNT=$(jq '[.runs[].results[]] | length' checkov-report.sarif/results_sarif.sarif)
+          echo "**Checkov (Dockerfiles) : ${COUNT} recommandation(s) remontee(s)**" >> "$GITHUB_STEP_SUMMARY"

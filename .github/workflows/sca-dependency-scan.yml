@@ -81,6 +81,12 @@ jobs:
           path: backend/target/dependency-check-report.html
           retention-days: 7
 
+      - name: Publish OWASP Dependency-Check summary
+        if: always() && hashFiles('backend/target/dependency-check-report.sarif') != ''
+        run: |
+          COUNT=$(jq '[.runs[].results[]] | length' target/dependency-check-report.sarif)
+          echo "**OWASP Dependency-Check : ${COUNT} CVE(s) remontee(s)**" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Run Trivy filesystem scan
         continue-on-error: true
         run: |
@@ -110,3 +116,9 @@ jobs:
           name: trivy-fs-report
           path: trivy-fs-results.sarif
           retention-days: 7
+
+      - name: Publish Trivy filesystem summary
+        if: always() && hashFiles('trivy-fs-results.sarif') != ''
+        run: |
+          COUNT=$(jq '[.runs[].results[]] | length' "$GITHUB_WORKSPACE/trivy-fs-results.sarif")
+          echo "**Trivy filesystem (CRITICAL/HIGH) : ${COUNT} vulnerabilite(s)**" >> "$GITHUB_STEP_SUMMARY"
