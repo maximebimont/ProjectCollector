@@ -34,5 +34,22 @@ jobs:
       - name: Run backend tests
         run: mvn test
 
+      - name: Publish coverage summary
+        if: always() && hashFiles('backend/target/site/jacoco/jacoco.csv') != ''
+        run: |
+          awk -F',' 'NR>1 { covered+=$5; missed+=$4 } END {
+            if (covered+missed>0) {
+              printf "**Couverture d'\''instructions backend (JaCoCo) : %.1f%%**\n", (covered/(covered+missed))*100
+            }
+          }' target/site/jacoco/jacoco.csv >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload JaCoCo coverage report
+        if: always() && hashFiles('backend/target/site/jacoco/jacoco.xml') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: backend/target/site/jacoco
+          retention-days: 7
+
       - name: Package backend
         run: mvn package -DskipTests
