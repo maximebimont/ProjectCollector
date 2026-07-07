@@ -127,6 +127,8 @@ Analyse des dependances backend pour identifier des CVE connues. Le workflow est
 
 Cette approche est adaptee a un POC scolaire : elle montre une demarche DevSecOps sans rendre la pipeline principale trop lente ou trop fragile.
 
+Le suivi des vulnerabilites remontees (statut, justification, correctif applique) est trace dans [`docs/vulnerability-register.md`](vulnerability-register.md).
+
 ## Limites et remediations futures
 
 Limites actuelles :

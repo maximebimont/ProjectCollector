@@ -95,6 +95,7 @@ Ces resultats sont satisfaisants pour un test local de POC, sans valoir une camp
 - [Securite et DevSecOps](docs/security-and-devsecops.md)
 - [Strategie de test](docs/test-strategy.md)
 - [Guide de deploiement](docs/deployment-guide.md)
+- [Registre de suivi des vulnerabilites](docs/vulnerability-register.md)
 
 ## Limites du POC
 
