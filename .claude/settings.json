@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"//wsl.localhost/Ubuntu/home/max/dev/ProjectCollector\" && grep -n \"Cette approche est adaptee\" docs/security-and-devsecops.md *)",
+      "Read(///wsl.localhost/Ubuntu/home/max/dev/**)",
+      "Bash(ls \"//wsl.localhost/Ubuntu/home/max/dev/ProjectCollector/.github/workflows-backup/\")",
+      "Read(///wsl.localhost/Ubuntu/home/max/dev/ProjectCollector/.github/**)",
+      "Bash(git config *)",
+      "Read(//mingw64/libexec/**)",
+      "Bash(where.exe git-credential-manager *)",
+      "Bash(where.exe git-credential-manager-core *)",
+      "Bash(cd \"//wsl.localhost/Ubuntu/home/max/dev/ProjectCollector\" && file docs/security-and-devsecops.md)"
+    ]
+  }
+}
