@@ -58,3 +58,34 @@ jobs:
       - backend-tests
       - frontend-build
     uses: ./.github/workflows/docker-build.yml
+
+  pipeline-summary:
+    name: 📋 Pipeline summary
+    if: always()
+    needs:
+      - backend-tests
+      - frontend-build
+      - code-quality-sast
+      - secret-scanning
+      - secure-iac-dockerfile-scan
+      - docker-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write pipeline summary
+        run: |
+          {
+            echo "## 🚀 CollectorShop DevSecOps Pipeline — Résumé"
+            echo ""
+            echo "| Job | Rôle | Bloquant | Résultat |"
+            echo "|---|---|---|---|"
+            echo "| 🧪 Backend tests | compile, tests, package Maven | oui | ${{ needs.backend-tests.result }} |"
+            echo "| 🎨 Frontend build | build + tests unitaires + E2E Angular | oui | ${{ needs.frontend-build.result }} |"
+            echo "| 🔍 Code quality & SAST | Semgrep + CodeQL | non | ${{ needs.code-quality-sast.result }} |"
+            echo "| 🔐 Secret scanning | Gitleaks | oui | ${{ needs.secret-scanning.result }} |"
+            echo "| 🛡️ Dockerfile / IaC scan | Checkov | non | ${{ needs.secure-iac-dockerfile-scan.result }} |"
+            echo "| 🐳 Docker build & image scan | build images + Trivy | non | ${{ needs.docker-build.result }} |"
+            echo ""
+            echo "Les résultats détaillés des scans SARIF (Semgrep, CodeQL, Checkov, Trivy) sont disponibles dans l'onglet [Security > Code scanning](${{ github.server_url }}/${{ github.repository }}/security/code-scanning) de ce dépôt."
+            echo ""
+            echo "Le scan de dépendances (OWASP Dependency-Check + Trivy filesystem) est planifié séparément chaque semaine via \`backend-security.yml\`, afin de ne pas ralentir cette pipeline à chaque push."
+          } >> "$GITHUB_STEP_SUMMARY"
