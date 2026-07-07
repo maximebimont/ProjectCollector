@@ -9,6 +9,10 @@ Collector.shop manipule des comptes utilisateurs, des articles, des achats et un
 - la coherence des transactions ;
 - la surface de code et de dependances.
 
+## Contexte applicatif
+
+L'application gere une transaction simple entre un vendeur et un acheteur, avec un calcul automatique de commission. Cette nature transactionnelle justifie une attention particuliere sur la securite des acces et des regles metier.
+
 ## Securite applicative
 
 ### Authentification JWT
@@ -67,6 +71,7 @@ Une gestion globale des erreurs est en place pour renvoyer des reponses comprehe
 
 Le depot contient les workflows suivants :
 
+- `main-pipeline.yml`
 - `backend-tests.yml`
 - `frontend-build.yml`
 - `code-quality-sast.yml`
@@ -78,14 +83,14 @@ Le depot contient les workflows suivants :
 
 ### Role des workflows
 
-- `backend-tests.yml` : compilation, tests et packaging Maven
-- `frontend-build.yml` : installation des dependances frontend puis build Angular
-- `code-quality-sast.yml` : analyse Semgrep et CodeQL
-- `secret-scanning.yml` : detection de secrets avec Gitleaks
-- `iac-dockerfile-scan.yml` : scan des Dockerfiles avec Checkov
-- `docker-build.yml` : build des images backend/frontend et scan Trivy des images
-- `backend-security.yml` : lancement manuel ou planifie du workflow de scans de dependances
-- `sca-dependency-scan.yml` : OWASP Dependency-Check et scan Trivy filesystem
+- `backend-tests.yml` : compilation, tests et packaging Maven ;
+- `frontend-build.yml` : installation des dependances frontend puis build Angular ;
+- `code-quality-sast.yml` : analyse Semgrep et CodeQL ;
+- `secret-scanning.yml` : detection de secrets avec Gitleaks ;
+- `iac-dockerfile-scan.yml` : scan des Dockerfiles avec Checkov ;
+- `docker-build.yml` : build des images backend/frontend et scan Trivy des images ;
+- `backend-security.yml` : lancement manuel ou planifie du workflow de scans de dependances ;
+- `sca-dependency-scan.yml` : OWASP Dependency-Check et scan Trivy filesystem.
 
 ## Outils utilises
 
@@ -120,21 +125,41 @@ Analyse des dependances backend pour identifier des CVE connues. Le workflow est
 ## Politique de scans dans la pipeline
 
 - les scans sont conserves ;
-- plusieurs scans sont non bloquants dans la pipeline principale ;
+- certains scans sont non bloquants dans la pipeline principale ;
 - les rapports restent generes pour permettre une analyse ulterieure ;
 - les vulnerabilites detectees doivent etre analysees et priorisees ;
 - les scans les plus lourds peuvent etre lances manuellement ou planifies via `backend-security.yml`.
 
 Cette approche est adaptee a un POC scolaire : elle montre une demarche DevSecOps sans rendre la pipeline principale trop lente ou trop fragile.
 
-Le suivi des vulnerabilites remontees (statut, justification, correctif applique) est trace dans [`docs/vulnerability-register.md`](vulnerability-register.md).
+## Ce qui est realise, teste, simule et a poursuivre
+
+Realise :
+
+- authentification JWT ;
+- protection des operations sensibles ;
+- controle proprietaire sur les articles ;
+- scans CI/CD de qualite et de securite ;
+- publication de rapports de scan en SARIF quand le workflow le permet.
+
+Teste :
+
+- regles metier critiques verifiees par les tests backend ;
+- parcours complet verifie manuellement ;
+- scans lances dans la chaine GitHub Actions.
+
+Simule ou simplifie :
+
+- aucun paiement reel ;
+- pas de gestion complete des roles administrateur ;
+- observabilite securite limitee au niveau du POC.
 
 ## Limites et remediations futures
 
 Limites actuelles :
 
 - paiement reel non integre ;
-- pas de gestion complete des roles administrateur ;
+- pas de gestion complete des roles admin ;
 - pas de monitoring Prometheus/Grafana ;
 - pas encore de politique complete de gestion d'incident ;
 - vulnerabilites detectees par les scans encore a traiter selon leur priorite.

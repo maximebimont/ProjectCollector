@@ -6,10 +6,10 @@ Ce document explique comment lancer Collector.shop localement dans son mode de d
 
 ## Prerequis
 
-- Docker installe
-- Docker Compose disponible
-- Ports `4200`, `8080` et `5433` disponibles
-- Depot present localement
+- Docker installe ;
+- Docker Compose disponible ;
+- depot present localement ;
+- ports `4200`, `8080` et `5433` disponibles.
 
 ## Services lances
 
@@ -64,7 +64,7 @@ Le compose actuel s'appuie notamment sur :
 
 - une base PostgreSQL `vintage_marketplace` ;
 - un backend connecte a `postgres:5432` ;
-- un frontend expose en `4200` via Nginx ;
+- un frontend Angular expose en `4200` via Nginx ;
 - un volume `vintage_marketplace_data` pour la persistance locale.
 
 ## Ce que couvre ce guide

@@ -51,7 +51,7 @@ PostgreSQL
 
 ## Architecture technique
 
-### Frontend Angular
+### Role du frontend Angular
 
 Le frontend fournit l'interface utilisateur et consomme l'API REST du backend. Il gere notamment :
 
@@ -63,7 +63,7 @@ Le frontend fournit l'interface utilisateur et consomme l'API REST du backend. I
 - l'envoi du JWT via un interceptor ;
 - la protection de certaines routes via un guard.
 
-### Backend Spring Boot
+### Role du backend Spring Boot
 
 Le backend porte les regles metier et expose les endpoints REST. Il gere notamment :
 
@@ -77,11 +77,11 @@ Le backend porte les regles metier et expose les endpoints REST. Il gere notamme
 
 La structure est separee par responsabilites, avec des packages de type `auth`, `user`, `item`, `order`, `config` et `common`.
 
-### PostgreSQL
+### Role de PostgreSQL
 
 PostgreSQL stocke les utilisateurs, les articles et les commandes. Cette base est suffisante pour un POC transactionnel simple, tout en restant classique et facile a expliquer.
 
-### Docker Compose
+### Role de Docker Compose
 
 Docker Compose orchestre le frontend, le backend et PostgreSQL. Il apporte :
 
@@ -162,7 +162,7 @@ Limite ou perspective : ces tests restent locaux et ne remplacent pas une campag
 
 Definition courte : le logiciel interagit correctement avec ses autres composants.
 
-Collector.shop y repond via une API REST consommee par Angular et une execution coordonnee avec Docker Compose.
+Collector.shop y repond via une API REST consommee par Angular et une execution coordonnee avec Docker Compose entre frontend, backend et base PostgreSQL.
 
 Limite ou perspective : la compatibilite est verifiee surtout dans le cadre local du projet.
 
@@ -170,7 +170,7 @@ Limite ou perspective : la compatibilite est verifiee surtout dans le cadre loca
 
 Definition courte : le logiciel reste facile a comprendre et a utiliser.
 
-Collector.shop y repond par une UX simplifiee et un parcours manuel vendeur/acheteur valide.
+Collector.shop y repond par une UX simplifiee, des pages dediees au vendeur et a l'acheteur, et un parcours manuel valide.
 
 Limite ou perspective : l'ergonomie reste celle d'un POC et peut encore etre polie.
 
@@ -180,7 +180,7 @@ Definition courte : le logiciel reste stable et produit des resultats coherents.
 
 Collector.shop y repond par des tests backend, un test manuel complet et une gestion globale des erreurs.
 
-Limite ou perspective : les tests de concurrence avances restent a completer.
+Limite ou perspective : les tests de concurrence avances sur achat simultane restent a completer.
 
 ### Securite
 
@@ -194,7 +194,7 @@ Limite ou perspective : pas de MFA, pas de paiement reel et pas de dispositif de
 
 Definition courte : le logiciel peut etre compris, corrige et faire evoluer.
 
-Collector.shop y repond par la separation frontend/backend, une architecture backend structuree et une documentation dediee.
+Collector.shop y repond par la separation frontend/backend, une architecture backend structuree, un monorepo lisible et une documentation dediee.
 
 Limite ou perspective : la couverture de tests frontend reste encore modeste.
 
