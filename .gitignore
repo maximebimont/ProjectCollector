@@ -1,0 +1,8 @@
+# Agent tooling (local-only, not part of project source)
+.agents/
+.codex/
+.claude/settings.local.json
+
+# Scratch files provided to Claude as context (subject, grading rubric, etc.)
+tmp/*
+!tmp/.gitkeep
