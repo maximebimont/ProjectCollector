@@ -78,6 +78,20 @@ La configuration CORS autorise `https://localhost` (acces via la passerelle
 TLS) ainsi que `http://localhost:4200` (mode `ng serve` sans passerelle),
 ce qui est coherent avec les deux modes de demonstration retenus.
 
+### CSRF
+
+La protection CSRF est explicitement desactivee (`SecurityConfig.java`,
+commentaire en place sur la ligne concernee). C'est un choix assume, pas un
+oubli : l'authentification se fait exclusivement via un header
+`Authorization: Bearer` lu par `JwtAuthenticationFilter` (jamais un cookie
+ni un parametre d'URL) et la session est `STATELESS`. La CSRF repose sur
+l'envoi automatique par le navigateur de cookies/identifiants lors d'une
+requete cross-site ; sans cookie de session, elle n'a pas de prise ici.
+C'est la recommandation Spring Security elle-meme pour les API stateless a
+base de JWT. Detail dans
+[`docs/vulnerability-register.md`](vulnerability-register.md) (finding
+SonarCloud `java:S4502`).
+
 ### Gestion des erreurs
 
 Une gestion globale des erreurs est en place pour renvoyer des reponses comprehensibles et eviter de laisser remonter des comportements techniques bruts a l'utilisateur.
@@ -244,6 +258,11 @@ section en donne la synthese priorisee.
   standard) mais n'est plus jamais utilise tant que `.env` est renseigne ;
   Docker Compose refuse de demarrer avec un message explicite si `.env`
   est absent.
+- **CSRF desactive (SonarCloud `java:S4502`)** : verifie et documente
+  comme acceptable, pas corrige par du code. Justification en commentaire
+  directement dans `SecurityConfig.java` et detail dans
+  [`docs/vulnerability-register.md`](vulnerability-register.md). Voir
+  aussi la section [CSRF](#csrf) ci-dessus.
 
 ### A traiter en priorite (chantiers en cours ou prevus)
 

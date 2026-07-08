@@ -33,6 +33,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                // CSRF desactive volontairement : l'API est stateless (pas de
+                // cookie de session, cf STATELESS ci-dessous) et l'authentification
+                // se fait exclusivement via un header "Authorization: Bearer ..."
+                // lu explicitement par JwtAuthenticationFilter (jamais un cookie
+                // ni un parametre d'URL). Un navigateur n'attache jamais ce header
+                // automatiquement lors d'une requete cross-site, donc la CSRF n'a
+                // pas de prise ici. Voir docs/vulnerability-register.md (rule
+                // java:S4502) pour la justification complete.
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session ->
