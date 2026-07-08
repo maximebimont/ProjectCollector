@@ -10,7 +10,9 @@ Ce document explique comment lancer Collector.shop localement dans son mode de d
 - Docker Compose disponible ;
 - OpenSSL disponible (generation du certificat TLS de dev) ;
 - depot present localement ;
-- ports `80`, `443`, `4200`, `8080` et `5433` disponibles.
+- ports `80`, `443` et `5433` disponibles (`backend` et `frontend` ne sont
+  plus publies sur l'hote, uniquement accessibles via la passerelle
+  `gateway`).
 
 ## Services lances
 
@@ -42,18 +44,23 @@ poursuivre. Le port `80` redirige automatiquement vers `443`.
 
 ## Secrets locaux (`.env`)
 
-Le backend a besoin d'un `APP_JWT_SECRET` reel (plus de valeur en dur dans
-`docker-compose.yml`). Avant le tout premier demarrage :
+Le backend a besoin d'un `APP_JWT_SECRET` reel et la base PostgreSQL d'un
+`POSTGRES_PASSWORD` (plus de valeur en dur dans `docker-compose.yml`).
+Avant le tout premier demarrage :
 
 ```bash
 cp .env.example .env
 # remplacer la ligne APP_JWT_SECRET= par une vraie valeur :
 openssl rand -base64 48
+# remplacer la ligne POSTGRES_PASSWORD= par un mot de passe local
+# quelconque (pas besoin d'openssl rand, ce n'est pas un secret
+# cryptographique comme APP_JWT_SECRET)
 ```
 
-`.env` n'est jamais commite (`.gitignore`). Sans lui, `docker compose up`
-refuse de demarrer le service `backend` avec un message explicite plutot
-que d'echouer silencieusement.
+`.env` n'est jamais commite (`.gitignore`). Sans l'une de ces deux
+variables, `docker compose up` refuse de demarrer le service concerne
+(`postgres` ou `backend`) avec un message explicite plutot que d'echouer
+silencieusement.
 
 ## Hook pre-push qualite (optionnel)
 

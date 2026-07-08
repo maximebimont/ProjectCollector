@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: vintage_marketplace
       POSTGRES_USER: vintage_user
-      POSTGRES_PASSWORD: vintage_password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquant, voir .env.example}
     ports:
       - "5433:5432"
     volumes:
@@ -23,7 +23,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/vintage_marketplace
       SPRING_DATASOURCE_USERNAME: vintage_user
-      SPRING_DATASOURCE_PASSWORD: vintage_password
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquant, voir .env.example}
       APP_JWT_SECRET: ${APP_JWT_SECRET:?APP_JWT_SECRET manquant, voir .env.example}
       APP_JWT_EXPIRATION: 86400000
 
