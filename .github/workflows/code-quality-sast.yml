@@ -25,12 +25,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Semgrep SAST
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: auto
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+        # returntocorp/semgrep-action@v1 est abandonne et incompatible avec
+        # les CLI Semgrep recentes (crash "invalid rule severity value:
+        # MEDIUM"), ce que continue-on-error masquait silencieusement.
+        # Appel direct de la CLI a la place.
+        working-directory: .
         continue-on-error: true
+        run: |
+          python3 -m pip install --quiet semgrep
+          semgrep scan --config auto --sarif --output semgrep.sarif .
 
       - name: Upload Semgrep SARIF
         if: always() && hashFiles('semgrep.sarif') != ''
