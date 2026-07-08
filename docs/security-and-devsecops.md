@@ -59,9 +59,24 @@ Le backend s'appuie sur :
 
 Cela permet de filtrer les donnees d'entree et de centraliser les regles importantes dans la couche metier.
 
+### HTTPS / TLS
+
+Une passerelle Nginx dediee (`infra/gateway/`) termine le TLS et expose
+l'application sur `https://localhost` (redirection automatique depuis le
+port `80`). Le certificat est auto-signe et genere localement
+(`infra/gateway/generate-dev-cert.sh`), jamais commite. Le trafic
+`passerelle -> backend`/`passerelle -> frontend` reste en clair sur le
+reseau Docker interne : choix assume pour un POC qui tourne entierement sur
+une seule machine (chiffrer aussi ce tronçon interne serait de la
+sur-ingenierie a ce niveau). Voir
+[`docs/deployment-guide.md`](deployment-guide.md#acces-https-local) pour la
+procedure d'acces.
+
 ### CORS
 
-La configuration CORS autorise le frontend local sur `http://localhost:4200`, ce qui est coherent avec le mode de demonstration retenu.
+La configuration CORS autorise `https://localhost` (acces via la passerelle
+TLS) ainsi que `http://localhost:4200` (mode `ng serve` sans passerelle),
+ce qui est coherent avec les deux modes de demonstration retenus.
 
 ### Gestion des erreurs
 
@@ -188,11 +203,12 @@ section en donne la synthese priorisee.
   - l'action Semgrep etait cassee silencieusement (`continue-on-error`
     masquait un crash de la CLI), donnant une fausse impression de
     couverture SAST.
+- **HTTPS/TLS** : passerelle Nginx de terminaison TLS ajoutee
+  (`https://localhost`, redirection depuis le port 80). Voir la section
+  [HTTPS / TLS](#https--tls) ci-dessus.
 
 ### A traiter en priorite (chantiers en cours ou prevus)
 
-- **HTTPS/TLS** : tout le trafic est aujourd'hui en clair (chantier de
-  remediation prevu, passerelle de terminaison TLS locale).
 - **Observabilite minimale** : pas de collecte de metriques ni de dashboard
   au-dela des endpoints Actuator bruts (chantier prevu, Prometheus/Grafana).
 - **Secret JWT par defaut** : la valeur par defaut de `APP_JWT_SECRET` est
@@ -213,7 +229,6 @@ section en donne la synthese priorisee.
 
 ### Limites actuelles restantes
 
-- pas de HTTPS (chantier de remediation prevu) ;
 - pas de monitoring Prometheus/Grafana (chantier prevu) ;
 - paiement reel non integre ;
 - pas de gestion complete des roles admin ;

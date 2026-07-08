@@ -31,14 +31,17 @@ Le test manuel complet du parcours principal a ete realise avec succes.
 Depuis la racine du projet :
 
 ```bash
+./infra/gateway/generate-dev-cert.sh   # une seule fois, genere un certificat TLS de dev
 docker compose up --build
 ```
 
-URLs utiles :
+URLs utiles (via la passerelle HTTPS, certificat auto-signe a accepter dans le navigateur) :
 
-- frontend : `http://localhost:4200`
-- health backend : `http://localhost:8080/actuator/health`
-- catalogue API : `http://localhost:8080/api/items`
+- application (frontend + API) : `https://localhost`
+- health backend : `https://localhost/actuator/health`
+- catalogue API : `https://localhost/api/items`
+
+Voir [`docs/deployment-guide.md`](docs/deployment-guide.md#acces-https-local) pour le detail.
 
 Arret :
 
