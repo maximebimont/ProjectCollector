@@ -118,6 +118,40 @@ Le projet reste lisible grace a une separation simple :
 
 Cette separation facilite la maintenance, les tests et la demonstration.
 
+### Choix d'architecture assumes
+
+Trois choix qui pourraient ressembler a des raccourcis a premiere lecture,
+mais qui sont deliberes pour la taille actuelle du projet :
+
+- **`User implements UserDetails`** : l'entite JPA `User` implemente
+  directement l'interface Spring Security `UserDetails`
+  (`getAuthorities()`, `isEnabled()`, etc.) plutot que d'introduire un DTO
+  d'adaptation separe. Couplage assume entre le modele de persistance et
+  le modele d'authentification Spring Security : sur un projet de cette
+  taille (3 entites), un adaptateur intermediaire ajouterait une couche
+  supplementaire sans benefice reel. A reconsiderer seulement si `User`
+  devait un jour porter des champs sensibles qu'on ne veut pas exposer au
+  contexte Spring Security.
+- **`OrderService` ecrit dans `ItemRepository`** : `OrderService.buyItem()`
+  charge l'objet via `ItemRepository`, met a jour son statut
+  (`SOLD`) et le sauvegarde, en plus de creer la commande — un service
+  qui ecrit dans le repository d'un autre module metier. Cohesion
+  transactionnelle assumee : l'achat d'un objet et son passage en `SOLD`
+  doivent reussir ou echouer ensemble dans la meme transaction
+  (`@Transactional`), et c'est le flux qui declenche ce changement d'etat,
+  pas `ItemService`. Separer les deux ecritures dans deux services
+  distincts obligerait a orchestrer la transaction depuis un troisieme
+  composant, complexite superieure au benefice pour ce POC.
+- **Logique de commission dans `OrderService`** : le taux (5 %) et le
+  calcul de repartition (`platformFee`/`sellerAmount`) vivent directement
+  dans `OrderService.buyItem()`, pas dans une classe dediee. Suffisant
+  tant qu'il n'existe qu'une seule regle de tarification. Evolution
+  identifiee si le besoin se presente : extraire une classe
+  `PricingPolicy` (ou equivalent) le jour ou plusieurs regles de
+  commission doivent coexister (taux variable par categorie, palier,
+  periode promotionnelle...) — pas fait aujourd'hui pour eviter
+  d'introduire une abstraction sans second cas d'usage reel.
+
 ## Endpoints principaux
 
 ### Authentification
