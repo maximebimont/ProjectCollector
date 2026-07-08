@@ -20,7 +20,7 @@ server:
 
 app:
   jwt:
-    secret: ${APP_JWT_SECRET:ZmFrZVNlY3JldEtleUZvclNjaG9vbFByb2plY3RNdXN0QmVMb25nRW5vdWdoMzI=}
+    secret: ${APP_JWT_SECRET}
     expiration: ${APP_JWT_EXPIRATION:86400000}
 
 management:

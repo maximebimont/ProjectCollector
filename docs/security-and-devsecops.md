@@ -258,15 +258,15 @@ section en donne la synthese priorisee.
   p95, memoire heap JVM, pool de connexions HikariCP). Voir
   [`docs/architecture-and-quality.md`](architecture-and-quality.md#role-de-la-chaine-dobservabilite-prometheus-grafana).
 - **Secret JWT en dur** : `APP_JWT_SECRET` etait code en dur (meme valeur
-  visible dans `application.yml` et `docker-compose.yml`, donc dans
-  l'historique git). Retire de `docker-compose.yml` au profit d'une
-  variable `${APP_JWT_SECRET:?...}` lue depuis un fichier `.env` local
-  (jamais commite, gabarit fourni dans `.env.example`), avec une valeur
-  generee via `openssl rand -base64 48`. Le fallback dans
-  `application.yml` reste volontairement present (pratique Spring
-  standard) mais n'est plus jamais utilise tant que `.env` est renseigne ;
-  Docker Compose refuse de demarrer avec un message explicite si `.env`
-  est absent.
+  de demonstration visible dans `application.yml`, `.env.example` et
+  `docker-compose.yml`, donc dans l'historique git). Le fallback par
+  defaut dans `application.yml` a ete retire (`${APP_JWT_SECRET}` sans
+  valeur de repli : l'application refuse de demarrer si la variable n'est
+  pas fournie), `.env.example` ne contient plus qu'un gabarit vide avec
+  instruction `openssl rand -base64 48`, et `docker-compose.yml` porte
+  desormais le guard `${APP_JWT_SECRET:?APP_JWT_SECRET manquant, voir
+  .env.example}` qui fait echouer `docker compose up` avec un message
+  explicite si `.env` est absent ou incomplet.
 - **CSRF desactive (SonarCloud `java:S4502`)** : verifie et documente
   comme acceptable, pas corrige par du code. Justification en commentaire
   directement dans `SecurityConfig.java` et detail dans
