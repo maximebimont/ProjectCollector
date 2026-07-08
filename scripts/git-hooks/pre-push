@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+# Hook pre-push : bloque le push si le code ne respecte pas les seuils
+# qualite (coverage >= 90%, duplication = 0%, 0 issue SonarCloud HIGH/MEDIUM
+# ouverte). Installe via scripts/install-git-hooks.sh (git config
+# core.hooksPath scripts/git-hooks).
+#
+# N'utilise pas les Quality Gates SonarCloud (fonctionnalite payante,
+# indisponible sur ce plan) : le hook interroge directement l'API
+# mesures/issues (lecture seule) et applique lui-meme les seuils.
+#
+# Si SONAR_TOKEN n'est pas configure dans .env, ce garde-fou est
+# simplement ignore (avec avertissement) plutot que de bloquer un dev qui
+# n'a pas encore fait le setup local - meme philosophie que le job
+# sonar-scan.yml en CI.
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+COVERAGE_THRESHOLD=90
+DUPLICATION_THRESHOLD=0
+SONAR_HOST="https://sonarcloud.io"
+
+SONAR_TOKEN=""
+if [ -f .env ]; then
+  SONAR_TOKEN="$(grep -E '^SONAR_TOKEN=' .env | head -1 | cut -d= -f2- || true)"
+fi
+
+if [ -z "$SONAR_TOKEN" ]; then
+  cat <<'EOF'
+
+[hook pre-push] SONAR_TOKEN non configure dans .env : verification qualite
+ignoree, push autorise tel quel.
+Pour activer ce garde-fou local, ajoute SONAR_TOKEN=<ton token SonarCloud>
+dans .env (voir .env.example et docs/deployment-guide.md).
+
+EOF
+  exit 0
+fi
+
+PROJECT_KEY="$(grep -E '^sonar\.projectKey=' sonar-project.properties | cut -d= -f2)"
+
+echo "[hook pre-push] Verification qualite SonarCloud avant push"
+echo "  seuils : coverage >= ${COVERAGE_THRESHOLD}% | duplication <= ${DUPLICATION_THRESHOLD}% | 0 issue HIGH/MEDIUM ouverte"
+echo ""
+
+echo "[hook pre-push] Build backend (mvn clean test)"
+(cd backend && mvn -q clean test)
+
+echo "[hook pre-push] Collecte des dependances backend (sonar.java.libraries)"
+(cd backend && mvn -q dependency:copy-dependencies -DoutputDirectory=target/dependency)
+
+echo "[hook pre-push] Build frontend (npm run test:ci)"
+(cd frontend && npm run test:ci)
+
+TMP_SCAN_LOG="$(mktemp)"
+TMP_TASK="$(mktemp)"
+TMP_MEASURES="$(mktemp)"
+TMP_ISSUES="$(mktemp)"
+trap 'rm -f "$TMP_SCAN_LOG" "$TMP_TASK" "$TMP_MEASURES" "$TMP_ISSUES"' EXIT
+
+echo "[hook pre-push] Scan SonarCloud (docker sonarsource/sonar-scanner-cli)"
+docker run --rm \
+  -v "${REPO_ROOT}:/usr/src" \
+  -e SONAR_TOKEN="${SONAR_TOKEN}" \
+  sonarsource/sonar-scanner-cli \
+  -Dsonar.host.url="${SONAR_HOST}" | tee "$TMP_SCAN_LOG"
+
+# Le repertoire de travail du scanner (.scannerwork) vit dans /tmp *a
+# l'interieur du conteneur* (non monte), pas dans /usr/src : on ne peut donc
+# pas lire report-task.txt depuis l'hote. L'URL du ceTask est neanmoins
+# affichee explicitement dans la sortie du scanner, on l'en extrait plutot.
+CE_TASK_URL="$(grep -oE 'https://sonarcloud\.io/api/ce/task\?id=[A-Za-z0-9_-]+' "$TMP_SCAN_LOG" | tail -1)"
+
+if [ -z "$CE_TASK_URL" ]; then
+  echo "[hook pre-push] ECHEC : URL du ceTask introuvable dans la sortie du scanner, impossible de verifier le resultat."
+  exit 1
+fi
+
+echo "[hook pre-push] Attente du traitement de l'analyse..."
+STATUS="PENDING"
+
+for _ in $(seq 1 30); do
+  curl -sS -u "${SONAR_TOKEN}:" "$CE_TASK_URL" -o "$TMP_TASK"
+  STATUS="$(python3 -c "import json; print(json.load(open('$TMP_TASK'))['task']['status'])")"
+  case "$STATUS" in
+    SUCCESS|FAILED|CANCELED) break ;;
+  esac
+  sleep 2
+done
+
+if [ "$STATUS" != "SUCCESS" ]; then
+  echo "[hook pre-push] ECHEC : traitement de l'analyse SonarCloud termine avec le statut '${STATUS}'."
+  exit 1
+fi
+
+echo "[hook pre-push] Recuperation des mesures et issues actuelles..."
+
+curl -sS -u "${SONAR_TOKEN}:" \
+  "${SONAR_HOST}/api/measures/component?component=${PROJECT_KEY}&metricKeys=coverage,duplicated_lines_density" \
+  -o "$TMP_MEASURES"
+
+curl -sS -u "${SONAR_TOKEN}:" \
+  "${SONAR_HOST}/api/issues/search?componentKeys=${PROJECT_KEY}&resolved=false&impactSeverities=HIGH,MEDIUM&ps=20" \
+  -o "$TMP_ISSUES"
+
+python3 "${REPO_ROOT}/scripts/git-hooks/check-quality-thresholds.py" \
+  "$TMP_MEASURES" "$TMP_ISSUES" "$COVERAGE_THRESHOLD" "$DUPLICATION_THRESHOLD" "$PROJECT_KEY"

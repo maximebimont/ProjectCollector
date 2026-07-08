@@ -150,7 +150,7 @@ Scan de vulnerabilites sur le filesystem du projet et sur les images Docker cons
 Analyse consolidee de la qualite de code (backend Java + frontend
 TypeScript dans un seul projet, `sonar-project.properties` a la racine) :
 couverture de tests (JaCoCo + lcov), duplication, complexite cognitive et
-dette technique, avec un Quality Gate unique.
+dette technique.
 
 A la difference de CodeQL et Semgrep (SAST oriente detection de
 vulnerabilites), SonarCloud n'est pas une source supplementaire de scan
@@ -165,6 +165,15 @@ SonarCloud, importer le repo, generer un token d'analyse et l'ajouter comme
 secret GitHub Actions `SONAR_TOKEN`. Tant que ce secret n'est pas
 configure, le job `sonar-scan.yml` est ignore proprement (pas d'echec de
 pipeline).
+
+Les Quality Gates personnalisees SonarCloud sont une fonctionnalite
+payante, indisponible sur ce plan : le job CI `sonar-scan.yml` reste donc
+informatif, sans blocage automatique. L'application des seuils qualite
+(couverture >= 90 %, duplication = 0 %, 0 issue HIGH/MEDIUM ouverte) se
+fait cote client, via un hook git local (`scripts/git-hooks/pre-push`) qui
+interroge directement l'API mesures/issues et bloque le `git push` si l'un
+des seuils n'est pas respecte. Voir
+[`docs/deployment-guide.md`](deployment-guide.md#hook-pre-push-qualite-optionnel).
 
 ### SARIF
 

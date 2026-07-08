@@ -55,6 +55,38 @@ openssl rand -base64 48
 refuse de demarrer le service `backend` avec un message explicite plutot
 que d'echouer silencieusement.
 
+## Hook pre-push qualite (optionnel)
+
+Un hook git local peut bloquer un `git push` si le code ne respecte pas les
+seuils qualite : couverture globale < 90 %, duplication globale > 0 % ou
+issue SonarCloud HIGH/MEDIUM ouverte. Il n'utilise pas les Quality Gates
+SonarCloud (fonctionnalite payante indisponible sur ce plan) : il interroge
+directement l'API mesures/issues et applique lui-meme les seuils.
+
+Installation (une fois par clone) :
+
+```bash
+./scripts/install-git-hooks.sh
+```
+
+Ajouter ensuite `SONAR_TOKEN` dans `.env` (meme valeur que le secret GitHub
+Actions du meme nom, genere sur sonarcloud.io > My Account > Security).
+Sans ce token, le hook est **ignore avec un avertissement** plutot que de
+bloquer un dev qui n'a pas encore fait ce setup.
+
+A savoir :
+
+- Le hook build le backend et le frontend, lance un scan SonarCloud complet
+  (via Docker, image `sonarsource/sonar-scanner-cli`) et attend le resultat
+  : compter ~1 a 2 minutes par push.
+- Necessite Docker (deja requis pour le reste du projet) et un acces
+  internet vers sonarcloud.io.
+- Echappatoire volontaire en cas d'urgence (a utiliser sciemment, pas par
+  defaut) : `git push --no-verify`.
+- Le detail des seuils et de la logique est dans
+  `scripts/git-hooks/pre-push` et
+  `scripts/git-hooks/check-quality-thresholds.py`.
+
 ## Commande principale
 
 Depuis la racine du projet :

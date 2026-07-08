@@ -73,12 +73,17 @@ Ils couvrent notamment :
 - compilation, tests et packaging backend ;
 - build frontend ;
 - SAST avec Semgrep et CodeQL ;
-- qualite de code et Quality Gate avec [SonarCloud](https://sonarcloud.io/project/overview?id=maximebimont_ProjectCollector) (couverture, duplication, dette technique) ;
+- qualite de code avec [SonarCloud](https://sonarcloud.io/project/overview?id=maximebimont_ProjectCollector) (couverture, duplication, dette technique) ;
 - secret scanning avec Gitleaks ;
 - scans Dockerfile avec Checkov ;
 - scans SCA et scans Trivy sur filesystem et images Docker.
 
 Plusieurs scans sont conserves meme lorsqu'ils sont non bloquants dans la pipeline principale, afin de garder les rapports et de pouvoir analyser les vulnerabilites detectees.
+
+Un hook git local optionnel (`./scripts/install-git-hooks.sh`) bloque
+`git push` si la couverture globale passe sous 90 %, si de la duplication
+apparait, ou si une issue SonarCloud HIGH/MEDIUM reste ouverte — voir
+[`docs/deployment-guide.md`](docs/deployment-guide.md#hook-pre-push-qualite-optionnel).
 
 ## Tests
 

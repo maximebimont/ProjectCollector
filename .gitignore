@@ -13,3 +13,6 @@ infra/gateway/certs/*
 
 # Local secrets (real values, never committed; see .env.example for the template)
 .env
+
+# Working directory of the local sonar-scanner CLI (hook pre-push)
+.scannerwork/
