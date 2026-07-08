@@ -7,7 +7,7 @@ import { Item, ItemRequest } from '../models/item.model';
   providedIn: 'root'
 })
 export class ItemService {
-  private readonly apiUrl = 'http://localhost:8080/api/items';
+  private readonly apiUrl = '/api/items';
 
   constructor(private http: HttpClient) {}
 

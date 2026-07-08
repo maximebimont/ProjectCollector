@@ -10,7 +10,7 @@ import { User } from '../models/user.model';
 })
 export class AuthService {
   private router = inject(Router);
-  private readonly apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = '/api';
   private readonly tokenKey = 'collector_token';
   private readonly userIdKey = 'collector_user_id';
 
