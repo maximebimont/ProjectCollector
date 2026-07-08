@@ -1,0 +1,22 @@
+<article class="card">
+  <div class="image-wrapper">
+    <img
+      *ngIf="imageUrl; else noImage"
+      [src]="imageUrl"
+      [alt]="title"
+    />
+
+    <ng-template #noImage><div class="placeholder">Pas d'image</div></ng-template>
+  </div>
+
+  <div class="card-content">
+    <div class="card-header">
+      <h3>{{ title }}</h3>
+      <span class="status" [class.cancelled]="cancelled">
+        {{ statusLabel }}
+      </span>
+    </div>
+
+    <ng-content></ng-content>
+  </div>
+</article>

@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 
 import { Order } from '../../../core/models/order.model';
 import { OrderService } from '../../../core/services/order.service';
+import { OrderCardComponent } from '../order-card/order-card.component';
 
 @Component({
   selector: 'app-my-purchases',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, OrderCardComponent],
   templateUrl: './my-purchases.component.html',
   styleUrl: './my-purchases.component.scss'
 })

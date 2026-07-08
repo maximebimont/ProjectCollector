@@ -25,45 +25,32 @@
   </div>
 
   <section *ngIf="!isLoading && !errorMessage && orders.length > 0" class="grid">
-    <article class="card" *ngFor="let order of orders; trackBy: trackByOrderId">
-      <div class="image-wrapper">
-        <img
-          *ngIf="order.itemImageUrl; else noImage"
-          [src]="order.itemImageUrl"
-          [alt]="order.itemTitle || 'Objet de collection'"
-        />
+    <app-order-card
+      *ngFor="let order of orders; trackBy: trackByOrderId"
+      [imageUrl]="order.itemImageUrl"
+      [title]="order.itemTitle || 'Objet sans titre'"
+      [cancelled]="order.status === 'CANCELLED'"
+      [statusLabel]="order.status === 'COMPLETED' ? 'Commande terminée' : 'Commande annulée'"
+    >
+      <p class="amount">
+        Prix : {{ order.itemPrice | currency:'EUR':'symbol':'1.2-2' }}
+      </p>
 
-        <ng-template #noImage><div class="placeholder">Pas d'image</div></ng-template>
-      </div>
+      <p class="meta">
+        Acheteur : {{ order.buyerFirstname }} {{ order.buyerLastname }}
+      </p>
 
-      <div class="card-content">
-        <div class="card-header">
-          <h3>{{ order.itemTitle || 'Objet sans titre' }}</h3>
-          <span class="status" [class.cancelled]="order.status === 'CANCELLED'">
-            {{ order.status === 'COMPLETED' ? 'Commande terminée' : 'Commande annulée' }}
-          </span>
-        </div>
+      <p class="meta">
+        Commission Collector : {{ order.platformFee | currency:'EUR':'symbol':'1.2-2' }}
+      </p>
 
-        <p class="amount">
-          Prix : {{ order.itemPrice | currency:'EUR':'symbol':'1.2-2' }}
-        </p>
+      <p class="meta">
+        Montant vendeur : {{ order.sellerAmount | currency:'EUR':'symbol':'1.2-2' }}
+      </p>
 
-        <p class="meta">
-          Acheteur : {{ order.buyerFirstname }} {{ order.buyerLastname }}
-        </p>
-
-        <p class="meta">
-          Commission Collector : {{ order.platformFee | currency:'EUR':'symbol':'1.2-2' }}
-        </p>
-
-        <p class="meta">
-          Montant vendeur : {{ order.sellerAmount | currency:'EUR':'symbol':'1.2-2' }}
-        </p>
-
-        <p class="meta">
-          Date de vente : {{ order.createdAt | date:'dd/MM/yyyy à HH:mm' }}
-        </p>
-      </div>
-    </article>
+      <p class="meta">
+        Date de vente : {{ order.createdAt | date:'dd/MM/yyyy à HH:mm' }}
+      </p>
+    </app-order-card>
   </section>
 </main>

@@ -4,11 +4,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
 import { ItemService } from '../../../core/services/item.service';
+import { ItemFormFieldsComponent } from '../item-form-fields/item-form-fields.component';
 
 @Component({
   selector: 'app-item-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, ItemFormFieldsComponent],
   templateUrl: './item-create.component.html',
   styleUrl: './item-create.component.scss'
 })
