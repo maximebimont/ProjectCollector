@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # Le code applicatif vit sur dev, jamais mergee sur main (branche
           # par defaut). Sans ce ref explicite, ce workflow (declenche par
