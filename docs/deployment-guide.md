@@ -40,11 +40,27 @@ un avertissement de securite au premier acces : c'est attendu, il suffit
 d'accepter l'exception (`Avance` / `Continuer vers localhost`) pour
 poursuivre. Le port `80` redirige automatiquement vers `443`.
 
+## Secrets locaux (`.env`)
+
+Le backend a besoin d'un `APP_JWT_SECRET` reel (plus de valeur en dur dans
+`docker-compose.yml`). Avant le tout premier demarrage :
+
+```bash
+cp .env.example .env
+# remplacer la ligne APP_JWT_SECRET= par une vraie valeur :
+openssl rand -base64 48
+```
+
+`.env` n'est jamais commite (`.gitignore`). Sans lui, `docker compose up`
+refuse de demarrer le service `backend` avec un message explicite plutot
+que d'echouer silencieusement.
+
 ## Commande principale
 
 Depuis la racine du projet :
 
 ```bash
+cp .env.example .env   # puis completer APP_JWT_SECRET dedans (une seule fois)
 ./infra/gateway/generate-dev-cert.sh   # une seule fois
 docker compose up --build
 ```

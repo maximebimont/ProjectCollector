@@ -32,6 +32,7 @@ Le test manuel complet du parcours principal a ete realise avec succes.
 Depuis la racine du projet :
 
 ```bash
+cp .env.example .env   # une seule fois, puis completer APP_JWT_SECRET (voir docs/deployment-guide.md)
 ./infra/gateway/generate-dev-cert.sh   # une seule fois, genere un certificat TLS de dev
 docker compose up --build
 ```

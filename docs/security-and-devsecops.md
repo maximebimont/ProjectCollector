@@ -234,13 +234,21 @@ section en donne la synthese priorisee.
   et tableau de bord Grafana provisionne (debit HTTP par endpoint, latence
   p95, memoire heap JVM, pool de connexions HikariCP). Voir
   [`docs/architecture-and-quality.md`](architecture-and-quality.md#role-de-la-chaine-dobservabilite-prometheus-grafana).
+- **Secret JWT en dur** : `APP_JWT_SECRET` etait code en dur (meme valeur
+  visible dans `application.yml` et `docker-compose.yml`, donc dans
+  l'historique git). Retire de `docker-compose.yml` au profit d'une
+  variable `${APP_JWT_SECRET:?...}` lue depuis un fichier `.env` local
+  (jamais commite, gabarit fourni dans `.env.example`), avec une valeur
+  generee via `openssl rand -base64 48`. Le fallback dans
+  `application.yml` reste volontairement present (pratique Spring
+  standard) mais n'est plus jamais utilise tant que `.env` est renseigne ;
+  Docker Compose refuse de demarrer avec un message explicite si `.env`
+  est absent.
 
 ### A traiter en priorite (chantiers en cours ou prevus)
 
-- **Secret JWT par defaut** : la valeur par defaut de `APP_JWT_SECRET` est
-  codee en dur dans `application.yml` et reprise telle quelle dans
-  `docker-compose.yml`. Acceptable en demo locale, a documenter comme non
-  reproductible tel quel hors de ce contexte.
+Rien en attente actuellement — dernier point traite : voir "Secret JWT en
+dur" ci-dessus.
 
 ### Accepte pour le perimetre POC (a justifier a l'oral)
 
