@@ -17,26 +17,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(
             IllegalArgumentException exception
     ) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", 400);
-        response.put("error", "Bad Request");
-        response.put("message", exception.getMessage());
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(buildErrorResponse(400, "Bad Request", exception.getMessage()));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleBadCredentialsException(
             BadCredentialsException exception
     ) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", 401);
-        response.put("error", "Unauthorized");
-        response.put("message", "Email ou mot de passe incorrect");
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(buildErrorResponse(401, "Unauthorized", "Email ou mot de passe incorrect"));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -62,25 +52,24 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleDataIntegrityViolationException(
             DataIntegrityViolationException exception
     ) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", 409);
-        response.put("error", "Conflict");
-        response.put("message", "Une contrainte de données a été violée");
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(buildErrorResponse(409, "Conflict", "Une contrainte de données a été violée"));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(
             Exception exception
     ) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(buildErrorResponse(500, "Internal Server Error", "Une erreur interne est survenue"));
+    }
+
+    private Map<String, Object> buildErrorResponse(int status, String error, Object message) {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
-        response.put("status", 500);
-        response.put("error", "Internal Server Error");
-        response.put("message", "Une erreur interne est survenue");
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        response.put("status", status);
+        response.put("error", error);
+        response.put("message", message);
+        return response;
     }
 }
