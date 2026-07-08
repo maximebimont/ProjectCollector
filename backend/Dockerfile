@@ -11,7 +11,8 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-RUN addgroup -S spring && adduser -S -D -H -G spring spring
+RUN apk update && apk upgrade --no-cache \
+    && addgroup -S spring && adduser -S -D -H -G spring spring
 
 COPY --from=build --chown=spring:spring /app/target/*.jar app.jar
 
