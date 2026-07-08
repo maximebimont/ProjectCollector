@@ -81,7 +81,7 @@ echo "[hook pre-push] Attente du traitement de l'analyse..."
 STATUS="PENDING"
 
 for _ in $(seq 1 30); do
-  curl -sS -u "${SONAR_TOKEN}:" "$CE_TASK_URL" -o "$TMP_TASK"
+  curl -sS -H "Authorization: Bearer ${SONAR_TOKEN}" "$CE_TASK_URL" -o "$TMP_TASK"
   STATUS="$(python3 -c "import json; print(json.load(open('$TMP_TASK'))['task']['status'])")"
   case "$STATUS" in
     SUCCESS|FAILED|CANCELED) break ;;
@@ -96,11 +96,11 @@ fi
 
 echo "[hook pre-push] Recuperation des mesures et issues actuelles..."
 
-curl -sS -u "${SONAR_TOKEN}:" \
+curl -sS -H "Authorization: Bearer ${SONAR_TOKEN}" \
   "${SONAR_HOST}/api/measures/component?component=${PROJECT_KEY}&metricKeys=coverage,duplicated_lines_density" \
   -o "$TMP_MEASURES"
 
-curl -sS -u "${SONAR_TOKEN}:" \
+curl -sS -H "Authorization: Bearer ${SONAR_TOKEN}" \
   "${SONAR_HOST}/api/issues/search?componentKeys=${PROJECT_KEY}&resolved=false&impactSeverities=HIGH,MEDIUM&ps=20" \
   -o "$TMP_ISSUES"
 
