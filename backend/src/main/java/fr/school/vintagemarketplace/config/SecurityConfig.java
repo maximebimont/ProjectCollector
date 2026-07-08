@@ -42,10 +42,13 @@ public class SecurityConfig {
                         // Auth publique
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        // Actuator public pour healthcheck et observabilité simple
+                        // Actuator public pour healthcheck et observabilité simple.
+                        // /actuator/prometheus n'est pas restreint au réseau interne ici
+                        // (limite assumée pour ce POC, cf docs/security-and-devsecops.md)
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/actuator/info").permitAll()
                         .requestMatchers("/actuator/metrics").permitAll()
+                        .requestMatchers("/actuator/prometheus").permitAll()
 
                         // Mes objets : protégé
                         .requestMatchers(HttpMethod.GET, "/api/items/me").authenticated()
