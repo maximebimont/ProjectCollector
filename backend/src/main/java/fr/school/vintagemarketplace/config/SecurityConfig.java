@@ -1,6 +1,7 @@
 package fr.school.vintagemarketplace.config;
 
 import fr.school.vintagemarketplace.auth.JwtAuthenticationFilter;
+import fr.school.vintagemarketplace.auth.LoginRateLimitFilter;
 import fr.school.vintagemarketplace.user.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final LoginRateLimitFilter loginRateLimitFilter;
     private final CustomUserDetailsService userDetailsService;
 
     @Bean
@@ -73,6 +75,7 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(loginRateLimitFilter, JwtAuthenticationFilter.class)
                 .build();
     }
 
