@@ -83,11 +83,29 @@ PostgreSQL stocke les utilisateurs, les articles et les commandes. Cette base es
 
 ### Role de Docker Compose
 
-Docker Compose orchestre le frontend, le backend et PostgreSQL. Il apporte :
+Docker Compose orchestre le frontend, le backend, PostgreSQL, la passerelle HTTPS et la chaine d'observabilite (Prometheus, Grafana). Il apporte :
 
 - un lancement unique pour la demonstration ;
 - une execution locale reproductible ;
 - une reduction des ecarts entre postes de travail.
+
+### Role de la chaine d'observabilite (Prometheus, Grafana)
+
+Le backend expose ses metriques au format Prometheus sur
+`/actuator/prometheus` (histogrammes de latence HTTP inclus). Prometheus
+scrape cet endpoint toutes les 15 secondes et conserve l'historique.
+Grafana, connecte a Prometheus, affiche un tableau de bord provisionne
+automatiquement (`infra/observability/`) avec quatre indicateurs :
+
+- debit HTTP par endpoint ;
+- latence p95 des requetes ;
+- memoire heap JVM utilisee ;
+- pool de connexions PostgreSQL (HikariCP) actives/inactives.
+
+Ces indicateurs recoupent directement ceux definis plus bas pour l'attribut
+qualite *Performance* (temps de reponse, stabilite sous charge) : le
+tableau de bord permet de les observer en continu plutot que de les
+mesurer ponctuellement via un test de charge isole.
 
 ## Separation des responsabilites
 
@@ -126,10 +144,11 @@ Cette separation facilite la maintenance, les tests et la demonstration.
 - `GET /api/orders/me`
 - `GET /api/orders/sales`
 
-### Observabilite minimale
+### Observabilite
 
 - `GET /actuator/health`
 - `GET /actuator/info`
+- `GET /actuator/prometheus` (scrape par Prometheus, visualise dans Grafana — voir [Role de la chaine d'observabilite](#role-de-la-chaine-dobservabilite-prometheus-grafana))
 
 ## Pourquoi un monorepo
 
@@ -154,7 +173,7 @@ Limite ou perspective : le perimetre reste volontairement restreint aux fonction
 
 Definition courte : le logiciel fournit un niveau de reponse acceptable pour la charge visee.
 
-Collector.shop y repond par des tests Siege locaux avec 100 % de disponibilite sur les scenarios documentes.
+Collector.shop y repond par des tests Siege locaux avec 100 % de disponibilite sur les scenarios documentes, et par un tableau de bord Grafana (debit HTTP, latence p95, memoire JVM, pool de connexions) qui permet d'observer ces indicateurs en continu, y compris pendant les tests de charge.
 
 Limite ou perspective : ces tests restent locaux et ne remplacent pas une campagne de preproduction.
 
@@ -178,7 +197,7 @@ Limite ou perspective : l'ergonomie reste celle d'un POC et peut encore etre pol
 
 Definition courte : le logiciel reste stable et produit des resultats coherents.
 
-Collector.shop y repond par des tests backend, un test manuel complet et une gestion globale des erreurs.
+Collector.shop y repond par des tests backend, un test manuel complet, une gestion globale des erreurs et un suivi en continu du taux d'erreur HTTP et de la sante de l'application via Grafana/Actuator.
 
 Limite ou perspective : les tests de concurrence avances sur achat simultane restent a completer.
 
@@ -210,7 +229,7 @@ Limite ou perspective : le projet documente surtout le deploiement local, pas un
 
 - pas de paiement reel ;
 - pas de role administrateur complet ;
-- observabilite limitee a Actuator ;
+- observabilite limitee aux metriques (Prometheus/Grafana) : pas de logs centralises ni de traces distribuees ;
 - tests frontend et E2E encore partiels ;
 - pas de gestion avancee de la concurrence sur achat simultane ;
 - pas de deploiement de production cible dans le depot.

@@ -21,8 +21,9 @@ Le projet reste volontairement simple, demonstrable et maintenable. L'objectif n
 
 - backend Spring Boot avec API REST, JWT, JPA et PostgreSQL ;
 - frontend Angular avec parcours vendeur et acheteur ;
-- Docker Compose fonctionnel pour lancer PostgreSQL, backend et frontend ;
-- endpoints Actuator pour la verification de base.
+- Docker Compose fonctionnel pour lancer PostgreSQL, backend, frontend, passerelle HTTPS et observabilite ;
+- endpoints Actuator pour la verification de base ;
+- observabilite via Prometheus/Grafana (debit HTTP, latence p95, memoire JVM, pool de connexions).
 
 Le test manuel complet du parcours principal a ete realise avec succes.
 
@@ -40,6 +41,8 @@ URLs utiles (via la passerelle HTTPS, certificat auto-signe a accepter dans le n
 - application (frontend + API) : `https://localhost`
 - health backend : `https://localhost/actuator/health`
 - catalogue API : `https://localhost/api/items`
+- tableau de bord Grafana : `http://localhost:3000` (identifiants par defaut `admin` / `admin`, a changer hors demo locale)
+- Prometheus : `http://localhost:9090`
 
 Voir [`docs/deployment-guide.md`](docs/deployment-guide.md#acces-https-local) pour le detail.
 
@@ -105,6 +108,6 @@ Ces resultats sont satisfaisants pour un test local de POC, sans valoir une camp
 
 - pas de paiement reel ;
 - pas de role administrateur complet ;
-- observabilite limitee a Actuator ;
+- observabilite limitee aux metriques (Prometheus/Grafana), pas de logs centralises ni de traces distribuees ;
 - tests frontend et E2E encore limites ;
 - tests de charge reproductibles localement, mais non industrialises dans une pipeline dediee.

@@ -206,11 +206,14 @@ section en donne la synthese priorisee.
 - **HTTPS/TLS** : passerelle Nginx de terminaison TLS ajoutee
   (`https://localhost`, redirection depuis le port 80). Voir la section
   [HTTPS / TLS](#https--tls) ci-dessus.
+- **Observabilite (metriques)** : backend instrumente pour Prometheus
+  (`/actuator/prometheus`, histogrammes de latence HTTP), scrape automatique
+  et tableau de bord Grafana provisionne (debit HTTP par endpoint, latence
+  p95, memoire heap JVM, pool de connexions HikariCP). Voir
+  [`docs/architecture-and-quality.md`](architecture-and-quality.md#role-de-la-chaine-dobservabilite-prometheus-grafana).
 
 ### A traiter en priorite (chantiers en cours ou prevus)
 
-- **Observabilite minimale** : pas de collecte de metriques ni de dashboard
-  au-dela des endpoints Actuator bruts (chantier prevu, Prometheus/Grafana).
 - **Secret JWT par defaut** : la valeur par defaut de `APP_JWT_SECRET` est
   codee en dur dans `application.yml` et reprise telle quelle dans
   `docker-compose.yml`. Acceptable en demo locale, a documenter comme non
@@ -229,7 +232,7 @@ section en donne la synthese priorisee.
 
 ### Limites actuelles restantes
 
-- pas de monitoring Prometheus/Grafana (chantier prevu) ;
+- observabilite limitee aux metriques (pas de logs centralises ni de traces distribuees) ;
 - paiement reel non integre ;
 - pas de gestion complete des roles admin ;
 - pas encore de politique complete de gestion d'incident.
