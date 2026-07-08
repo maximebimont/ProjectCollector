@@ -90,6 +90,7 @@ Le depot contient les workflows suivants :
 - `backend-tests.yml`
 - `frontend-build.yml`
 - `code-quality-sast.yml`
+- `sonar-scan.yml`
 - `secret-scanning.yml`
 - `iac-dockerfile-scan.yml`
 - `docker-build.yml`
@@ -101,6 +102,7 @@ Le depot contient les workflows suivants :
 - `backend-tests.yml` : compilation, tests et packaging Maven ;
 - `frontend-build.yml` : installation des dependances frontend puis build Angular ;
 - `code-quality-sast.yml` : analyse Semgrep et CodeQL ;
+- `sonar-scan.yml` : scan qualite de code SonarCloud (backend + frontend) ;
 - `secret-scanning.yml` : detection de secrets avec Gitleaks ;
 - `iac-dockerfile-scan.yml` : scan des Dockerfiles avec Checkov ;
 - `docker-build.yml` : build des images backend/frontend et scan Trivy des images ;
@@ -128,6 +130,27 @@ Analyse de securite appliquee ici aux Dockerfiles.
 ### Trivy
 
 Scan de vulnerabilites sur le filesystem du projet et sur les images Docker construites.
+
+### SonarCloud
+
+Analyse consolidee de la qualite de code (backend Java + frontend
+TypeScript dans un seul projet, `sonar-project.properties` a la racine) :
+couverture de tests (JaCoCo + lcov), duplication, complexite cognitive et
+dette technique, avec un Quality Gate unique.
+
+A la difference de CodeQL et Semgrep (SAST oriente detection de
+vulnerabilites), SonarCloud n'est pas une source supplementaire de scan
+securite dans ce projet — c'est assume : son role est de rendre visible,
+dans un seul tableau de bord, ce qui etait auparavant disperse (rapport
+JaCoCo genere mais jamais visualise, aucune mesure de qualite cote
+frontend). C'est directement ce qui est demande dans les consignes pour
+justifier le suivi d'indicateurs qualite dans le temps.
+
+Setup requis (non automatisable depuis ce depot) : creer un compte
+SonarCloud, importer le repo, generer un token d'analyse et l'ajouter comme
+secret GitHub Actions `SONAR_TOKEN`. Tant que ce secret n'est pas
+configure, le job `sonar-scan.yml` est ignore proprement (pas d'echec de
+pipeline).
 
 ### SARIF
 

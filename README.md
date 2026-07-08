@@ -60,6 +60,7 @@ Les workflows GitHub Actions principaux presents dans le depot sont :
 - `backend-tests.yml`
 - `frontend-build.yml`
 - `code-quality-sast.yml`
+- `sonar-scan.yml`
 - `secret-scanning.yml`
 - `iac-dockerfile-scan.yml`
 - `docker-build.yml`
@@ -71,6 +72,7 @@ Ils couvrent notamment :
 - compilation, tests et packaging backend ;
 - build frontend ;
 - SAST avec Semgrep et CodeQL ;
+- qualite de code et Quality Gate avec [SonarCloud](https://sonarcloud.io/project/overview?id=maximebimont_ProjectCollector) (couverture, duplication, dette technique) ;
 - secret scanning avec Gitleaks ;
 - scans Dockerfile avec Checkov ;
 - scans SCA et scans Trivy sur filesystem et images Docker.

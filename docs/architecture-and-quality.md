@@ -213,9 +213,9 @@ Limite ou perspective : pas de MFA, pas de paiement reel et pas de dispositif de
 
 Definition courte : le logiciel peut etre compris, corrige et faire evoluer.
 
-Collector.shop y repond par la separation frontend/backend, une architecture backend structuree, un monorepo lisible et une documentation dediee.
+Collector.shop y repond par la separation frontend/backend, une architecture backend structuree, un monorepo lisible, une documentation dediee, et un Quality Gate SonarCloud (`sonar-scan.yml`) qui mesure en continu couverture de tests, duplication de code et complexite cognitive sur le backend et le frontend. Ce suivi dans le temps est ce qui permet d'eviter l'accumulation silencieuse de dette technique : une regression de couverture ou une hausse de duplication est visible des le commit qui l'introduit, plutot que decouverte tardivement.
 
-Limite ou perspective : la couverture de tests frontend reste encore modeste.
+Limite ou perspective : la couverture de tests frontend reste encore modeste (Quality Gate non encore calibre/valide sur ce projet, cf `docs/security-and-devsecops.md`).
 
 ### Portabilite
 
