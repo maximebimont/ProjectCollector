@@ -44,6 +44,11 @@ jobs:
     uses: ./.github/workflows/code-quality-sast.yml
     secrets: inherit
 
+  sonar-scan:
+    name: 📊 SonarCloud scan
+    uses: ./.github/workflows/sonar-scan.yml
+    secrets: inherit
+
   secret-scanning:
     name: 🔐 Secret scanning
     uses: ./.github/workflows/secret-scanning.yml
@@ -66,6 +71,7 @@ jobs:
       - backend-tests
       - frontend-build
       - code-quality-sast
+      - sonar-scan
       - secret-scanning
       - secure-iac-dockerfile-scan
       - docker-build
@@ -81,11 +87,14 @@ jobs:
             echo "| 🧪 Backend tests | compile, tests, package Maven | oui | ${{ needs.backend-tests.result }} |"
             echo "| 🎨 Frontend build | build + tests unitaires + E2E Angular | oui | ${{ needs.frontend-build.result }} |"
             echo "| 🔍 Code quality & SAST | Semgrep + CodeQL | non | ${{ needs.code-quality-sast.result }} |"
+            echo "| 📊 SonarCloud scan | qualité de code + Quality Gate | non | ${{ needs.sonar-scan.result }} |"
             echo "| 🔐 Secret scanning | Gitleaks | oui | ${{ needs.secret-scanning.result }} |"
             echo "| 🛡️ Dockerfile / IaC scan | Checkov | non | ${{ needs.secure-iac-dockerfile-scan.result }} |"
             echo "| 🐳 Docker build & image scan | build images + Trivy | non | ${{ needs.docker-build.result }} |"
             echo ""
             echo "Les résultats détaillés des scans SARIF (Semgrep, CodeQL, Checkov, Trivy) sont disponibles dans l'onglet [Security > Code scanning](${{ github.server_url }}/${{ github.repository }}/security/code-scanning) de ce dépôt."
+            echo ""
+            echo "Le dashboard SonarCloud (qualité de code, couverture, duplication) est disponible sur [sonarcloud.io](https://sonarcloud.io/project/overview?id=maximebimont_ProjectCollector) une fois \`SONAR_TOKEN\` configuré (sinon le job est ignoré, voir docs/security-and-devsecops.md)."
             echo ""
             echo "Le scan de dépendances (OWASP Dependency-Check + Trivy filesystem) est planifié séparément chaque semaine via \`backend-security.yml\`, afin de ne pas ralentir cette pipeline à chaque push."
           } >> "$GITHUB_STEP_SUMMARY"
