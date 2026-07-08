@@ -233,7 +233,7 @@ Definition courte : le logiciel reste stable et produit des resultats coherents.
 
 Collector.shop y repond par des tests backend, un test manuel complet, une gestion globale des erreurs et un suivi en continu du taux d'erreur HTTP et de la sante de l'application via Grafana/Actuator.
 
-Limite ou perspective : les tests de concurrence avances sur achat simultane restent a completer.
+Limite ou perspective : les tests de concurrence avances sur achat simultane restent a completer ; aucune strategie de sauvegarde PostgreSQL (backup/restauration planifie) ni d'alerting automatique (Grafana expose les metriques mais aucune regle d'alerte n'est configuree) ne sont mises en place - limites assumees pour ce POC, a traiter avant tout usage en production reelle.
 
 ### Securite
 
@@ -266,4 +266,6 @@ Limite ou perspective : le projet documente surtout le deploiement local, pas un
 - observabilite limitee aux metriques (Prometheus/Grafana) : pas de logs centralises ni de traces distribuees ;
 - tests frontend et E2E encore partiels ;
 - pas de gestion avancee de la concurrence sur achat simultane ;
-- pas de deploiement de production cible dans le depot.
+- pas de deploiement de production cible dans le depot ;
+- pas de strategie de sauvegarde/restauration PostgreSQL (backup planifie, test de restauration) ;
+- pas d'alerting automatique sur les metriques Grafana (dashboards consultables manuellement, aucune regle d'alerte configuree).
