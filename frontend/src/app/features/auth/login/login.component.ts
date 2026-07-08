@@ -16,9 +16,9 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  private formBuilder = inject(FormBuilder);
-  private authService = inject(AuthService);
-  private router = inject(Router);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   errorMessage = '';
   isLoading = false;

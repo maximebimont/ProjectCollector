@@ -13,9 +13,9 @@ import { ItemService } from '../../../core/services/item.service';
   styleUrl: './item-create.component.scss'
 })
 export class ItemCreateComponent {
-  private formBuilder = inject(FormBuilder);
-  private itemService = inject(ItemService);
-  private router = inject(Router);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly itemService = inject(ItemService);
+  private readonly router = inject(Router);
 
   errorMessage = '';
   isLoading = false;
@@ -30,7 +30,7 @@ export class ItemCreateComponent {
   onSubmit(): void {
     if (this.itemForm.invalid) {
       this.itemForm.markAllAsTouched();
-      this.errorMessage = 'Une erreur est survenue. Veuillez vérifier le formulaire.';
+      this.errorMessage = 'Une erreur est survenue. Veuillez vï¿½rifier le formulaire.';
       return;
     }
 
@@ -43,7 +43,7 @@ export class ItemCreateComponent {
       title: this.itemForm.value.title!.trim(),
       description: this.itemForm.value.description!.trim(),
       price: this.itemForm.value.price!,
-      imageUrl: imageUrlValue ? imageUrlValue : null
+      imageUrl: imageUrlValue || null
     };
 
     this.itemService.createItem(request).subscribe({
@@ -51,7 +51,7 @@ export class ItemCreateComponent {
         this.router.navigate(['/my-items'], { queryParams: { feedback: 'created' } });
       },
       error: (error) => {
-        this.errorMessage = error.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
+        this.errorMessage = error.error?.message || 'Une erreur est survenue. Veuillez rï¿½essayer.';
         this.isLoading = false;
       }
     });

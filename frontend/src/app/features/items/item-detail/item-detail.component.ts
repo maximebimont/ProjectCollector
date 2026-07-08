@@ -15,10 +15,10 @@ import { Order } from '../../../core/models/order.model';
   styleUrl: './item-detail.component.scss'
 })
 export class ItemDetailComponent implements OnInit {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private itemService = inject(ItemService);
-  private orderService = inject(OrderService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly itemService = inject(ItemService);
+  private readonly orderService = inject(OrderService);
 
   authService = inject(AuthService);
 

@@ -13,7 +13,7 @@ import { Item } from '../../../core/models/item.model';
   styleUrl: './item-list.component.scss'
 })
 export class ItemListComponent implements OnInit {
-  private itemService = inject(ItemService);
+  private readonly itemService = inject(ItemService);
 
   items: Item[] = [];
   isLoading = true;

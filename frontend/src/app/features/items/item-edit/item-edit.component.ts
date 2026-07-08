@@ -13,10 +13,10 @@ import { ItemService } from '../../../core/services/item.service';
   styleUrl: './item-edit.component.scss'
 })
 export class ItemEditComponent implements OnInit {
-  private formBuilder = inject(FormBuilder);
-  private route = inject(ActivatedRoute);
-  private itemService = inject(ItemService);
-  private router = inject(Router);
+  private readonly formBuilder = inject(FormBuilder);
+  private readonly route = inject(ActivatedRoute);
+  private readonly itemService = inject(ItemService);
+  private readonly router = inject(Router);
 
   itemId: number | null = null;
   isPageLoading = true;
@@ -68,7 +68,7 @@ export class ItemEditComponent implements OnInit {
   onSubmit(): void {
     if (this.itemForm.invalid || !this.itemId) {
       this.itemForm.markAllAsTouched();
-      this.formErrorMessage = 'Une erreur est survenue. Veuillez vérifier le formulaire.';
+      this.formErrorMessage = 'Une erreur est survenue. Veuillez vï¿½rifier le formulaire.';
       return;
     }
 
@@ -81,7 +81,7 @@ export class ItemEditComponent implements OnInit {
       title: this.itemForm.value.title!.trim(),
       description: this.itemForm.value.description!.trim(),
       price: this.itemForm.value.price!,
-      imageUrl: imageUrlValue ? imageUrlValue : null
+      imageUrl: imageUrlValue || null
     };
 
     this.itemService.updateItem(this.itemId, request).subscribe({
@@ -90,7 +90,7 @@ export class ItemEditComponent implements OnInit {
       },
       error: (error) => {
         console.error(error);
-        this.formErrorMessage = error.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
+        this.formErrorMessage = error.error?.message || 'Une erreur est survenue. Veuillez rï¿½essayer.';
         this.isSaving = false;
       }
     });

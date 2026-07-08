@@ -24,7 +24,7 @@
         (click)="toggleMenu()"
       ></button>
 
-      <nav class="hidden items-center justify-center gap-2 md:flex">
+      <nav class="hidden items-center justify-center gap-2 md:flex" aria-label="Navigation principale">
         <a
           routerLink="/items"
           routerLinkActive="nav-link-active"
@@ -58,7 +58,7 @@
       </div>
     </div>
 
-    <nav *ngIf="mobileMenuOpen()" class="border-t border-slate-200/80 bg-white/95 px-4 py-4 md:hidden">
+    <nav *ngIf="mobileMenuOpen()" class="border-t border-slate-200/80 bg-white/95 px-4 py-4 md:hidden" aria-label="Navigation mobile">
       <div class="flex flex-col gap-2">
         <a routerLink="/items" class="inline-flex items-center rounded-2xl px-4 py-3 text-sm font-medium leading-none text-slate-700 no-underline hover:bg-slate-100" (click)="closeMenu()">Catalogue</a>
 

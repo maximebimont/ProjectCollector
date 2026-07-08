@@ -13,7 +13,7 @@ import { OrderService } from '../../../core/services/order.service';
   styleUrl: './my-sales.component.scss'
 })
 export class MySalesComponent implements OnInit {
-  private orderService = inject(OrderService);
+  private readonly orderService = inject(OrderService);
 
   orders: Order[] = [];
   isLoading = true;

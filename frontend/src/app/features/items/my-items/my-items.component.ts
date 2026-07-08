@@ -13,9 +13,9 @@ import { ItemService } from '../../../core/services/item.service';
   styleUrl: './my-items.component.scss'
 })
 export class MyItemsComponent implements OnInit {
-  private itemService = inject(ItemService);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  private readonly itemService = inject(ItemService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   items: Item[] = [];
   isLoading = true;

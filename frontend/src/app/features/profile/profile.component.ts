@@ -17,7 +17,7 @@ import { User } from '../../core/models/user.model';
   styleUrl: './profile.component.scss'
 })
 export class ProfileComponent implements OnInit {
-  private authService = inject(AuthService);
+  private readonly authService = inject(AuthService);
   readonly fallbackValue = 'Non renseigné';
 
   user: User | null = null;

@@ -9,12 +9,12 @@ import { User } from '../models/user.model';
   providedIn: 'root'
 })
 export class AuthService {
-  private router = inject(Router);
+  private readonly router = inject(Router);
   private readonly apiUrl = '/api';
   private readonly tokenKey = 'collector_token';
   private readonly userIdKey = 'collector_user_id';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   register(request: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, request)

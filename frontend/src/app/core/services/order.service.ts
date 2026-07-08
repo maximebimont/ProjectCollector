@@ -9,7 +9,7 @@ import { Order } from '../models/order.model';
 export class OrderService {
   private readonly apiUrl = '/api/orders';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   buyItem(itemId: number): Observable<Order> {
     return this.http.post<Order>(`${this.apiUrl}/items/${itemId}`, {});
