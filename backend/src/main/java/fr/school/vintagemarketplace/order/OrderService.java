@@ -7,12 +7,14 @@ import fr.school.vintagemarketplace.order.dto.OrderResponse;
 import fr.school.vintagemarketplace.user.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -65,6 +67,11 @@ public class OrderService {
                 .build();
 
         Order savedOrder = orderRepository.save(order);
+
+        log.info(
+                "Commande creee : orderId={} itemId={} buyerId={} sellerId={} totalAmount={}",
+                savedOrder.getId(), item.getId(), buyer.getId(), item.getSeller().getId(), totalAmount
+        );
 
         return OrderResponse.from(savedOrder);
     }

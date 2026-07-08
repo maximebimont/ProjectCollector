@@ -1,5 +1,6 @@
 package fr.school.vintagemarketplace.common;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -18,6 +20,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(
             IllegalArgumentException exception
     ) {
+        log.warn("Requete rejetee (400) : {}", exception.getMessage());
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(buildErrorResponse(400, "Bad Request", exception.getMessage()));
     }
@@ -26,6 +30,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleBadCredentialsException(
             BadCredentialsException exception
     ) {
+        log.warn("Tentative d'authentification refusee (401)");
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(buildErrorResponse(401, "Unauthorized", "Email ou mot de passe incorrect"));
     }
@@ -53,6 +59,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleDataIntegrityViolationException(
             DataIntegrityViolationException exception
     ) {
+        log.warn("Contrainte de donnees violee (409) : {}", exception.getMessage());
+
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(buildErrorResponse(409, "Conflict", "Une contrainte de données a été violée"));
     }
@@ -61,6 +69,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleGenericException(
             Exception exception
     ) {
+        log.error("Erreur interne non geree (500)", exception);
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(buildErrorResponse(500, "Internal Server Error", "Une erreur interne est survenue"));
     }
