@@ -123,5 +123,7 @@ Ces resultats sont satisfaisants pour un test local de POC, sans valoir une camp
 - pas de paiement reel ;
 - pas de role administrateur complet ;
 - observabilite limitee aux metriques (Prometheus/Grafana), pas de logs centralises ni de traces distribuees ;
-- tests frontend et E2E encore limites ;
-- tests de charge reproductibles localement, mais non industrialises dans une pipeline dediee.
+- tests E2E encore limites (un seul smoke test) ;
+- tests de charge reproductibles localement, mais non industrialises dans une pipeline dediee ;
+- pas d'internationalisation (contenu et interface en francais uniquement) ;
+- accessibilite WCAG non auditee formellement (quelques corrections ponctuelles apportees - langue de la page, titre, aria-label/aria-expanded du menu mobile - mais pas de verification systematique du contraste des couleurs ni de gestion explicite du focus clavier apres navigation entre pages) — chantier V2.
