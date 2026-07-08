@@ -20,3 +20,10 @@ export interface ItemRequest {
   price: number;
   imageUrl?: string | null;
 }
+
+export interface Page<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  number: number;
+}

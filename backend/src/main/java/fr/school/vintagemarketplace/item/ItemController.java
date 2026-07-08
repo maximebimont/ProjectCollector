@@ -5,6 +5,10 @@ import fr.school.vintagemarketplace.item.dto.ItemResponse;
 import fr.school.vintagemarketplace.user.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -17,8 +21,10 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemResponse> getAvailableItems() {
-        return itemService.getAvailableItems();
+    public Page<ItemResponse> getAvailableItems(
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return itemService.getAvailableItems(pageable);
     }
 
     @GetMapping("/{id}")

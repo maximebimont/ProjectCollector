@@ -61,4 +61,26 @@
       </div>
     </article>
   </section>
+
+  <nav *ngIf="!isLoading && !errorMessage && totalPages > 1" class="pager">
+    <button
+      type="button"
+      class="pager-button"
+      [disabled]="currentPage === 0"
+      (click)="goToPreviousPage()"
+    >
+      Précédent
+    </button>
+
+    <span class="pager-status">Page {{ currentPage + 1 }} / {{ totalPages }}</span>
+
+    <button
+      type="button"
+      class="pager-button"
+      [disabled]="currentPage >= totalPages - 1"
+      (click)="goToNextPage()"
+    >
+      Suivant
+    </button>
+  </nav>
 </main>

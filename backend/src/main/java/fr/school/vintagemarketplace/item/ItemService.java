@@ -4,6 +4,8 @@ import fr.school.vintagemarketplace.item.dto.ItemRequest;
 import fr.school.vintagemarketplace.item.dto.ItemResponse;
 import fr.school.vintagemarketplace.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -13,11 +15,9 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
-    public List<ItemResponse> getAvailableItems() {
-        return itemRepository.findAllByStatusOrderByCreatedAtDesc(ItemStatus.AVAILABLE)
-                .stream()
-                .map(ItemResponse::from)
-                .toList();
+    public Page<ItemResponse> getAvailableItems(Pageable pageable) {
+        return itemRepository.findAllByStatus(ItemStatus.AVAILABLE, pageable)
+                .map(ItemResponse::from);
     }
 
     public ItemResponse getItemById(Long id) {

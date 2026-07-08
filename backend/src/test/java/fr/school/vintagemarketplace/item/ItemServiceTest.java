@@ -9,6 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -61,13 +65,16 @@ class ItemServiceTest {
 
     @Test
     void shouldReturnAvailableItems() {
-        when(itemRepository.findAllByStatusOrderByCreatedAtDesc(ItemStatus.AVAILABLE))
-                .thenReturn(List.of(item));
+        Pageable pageable = PageRequest.of(0, 20);
+        Page<Item> page = new PageImpl<>(List.of(item), pageable, 1);
 
-        List<ItemResponse> result = itemService.getAvailableItems();
+        when(itemRepository.findAllByStatus(ItemStatus.AVAILABLE, pageable)).thenReturn(page);
 
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).id()).isEqualTo(10L);
+        Page<ItemResponse> result = itemService.getAvailableItems(pageable);
+
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).id()).isEqualTo(10L);
+        assertThat(result.getTotalElements()).isEqualTo(1);
     }
 
     @Test

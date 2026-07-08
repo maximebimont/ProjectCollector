@@ -16,20 +16,24 @@ export class ItemListComponent implements OnInit {
   private readonly itemService = inject(ItemService);
 
   items: Item[] = [];
+  currentPage = 0;
+  totalPages = 0;
   isLoading = true;
   errorMessage = '';
 
   ngOnInit(): void {
-    this.loadItems();
+    this.loadItems(0);
   }
 
-  loadItems(): void {
+  loadItems(page: number): void {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.itemService.getAvailableItems().subscribe({
-      next: (items) => {
-        this.items = items;
+    this.itemService.getAvailableItems(page).subscribe({
+      next: (result) => {
+        this.items = result.content;
+        this.currentPage = result.number;
+        this.totalPages = result.totalPages;
         this.isLoading = false;
       },
       error: (error) => {
@@ -38,6 +42,18 @@ export class ItemListComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  goToPreviousPage(): void {
+    if (this.currentPage > 0) {
+      this.loadItems(this.currentPage - 1);
+    }
+  }
+
+  goToNextPage(): void {
+    if (this.currentPage < this.totalPages - 1) {
+      this.loadItems(this.currentPage + 1);
+    }
   }
 
   trackByItemId(index: number, item: Item): number {

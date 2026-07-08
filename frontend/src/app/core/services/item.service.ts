@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Item, ItemRequest } from '../models/item.model';
+import { Item, ItemRequest, Page } from '../models/item.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +11,9 @@ export class ItemService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getAvailableItems(): Observable<Item[]> {
-    return this.http.get<Item[]>(this.apiUrl);
+  getAvailableItems(page = 0, size = 20): Observable<Page<Item>> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<Page<Item>>(this.apiUrl, { params });
   }
 
   getItemById(id: number): Observable<Item> {

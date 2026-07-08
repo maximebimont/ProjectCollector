@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Item, ItemRequest } from '../models/item.model';
+import { Item, ItemRequest, Page } from '../models/item.model';
 import { ItemService } from './item.service';
 
 describe('ItemService', () => {
@@ -35,14 +35,31 @@ describe('ItemService', () => {
     httpMock.verify();
   });
 
-  it('should fetch available items', () => {
-    service.getAvailableItems().subscribe((items) => {
-      expect(items).toEqual([item]);
+  it('should fetch available items with the default page and size', () => {
+    const page: Page<Item> = { content: [item], number: 0, totalPages: 1, totalElements: 1 };
+
+    service.getAvailableItems().subscribe((result) => {
+      expect(result).toEqual(page);
     });
 
-    const req = httpMock.expectOne('/api/items');
+    const req = httpMock.expectOne((request) => request.url === '/api/items');
     expect(req.request.method).toBe('GET');
-    req.flush([item]);
+    expect(req.request.params.get('page')).toBe('0');
+    expect(req.request.params.get('size')).toBe('20');
+    req.flush(page);
+  });
+
+  it('should fetch available items with a custom page', () => {
+    const page: Page<Item> = { content: [item], number: 2, totalPages: 5, totalElements: 41 };
+
+    service.getAvailableItems(2, 10).subscribe((result) => {
+      expect(result).toEqual(page);
+    });
+
+    const req = httpMock.expectOne((request) => request.url === '/api/items');
+    expect(req.request.params.get('page')).toBe('2');
+    expect(req.request.params.get('size')).toBe('10');
+    req.flush(page);
   });
 
   it('should fetch an item by id', () => {
