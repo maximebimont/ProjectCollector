@@ -1,0 +1,84 @@
+name: Reusable SonarCloud Scan
+
+on:
+  workflow_call:
+    secrets:
+      SONAR_TOKEN:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  sonar-scan:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+    env:
+      # `secrets` n'est pas utilisable directement dans un `if:` (restriction
+      # GitHub Actions) ; on le recopie dans une env var au niveau job pour
+      # pouvoir conditionner chaque step dessus.
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    steps:
+      # Tant que SONAR_TOKEN n'est pas configure (setup manuel SonarCloud,
+      # cf docs/security-and-devsecops.md), les steps ci-dessous sont
+      # "skipped" et le job se termine en succes plutot que de faire
+      # echouer la pipeline.
+      - name: Notice if SONAR_TOKEN is missing
+        if: ${{ env.SONAR_TOKEN == '' }}
+        run: echo "::notice::SONAR_TOKEN non configure, scan SonarCloud ignore (voir docs/security-and-devsecops.md)."
+
+      - name: Checkout repository
+        if: ${{ env.SONAR_TOKEN != '' }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        if: ${{ env.SONAR_TOKEN != '' }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+
+      - name: Build and test backend (produces the JaCoCo report)
+        if: ${{ env.SONAR_TOKEN != '' }}
+        working-directory: backend
+        run: mvn clean test
+
+      - name: Set up Node.js 20
+        if: ${{ env.SONAR_TOKEN != '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        if: ${{ env.SONAR_TOKEN != '' }}
+        working-directory: frontend
+        run: npm ci
+
+      - name: Install Playwright browsers
+        if: ${{ env.SONAR_TOKEN != '' }}
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Run frontend unit tests (produces the lcov report)
+        if: ${{ env.SONAR_TOKEN != '' }}
+        working-directory: frontend
+        run: npm run test:ci
+
+      - name: SonarCloud Scan
+        if: ${{ env.SONAR_TOKEN != '' }}
+        uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+
+      - name: Publish scan summary
+        if: ${{ env.SONAR_TOKEN != '' }}
+        run: |
+          PROJECT_KEY=$(grep -m1 '^sonar.projectKey=' sonar-project.properties | cut -d= -f2)
+          echo "**Scan SonarCloud termine.** Dashboard : https://sonarcloud.io/project/overview?id=${PROJECT_KEY}" >> "$GITHUB_STEP_SUMMARY"
