@@ -16,10 +16,22 @@ Ce test manuel complet a ete realise avec succes.
 
 ## Tests backend
 
-Les tests backend reellement presents dans le depot couvrent deux niveaux :
+Le backend est couvre par 17 classes de tests (63 tests, ~99 % de lignes et
+~97 % de branches en couverture JaCoCo) :
 
-- `OrderServiceTest` : tests unitaires sur la logique de commande ;
-- `PurchaseFlowIntegrationTest` : test d'integration sur le parcours d'achat.
+- tests unitaires de services : `OrderServiceTest`, `ItemServiceTest`,
+  `AuthServiceTest` ;
+- tests unitaires des controleurs REST (construction manuelle, sans
+  contexte Spring) : `OrderControllerTest`, `ItemControllerTest`,
+  `UserControllerTest`, `AuthControllerTest` ;
+- tests unitaires securite : `JwtServiceTest`,
+  `JwtAuthenticationFilterTest`, `CustomUserDetailsServiceTest` ;
+- tests unitaires entites JPA (`@PrePersist`/`@PreUpdate`) : `ItemTest`,
+  `OrderTest`, `UserTest` ;
+- tests unitaires DTO : `UserResponseTest`, `MessageResponseTest` ;
+- `GlobalExceptionHandlerTest` : gestion centralisee des erreurs ;
+- `PurchaseFlowIntegrationTest` : test d'integration sur le parcours
+  d'achat (base H2 en memoire).
 
 Ils verifient notamment :
 
@@ -27,7 +39,9 @@ Ils verifient notamment :
 - le calcul de la commission de 5 % ;
 - le calcul du montant vendeur ;
 - le passage de l'article en `SOLD` ;
-- des refus sur des cas metier critiques.
+- des refus sur des cas metier critiques ;
+- l'authentification JWT (generation, validation, filtre de securite) ;
+- les valeurs par defaut poses par les callbacks JPA.
 
 Commande utile :
 
@@ -49,17 +63,32 @@ Cette etape valide la compilation de l'application Angular et sert de garde-fou 
 
 ## Tests frontend automatises
 
-Le depot contient quelques tests frontend automatises, mais leur couverture reste limitee :
+Le depot contient 16 fichiers de specs (87 tests, 100 % de couverture
+Istanbul sur statements/branches/functions/lines) :
 
-- `app.component.spec.ts` ;
-- `auth.service.spec.ts` ;
-- `item-list.component.spec.ts`.
+- shell applicatif : `app.component.spec.ts` ;
+- services coeur : `auth.service.spec.ts`, `item.service.spec.ts`,
+  `order.service.spec.ts` ;
+- garde et intercepteur : `auth.guard.spec.ts`,
+  `auth.interceptor.spec.ts` ;
+- authentification : `login.component.spec.ts`,
+  `register.component.spec.ts` ;
+- objets : `item-list.component.spec.ts`, `item-create.component.spec.ts`,
+  `item-edit.component.spec.ts`, `item-detail.component.spec.ts`,
+  `my-items.component.spec.ts` ;
+- commandes : `my-purchases.component.spec.ts`,
+  `my-sales.component.spec.ts` ;
+- profil : `profile.component.spec.ts`.
 
-Ils apportent un premier niveau de verification sur :
+Ils apportent une verification sur :
 
-- le shell principal ;
-- la persistance de session locale ;
-- l'affichage du catalogue.
+- le shell principal et la navigation contextuelle (espace utilisateur) ;
+- la persistance et la restitution de la session locale ;
+- l'affichage et le filtrage du catalogue ;
+- les parcours de creation/edition/suppression d'un article ;
+- l'achat, la consultation des achats/ventes ;
+- les cas d'erreur serveur (messages par defaut, absence de reponse) et les
+  branches conditionnelles (garde de route, intercepteur d'authentification).
 
 Commande utile :
 
@@ -168,11 +197,13 @@ Les rapports de scans sont conserves afin de pouvoir analyser et prioriser les v
 
 ## Ce qui est automatise
 
-- tests backend ;
+- tests backend (63 tests, ~99 % lignes / ~97 % branches) ;
 - build frontend ;
-- quelques tests frontend unitaires ;
+- tests frontend unitaires (87 tests, 100 % statements/branches/functions/lines) ;
 - un smoke test E2E navigateur ;
-- scans qualite et securite en GitHub Actions.
+- scans qualite et securite en GitHub Actions ;
+- blocage local du `git push` sous les seuils qualite SonarCloud (hook
+  `scripts/git-hooks/pre-push`, voir `docs/deployment-guide.md`).
 
 ## Ce qui reste manuel
 
@@ -183,8 +214,7 @@ Les rapports de scans sont conserves afin de pouvoir analyser et prioriser les v
 
 ## Limites
 
-- les tests frontend automatises restent limites ;
-- les tests E2E navigateur restent limites et gagneraient a etre completes ;
+- les tests E2E navigateur restent limites (un seul smoke test) et gagneraient a etre completes ;
 - les tests de charge sont reproductibles localement avec Siege, mais pas encore industrialises dans une pipeline dediee ;
 - les tests de concurrence avances sur achat simultane restent une perspective ;
-- les metriques de couverture ne sont pas encore consolidees dans un tableau de bord centralise.
+- les metriques de couverture sont desormais consolidees dans le tableau de bord SonarCloud et bloquantes localement via le hook pre-push, mais l'historique de tendance n'est suivi que depuis la mise en place de ce dispositif (pas de recul sur plusieurs mois).

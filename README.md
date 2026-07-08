@@ -89,9 +89,9 @@ apparait, ou si une issue SonarCloud HIGH/MEDIUM reste ouverte — voir
 
 Le projet s'appuie sur :
 
-- des tests backend unitaires et d'integration ;
+- des tests backend unitaires et d'integration (63 tests, ~99 % lignes / ~97 % branches) ;
 - un build frontend automatise ;
-- quelques tests frontend automatises ;
+- des tests frontend automatises (87 tests, 100 % de couverture) ;
 - un smoke test navigateur Playwright limite ;
 - un test manuel complet valide ;
 - des tests de charge locaux reproductibles avec Siege.
