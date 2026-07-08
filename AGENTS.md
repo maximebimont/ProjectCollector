@@ -70,8 +70,6 @@ Use:
 * Actuator;
 * Docker.
 
-Do not migrate to Java 21 unless explicitly requested. The current CI and Docker setup expect Java 17.
-
 ## Frontend stack
 
 The frontend is located in `frontend/`.
