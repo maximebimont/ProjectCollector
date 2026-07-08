@@ -26,8 +26,6 @@ services:
       SPRING_DATASOURCE_PASSWORD: vintage_password
       APP_JWT_SECRET: ${APP_JWT_SECRET:?APP_JWT_SECRET manquant, voir .env.example}
       APP_JWT_EXPIRATION: 86400000
-    ports:
-      - "8080:8080"
 
   frontend:
     build:
@@ -37,8 +35,6 @@ services:
     restart: always
     depends_on:
       - backend
-    ports:
-      - "4200:8080"
 
   gateway:
     image: nginx:1.27-alpine
