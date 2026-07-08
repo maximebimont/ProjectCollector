@@ -16,3 +16,7 @@ infra/gateway/certs/*
 
 # Working directory of the local sonar-scanner CLI (hook pre-push)
 .scannerwork/
+
+# Generated test/build artifacts (not part of project source)
+frontend/test-results/
+scripts/git-hooks/__pycache__/
