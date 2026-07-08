@@ -17,11 +17,15 @@ module.exports = function (config) {
       jasmine: {},
       clearContext: false
     },
-    reporters: ['progress', 'kjhtml'],
+    reporters: ['progress', 'kjhtml', 'coverage'],
     coverageReporter: {
       dir: require('path').join(__dirname, './coverage/frontend'),
       subdir: '.',
-      reporters: [{ type: 'html' }, { type: 'text-summary' }]
+      reporters: [
+        { type: 'html' },
+        { type: 'text-summary' },
+        { type: 'lcovonly', file: 'lcov.info' }
+      ]
     },
     customLaunchers: {
       ChromeHeadlessCI: {

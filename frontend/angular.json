@@ -97,7 +97,8 @@
               "src/styles.scss"
             ],
             "scripts": [],
-            "karmaConfig": "karma.conf.cjs"
+            "karmaConfig": "karma.conf.cjs",
+            "codeCoverage": true
           }
         }
       }
