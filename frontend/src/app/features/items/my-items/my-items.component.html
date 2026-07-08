@@ -43,6 +43,7 @@
           *ngIf="item.imageUrl; else noImage"
           [src]="item.imageUrl"
           [alt]="item.title || 'Objet de collection'"
+          loading="lazy"
         />
 
         <ng-template #noImage>
