@@ -6,3 +6,7 @@
 # Scratch files provided to Claude as context (subject, grading rubric, etc.)
 tmp/*
 !tmp/.gitkeep
+
+# Self-signed dev TLS cert (generated locally, never committed)
+infra/gateway/certs/*
+!infra/gateway/certs/.gitkeep
