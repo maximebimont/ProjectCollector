@@ -80,4 +80,22 @@ describe('RegisterComponent', () => {
     expect(component.errorMessage).toBe('Email déjà utilisé');
     expect(component.isLoading).toBeFalse();
   });
+
+  it('should fall back to a default error message when the server sends none', () => {
+    authServiceSpy.register.and.returnValue(throwError(() => ({})));
+
+    const fixture = TestBed.createComponent(RegisterComponent);
+    const component = fixture.componentInstance;
+
+    component.registerForm.setValue({
+      firstname: 'Alice',
+      lastname: 'Acheteur',
+      email: 'a@test.com',
+      password: 'password123'
+    });
+    component.onSubmit();
+
+    expect(component.errorMessage).toBe('Erreur lors de la création du compte');
+    expect(component.isLoading).toBeFalse();
+  });
 });

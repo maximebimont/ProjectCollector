@@ -258,4 +258,44 @@ describe('ItemDetailComponent', () => {
     component.item = null;
     expect(component.getPurchaseHint()).toBe('');
   });
+
+  it('should not be the own item when there is no item', () => {
+    itemServiceSpy.getItemById.and.returnValue(of(makeAvailableItem()));
+
+    const fixture = setup('5');
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+
+    component.item = null;
+    expect(component.isOwnItem()).toBeFalse();
+  });
+
+  it('should fall back to the default seller label when names are missing', () => {
+    itemServiceSpy.getItemById.and.returnValue(of(makeAvailableItem()));
+
+    const fixture = setup('5');
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+
+    component.item = {
+      ...makeAvailableItem(),
+      sellerFirstname: null as unknown as string,
+      sellerLastname: null as unknown as string
+    };
+    expect(component.getSellerName()).toBe('Vendeur non renseigné');
+  });
+
+  it('should fall back to a default error message when the purchase fails without one', () => {
+    itemServiceSpy.getItemById.and.returnValue(of(makeAvailableItem()));
+    orderServiceSpy.buyItem.and.returnValue(throwError(() => ({})));
+
+    const fixture = setup('5');
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+
+    component.buyItem();
+
+    expect(component.errorMessage).toBe('Une erreur est survenue. Veuillez réessayer.');
+    expect(component.isBuying).toBeFalse();
+  });
 });

@@ -88,4 +88,22 @@ describe('ItemCreateComponent', () => {
     expect(component.errorMessage).toBe('Erreur serveur');
     expect(component.isLoading).toBeFalse();
   });
+
+  it('should fall back to a default error message when the server sends none', () => {
+    itemServiceSpy.createItem.and.returnValue(throwError(() => ({})));
+
+    const fixture = TestBed.createComponent(ItemCreateComponent);
+    const component = fixture.componentInstance;
+
+    component.itemForm.setValue({
+      title: 'Nouvel objet',
+      description: 'Description',
+      price: 20,
+      imageUrl: ''
+    });
+    component.onSubmit();
+
+    expect(component.errorMessage).toBe('Une erreur est survenue. Veuillez réessayer.');
+    expect(component.isLoading).toBeFalse();
+  });
 });

@@ -127,4 +127,50 @@ class OrderServiceTest {
 
         verify(orderRepository, never()).save(any(Order.class));
     }
+
+    @Test
+    void shouldRejectPurchaseWhenOrderAlreadyExistsForItem() {
+        when(itemRepository.findById(10L)).thenReturn(Optional.of(availableItem));
+        when(orderRepository.existsByItemId(10L)).thenReturn(true);
+
+        assertThatThrownBy(() -> orderService.buyItem(10L, buyer))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Une commande existe déjà pour cet objet");
+
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
+    @Test
+    void shouldReturnMyPurchases() {
+        Order order = Order.builder()
+                .id(1L).item(availableItem).buyer(buyer).seller(seller)
+                .itemPrice(new BigDecimal("100.00")).platformFee(new BigDecimal("5.00"))
+                .sellerAmount(new BigDecimal("95.00")).totalAmount(new BigDecimal("100.00"))
+                .status(OrderStatus.COMPLETED)
+                .build();
+
+        when(orderRepository.findAllByBuyerIdOrderByCreatedAtDesc(2L)).thenReturn(java.util.List.of(order));
+
+        java.util.List<OrderResponse> result = orderService.getMyPurchases(buyer);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).buyerId()).isEqualTo(2L);
+    }
+
+    @Test
+    void shouldReturnMySales() {
+        Order order = Order.builder()
+                .id(1L).item(availableItem).buyer(buyer).seller(seller)
+                .itemPrice(new BigDecimal("100.00")).platformFee(new BigDecimal("5.00"))
+                .sellerAmount(new BigDecimal("95.00")).totalAmount(new BigDecimal("100.00"))
+                .status(OrderStatus.COMPLETED)
+                .build();
+
+        when(orderRepository.findAllBySellerIdOrderByCreatedAtDesc(1L)).thenReturn(java.util.List.of(order));
+
+        java.util.List<OrderResponse> result = orderService.getMySales(seller);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).sellerId()).isEqualTo(1L);
+    }
 }

@@ -124,6 +124,20 @@ describe('MyItemsComponent', () => {
     expect(component.deletingItemId).toBeNull();
   });
 
+  it('should fall back to a default action error message when the server sends none', () => {
+    const fixture = setup();
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+
+    spyOn(window, 'confirm').and.returnValue(true);
+    itemServiceSpy.deleteItem.and.returnValue(throwError(() => ({})));
+
+    component.deleteItem(item);
+
+    expect(component.actionErrorMessage).toBe('Une erreur est survenue. Veuillez réessayer.');
+    expect(component.deletingItemId).toBeNull();
+  });
+
   it('should track items by id', () => {
     const fixture = setup();
     fixture.detectChanges();

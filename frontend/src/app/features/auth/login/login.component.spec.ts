@@ -67,4 +67,17 @@ describe('LoginComponent', () => {
     expect(component.errorMessage).toBe('Identifiants invalides');
     expect(component.isLoading).toBeFalse();
   });
+
+  it('should fall back to a default error message when the server sends none', () => {
+    authServiceSpy.login.and.returnValue(throwError(() => ({})));
+
+    const fixture = TestBed.createComponent(LoginComponent);
+    const component = fixture.componentInstance;
+
+    component.loginForm.setValue({ email: 'a@test.com', password: 'wrong' });
+    component.onSubmit();
+
+    expect(component.errorMessage).toBe('Erreur lors de la connexion');
+    expect(component.isLoading).toBeFalse();
+  });
 });
