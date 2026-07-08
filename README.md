@@ -85,6 +85,12 @@ Un hook git local optionnel (`./scripts/install-git-hooks.sh`) bloque
 apparait, ou si une issue SonarCloud HIGH/MEDIUM reste ouverte — voir
 [`docs/deployment-guide.md`](docs/deployment-guide.md#hook-pre-push-qualite-optionnel).
 
+**`dev` est la branche d'integration reelle du projet** : tout le
+developpement, les correctifs et le suivi qualite (SonarCloud, hook
+pre-push) s'y font au fil de l'eau. `main` peut donc etre en retard de
+plusieurs commits par rapport a `dev` — ce n'est pas un oubli, `dev` est
+la reference a jour pour evaluer l'etat reel du projet.
+
 ## Tests
 
 Le projet s'appuie sur :
