@@ -30,7 +30,7 @@
         <img
           *ngIf="order.itemImageUrl; else noImage"
           [src]="order.itemImageUrl"
-          [alt]="order.itemTitle || 'Image de l\'objet'"
+          [alt]="order.itemTitle || 'Objet de collection'"
         />
 
         <ng-template #noImage><div class="placeholder">Pas d'image</div></ng-template>

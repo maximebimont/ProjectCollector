@@ -7,6 +7,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +41,7 @@ public class GlobalExceptionHandler {
         );
 
         Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
+        response.put("timestamp", LocalDateTime.now(ZoneId.systemDefault()));
         response.put("status", 400);
         response.put("error", "Validation Error");
         response.put("messages", errors);
@@ -66,7 +67,7 @@ public class GlobalExceptionHandler {
 
     private Map<String, Object> buildErrorResponse(int status, String error, Object message) {
         Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
+        response.put("timestamp", LocalDateTime.now(ZoneId.systemDefault()));
         response.put("status", status);
         response.put("error", error);
         response.put("message", message);

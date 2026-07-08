@@ -6,8 +6,8 @@
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <label>Prénom</label>
-        <input type="text" formControlName="firstname" placeholder="Votre prénom" />
+        <label for="register-firstname">Prénom</label>
+        <input id="register-firstname" type="text" formControlName="firstname" placeholder="Votre prénom" />
 
         <small *ngIf="registerForm.controls.firstname.touched && registerForm.controls.firstname.invalid">
           Prénom obligatoire.
@@ -15,8 +15,8 @@
       </div>
 
       <div class="form-group">
-        <label>Nom</label>
-        <input type="text" formControlName="lastname" placeholder="Votre nom" />
+        <label for="register-lastname">Nom</label>
+        <input id="register-lastname" type="text" formControlName="lastname" placeholder="Votre nom" />
 
         <small *ngIf="registerForm.controls.lastname.touched && registerForm.controls.lastname.invalid">
           Nom obligatoire.
@@ -24,8 +24,8 @@
       </div>
 
       <div class="form-group">
-        <label>Email</label>
-        <input type="email" formControlName="email" placeholder="exemple@email.com" />
+        <label for="register-email">Email</label>
+        <input id="register-email" type="email" formControlName="email" placeholder="exemple@email.com" />
 
         <small *ngIf="registerForm.controls.email.touched && registerForm.controls.email.invalid">
           Email obligatoire et valide.
@@ -33,8 +33,8 @@
       </div>
 
       <div class="form-group">
-        <label>Mot de passe</label>
-        <input type="password" formControlName="password" placeholder="Minimum 8 caractères" />
+        <label for="register-password">Mot de passe</label>
+        <input id="register-password" type="password" formControlName="password" placeholder="Minimum 8 caractères" />
 
         <small *ngIf="registerForm.controls.password.touched && registerForm.controls.password.invalid">
           Mot de passe obligatoire, minimum 8 caractères.
