@@ -70,6 +70,9 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of(
+                // Passerelle HTTPS locale (docker compose, meme origine que le frontend)
+                "https://localhost",
+                // ng serve en dev sans passerelle
                 "http://localhost:4200"
         ));
 
