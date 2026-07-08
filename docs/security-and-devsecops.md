@@ -166,9 +166,11 @@ secret GitHub Actions `SONAR_TOKEN`. Tant que ce secret n'est pas
 configure, le job `sonar-scan.yml` est ignore proprement (pas d'echec de
 pipeline).
 
-Les Quality Gates personnalisees SonarCloud sont une fonctionnalite
-payante, indisponible sur ce plan : le job CI `sonar-scan.yml` reste donc
-informatif, sans blocage automatique. L'application des seuils qualite
+Une Quality Gate personnalisee (`Collector strict`) peut etre creee sur
+SonarCloud, mais l'activer comme gate active du projet (celle qui bloque
+reellement une analyse) est une fonctionnalite payante indisponible sur
+ce plan gratuit. Le job CI `sonar-scan.yml` reste donc informatif, sans
+blocage automatique. L'application des seuils qualite
 (couverture >= 90 %, duplication = 0 %, 0 issue HIGH/MEDIUM ouverte) se
 fait cote client, via un hook git local (`scripts/git-hooks/pre-push`) qui
 interroge directement l'API mesures/issues et bloque le `git push` si l'un

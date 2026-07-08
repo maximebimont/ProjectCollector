@@ -67,8 +67,10 @@ silencieusement.
 Un hook git local peut bloquer un `git push` si le code ne respecte pas les
 seuils qualite : couverture globale < 90 %, duplication globale > 0 % ou
 issue SonarCloud HIGH/MEDIUM ouverte. Il n'utilise pas les Quality Gates
-SonarCloud (fonctionnalite payante indisponible sur ce plan) : il interroge
-directement l'API mesures/issues et applique lui-meme les seuils.
+SonarCloud (activer une gate personnalisee comme gate active du projet
+est une fonctionnalite payante indisponible sur ce plan gratuit) : il
+interroge directement l'API mesures/issues et applique lui-meme les
+seuils.
 
 Installation (une fois par clone) :
 
