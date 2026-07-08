@@ -21,6 +21,8 @@
         [text]="true"
         [rounded]="true"
         [icon]="mobileMenuOpen() ? 'pi pi-times' : 'pi pi-bars'"
+        [attr.aria-label]="mobileMenuOpen() ? 'Fermer le menu' : 'Ouvrir le menu'"
+        [attr.aria-expanded]="mobileMenuOpen()"
         (click)="toggleMenu()"
       ></button>
 

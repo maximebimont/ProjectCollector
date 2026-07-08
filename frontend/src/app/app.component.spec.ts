@@ -71,6 +71,21 @@ describe('AppComponent', () => {
     expect(component.mobileMenuOpen()).toBeFalse();
   });
 
+  it('should reflect the mobile menu state on the toggle button aria attributes', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('button[pButton]');
+
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+    expect(button.getAttribute('aria-label')).toBe('Ouvrir le menu');
+
+    button.click();
+    fixture.detectChanges();
+
+    expect(button.getAttribute('aria-expanded')).toBe('true');
+    expect(button.getAttribute('aria-label')).toBe('Fermer le menu');
+  });
+
   it('should detect user-space routes, including nested paths', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const component = fixture.componentInstance;
