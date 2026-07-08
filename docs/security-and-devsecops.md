@@ -158,20 +158,63 @@ Simule ou simplifie :
 - pas de gestion complete des roles administrateur ;
 - observabilite securite limitee au niveau du POC.
 
-## Limites et remediations futures
+## Plan de remediation securite
 
-Limites actuelles :
+Ce plan est construit a partir de l'analyse reelle des scans de la pipeline
+(run GitHub Actions du 2026-07-07) et d'une verification locale du
+2026-07-08 (build + scan Trivy des deux images apres correctif). Le detail
+ligne par ligne (CVE, severite, statut, justification) est trace dans
+[`docs/vulnerability-register.md`](vulnerability-register.md) ; cette
+section en donne la synthese priorisee.
 
+### Deja traite
+
+- **Durcissement des images Docker** : utilisateur non-root et `HEALTHCHECK`
+  ajoutes sur les deux images (findings Checkov CKV_DOCKER_2 / CKV_DOCKER_3).
+- **CVE applicatives backend** : bump `spring-boot-starter-parent` 3.5.14 ->
+  3.5.16, qui resout le CVE critique Tomcat (CVE-2026-41293) et le CVE
+  Jackson-databind (CVE-2026-54512).
+- **CVE image frontend** : changement de base image
+  (`nginxinc/nginx-unprivileged`) et mise a jour des paquets OS Alpine au
+  build (`apk upgrade`), qui resout le CVE `golang.org/x/net` d'origine
+  ainsi qu'un lot de 31 CVE OS decouvert en verifiant le correctif, non lie
+  au code applicatif.
+- **Fiabilite de la pipeline elle-meme** : deux bugs de process corriges,
+  decouverts en analysant les runs reels plutot qu'en partant d'un registre
+  vide :
+  - le scan OWASP Dependency-Check ciblait la branche `main` (qui ne
+    contient pas le code applicatif) et n'avait donc jamais reellement
+    tourne depuis au moins 4 semaines ;
+  - l'action Semgrep etait cassee silencieusement (`continue-on-error`
+    masquait un crash de la CLI), donnant une fausse impression de
+    couverture SAST.
+
+### A traiter en priorite (chantiers en cours ou prevus)
+
+- **HTTPS/TLS** : tout le trafic est aujourd'hui en clair (chantier de
+  remediation prevu, passerelle de terminaison TLS locale).
+- **Observabilite minimale** : pas de collecte de metriques ni de dashboard
+  au-dela des endpoints Actuator bruts (chantier prevu, Prometheus/Grafana).
+- **Secret JWT par defaut** : la valeur par defaut de `APP_JWT_SECRET` est
+  codee en dur dans `application.yml` et reprise telle quelle dans
+  `docker-compose.yml`. Acceptable en demo locale, a documenter comme non
+  reproductible tel quel hors de ce contexte.
+
+### Accepte pour le perimetre POC (a justifier a l'oral)
+
+- **Role ADMIN inutilise** : le role existe dans le modele (`Role.ADMIN`)
+  mais aucun endpoint ne l'exploite encore. Accepte car hors perimetre de la
+  fonctionnalite metier implementee (achat/vente), identifie comme premiere
+  extension naturelle.
+- **Paiement reel non integre** : hors scope explicite d'un POC scolaire.
+- **Politique de gestion d'incident** : non formalisee en tant que telle ;
+  le registre de vulnerabilites materialise deja la boucle minimale
+  detection -> decision -> tracabilite attendue a ce niveau d'exercice.
+
+### Limites actuelles restantes
+
+- pas de HTTPS (chantier de remediation prevu) ;
+- pas de monitoring Prometheus/Grafana (chantier prevu) ;
 - paiement reel non integre ;
 - pas de gestion complete des roles admin ;
-- pas de monitoring Prometheus/Grafana ;
-- pas encore de politique complete de gestion d'incident ;
-- vulnerabilites detectees par les scans encore a traiter selon leur priorite.
-
-Remediations futures pertinentes :
-
-- durcir la gestion des secrets et des sessions ;
-- etendre la couverture de tests de securite ;
-- renforcer l'observabilite et la supervision ;
-- corriger progressivement les vulnerabilites remontees par les outils ;
-- preparer, si necessaire, une trajectoire vers un environnement cible plus proche de la production.
+- pas encore de politique complete de gestion d'incident.
