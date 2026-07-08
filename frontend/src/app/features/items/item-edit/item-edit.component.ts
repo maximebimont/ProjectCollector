@@ -69,7 +69,7 @@ export class ItemEditComponent implements OnInit {
   onSubmit(): void {
     if (this.itemForm.invalid || !this.itemId) {
       this.itemForm.markAllAsTouched();
-      this.formErrorMessage = 'Une erreur est survenue. Veuillez v�rifier le formulaire.';
+      this.formErrorMessage = 'Une erreur est survenue. Veuillez vérifier le formulaire.';
       return;
     }
 
@@ -91,7 +91,7 @@ export class ItemEditComponent implements OnInit {
       },
       error: (error) => {
         console.error(error);
-        this.formErrorMessage = error.error?.message || 'Une erreur est survenue. Veuillez r�essayer.';
+        this.formErrorMessage = error.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
         this.isSaving = false;
       }
     });

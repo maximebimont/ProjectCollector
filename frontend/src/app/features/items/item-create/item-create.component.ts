@@ -31,7 +31,7 @@ export class ItemCreateComponent {
   onSubmit(): void {
     if (this.itemForm.invalid) {
       this.itemForm.markAllAsTouched();
-      this.errorMessage = 'Une erreur est survenue. Veuillez v�rifier le formulaire.';
+      this.errorMessage = 'Une erreur est survenue. Veuillez vérifier le formulaire.';
       return;
     }
 
@@ -52,7 +52,7 @@ export class ItemCreateComponent {
         this.router.navigate(['/my-items'], { queryParams: { feedback: 'created' } });
       },
       error: (error) => {
-        this.errorMessage = error.error?.message || 'Une erreur est survenue. Veuillez r�essayer.';
+        this.errorMessage = error.error?.message || 'Une erreur est survenue. Veuillez réessayer.';
         this.isLoading = false;
       }
     });
