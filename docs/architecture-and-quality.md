@@ -51,6 +51,72 @@ PostgreSQL
 
 ## Architecture technique
 
+### Schema d'architecture physique detaille
+
+Le schema simplifie (navigateur -> frontend -> backend -> PostgreSQL, plus
+haut) omet volontairement la passerelle TLS et la chaine d'observabilite
+pour rester lisible en premiere lecture. Voici le detail complet des
+composants physiques reellement deployes par `docker-compose.yml` et de
+leurs interactions :
+
+```txt
+                              Navigateur (HTTPS)
+                                     |
+                          port hote 443 (TLS) / 80 (redirige vers 443)
+                                     v
+                    +--------------------------------------+
+                    |  gateway  (Nginx 1.27, TLS)            |
+                    |  - termine le TLS (certificat dev)     |
+                    |  - route /api* et /actuator* -> backend|
+                    |  - route /*                -> frontend|
+                    +-----------------+----------------------+
+                                      |
+                    reseau Docker prive "projectcollector_default"
+                                      |
+        +-----------------------------+-----------------------------+
+        v                                                            v
++----------------------+                              +----------------------------+
+| frontend              |                              | backend                    |
+| Nginx + build Angular |                              | Spring Boot (API REST, JWT)|
+| port interne 8080     |                              | port interne 8080          |
++----------------------+                              +---------------+------------+
+                                                                       |
+                                     +---------------------------------+---------------------------------+
+                                     | JDBC                                                               | scrape /actuator/prometheus (15 s)
+                                     v                                                                     v
+                          +----------------------+                                          +----------------------+
+                          | postgres (16)         |                                          | prometheus (v3.1.0)   |
+                          | port interne 5432      |                                          | port interne 9090     |
+                          | volume vintage_..._data|                                          | volume prometheus_data|
+                          +----------------------+                                          +-----------+----------+
+                                                                                                          |
+                                                                                                          v
+                                                                                              +----------------------+
+                                                                                              | grafana (11.4.0)      |
+                                                                                              | dashboard provisionne  |
+                                                                                              | port interne 3000     |
+                                                                                              +----------------------+
+```
+
+Detail des composants de l'environnement Docker Compose (architecture interne
+de l'environnement manage) :
+
+| Service | Image | Port interne | Port publie sur l'hote | Role |
+|---|---|---|---|---|
+| `gateway` | `nginx:1.27-alpine` | 80, 443 | 80, 443 | seul point d'entree externe ; termine le TLS ; route vers `frontend`/`backend` |
+| `frontend` | build local (`frontend/Dockerfile`, Nginx + Angular) | 8080 | aucun (acces uniquement via `gateway`) | sert les fichiers statiques Angular |
+| `backend` | build local (`backend/Dockerfile`, Spring Boot) | 8080 | aucun (acces uniquement via `gateway`) | API REST, JWT, regles metier |
+| `postgres` | `postgres:16` | 5432 | 5433 (debug local uniquement) | persistance utilisateurs/articles/commandes |
+| `prometheus` | `prom/prometheus:v3.1.0` | 9090 | 9090 | scrape et stocke les metriques exposees par `backend` |
+| `grafana` | `grafana/grafana:11.4.0` | 3000 | 3000 | visualise les metriques Prometheus (dashboard provisionne) |
+
+Seuls `gateway`, `prometheus` (9090) et `grafana` (3000) exposent un port sur
+l'hote : `frontend` et `backend` ne sont accessibles que via la passerelle,
+ce qui reduit la surface d'attaque du reseau Docker interne. Ce choix
+(Nginx plutot qu'une alternative comme Traefik) a ete confirme par une
+experimentation reelle documentee dans
+[`docs/experimentation-technologique.md`](experimentation-technologique.md).
+
 ### Role du frontend Angular
 
 Le frontend fournit l'interface utilisateur et consomme l'API REST du backend. Il gere notamment :
@@ -192,6 +258,61 @@ Le choix du monorepo est adapte a ce projet scolaire car il permet :
 - de lancer l'application plus facilement ;
 - de garder une vision simple du POC ;
 - de simplifier la soutenance et la demonstration technique.
+
+## Indicateurs qualite retenus et prevention de la dette technique
+
+Quatre indicateurs/metriques ont ete retenus pour suivre la conformite de
+Collector.shop aux exigences de qualite. Chacun est deja outille (pas
+d'indicateur theorique non mesure) et couvre un ou plusieurs attributs
+ISO/IEC 25010 (detailles ci-dessous) :
+
+1. **Couverture de tests** (JaCoCo backend + lcov frontend, consolidee par
+   SonarCloud — actuellement ~99 % lignes backend, 100 % frontend).
+   Couvre : *Fiabilite*, *Maintenabilite*.
+   Prevention de la dette technique : une baisse de couverture signale du
+   code ajoute sans test associe — donc une zone qui peut regresser sans
+   qu'on s'en apercoive. Suivie en continu (SonarCloud a chaque push) et
+   bloquante localement via le hook `pre-push` (seuil 90 %) : la dette de
+   test est visible et bloquee des le commit qui l'introduit, plutot que
+   decouverte des mois plus tard lors d'un bug en production.
+
+2. **Duplication de code** (SonarCloud, actuellement 0 %).
+   Couvre : *Maintenabilite*.
+   Prevention de la dette technique : du code duplique oblige a repercuter
+   chaque correctif a plusieurs endroits ; oublier l'un d'eux reintroduit un
+   bug deja corrige ailleurs. Suivie en continu et bloquante via le hook
+   `pre-push` (seuil 0 %) : la duplication ne peut pas s'accumuler
+   silencieusement commit apres commit.
+
+3. **Vulnerabilites ouvertes de severite HIGH/MEDIUM** (SonarCloud +
+   Trivy + OWASP Dependency-Check + Gitleaks, consolidees dans
+   `docs/vulnerability-register.md`).
+   Couvre : *Securite*, *Maintenabilite* (une vulnerabilite non traitee est
+   une forme de dette technique a part entiere).
+   Prevention de la dette technique : une vulnerabilite laissee ouverte
+   devient plus couteuse a corriger avec le temps (la version corrigee de la
+   dependance s'eloigne davantage, le risque d'exploitation reste actif).
+   Suivie a chaque push (scans CI) et bloquante localement via le hook
+   `pre-push` : aucune nouvelle issue HIGH/MEDIUM ne peut s'accumuler sans
+   etre visible immediatement.
+
+4. **Latence p95 des requetes HTTP** (Prometheus/Grafana, histogrammes
+   Micrometer, observee en continu y compris pendant les tests de charge
+   Siege).
+   Couvre : *Performance*, *Fiabilite*.
+   Prevention de la dette technique : une degradation progressive de la
+   latence (requetes N+1, index manquant, fuite de ressources) est un
+   symptome classique de dette technique qui s'installe sans etre remarquee
+   tant qu'aucune mesure continue n'existe. Le tableau de bord Grafana rend
+   cette derive visible en continu, plutot que de la decouvrir seulement
+   lors d'un test de charge ponctuel ou en production.
+
+Ces quatre indicateurs ne couvrent pas l'integralite des exigences de
+qualite ISO/IEC 25010 (ce n'est pas demande) : ils ont ete choisis pour leur
+capacite a signaler tot une accumulation de dette technique dans les zones
+les plus a risque du projet (tests, structure du code, securite,
+performance), avec un outillage deja en place plutot que des indicateurs
+theoriques non suivis.
 
 ## Alignement qualite selon ISO/IEC 25010
 

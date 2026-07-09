@@ -112,11 +112,14 @@ Ces resultats sont satisfaisants pour un test local de POC, sans valoir une camp
 ## Documentation detaillee
 
 - [Guide de demo](docs/demo-guide.md)
+- [Backlog fonctionnel (user stories et criteres d'acceptation)](docs/backlog.md)
 - [Architecture et qualite](docs/architecture-and-quality.md)
 - [Securite et DevSecOps](docs/security-and-devsecops.md)
 - [Strategie de test](docs/test-strategy.md)
 - [Guide de deploiement](docs/deployment-guide.md)
 - [Registre de suivi des vulnerabilites](docs/vulnerability-register.md)
+- [Synthese d'experimentation technologique (CI/CD, passerelle TLS)](docs/experimentation-technologique.md)
+- [Equipe et competences](docs/equipe-et-competences.md)
 
 ## Limites du POC
 

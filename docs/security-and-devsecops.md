@@ -96,7 +96,94 @@ SonarCloud `java:S4502`).
 
 Une gestion globale des erreurs est en place pour renvoyer des reponses comprehensibles et eviter de laisser remonter des comportements techniques bruts a l'utilisateur.
 
+## Cycle de vie du developpement (demarche DevSecOps)
+
+Le cycle de vie retenu pour Collector.shop integre une mesure de securite a
+chaque etape cle, plutot que de concentrer la securite sur une seule phase
+(par exemple un scan final avant mise en production) :
+
+```txt
+   PLAN              CODE               BUILD              TEST                RELEASE             DEPLOY              OPERATE / MONITOR
+    |                  |                  |                  |                    |                   |                       |
+    v                  v                  v                  v                    v                   v                       v
+Backlog +        Bean Validation    Checkov            Tests unitaires      Trivy (scan des     HTTPS/TLS           Prometheus/Grafana
+user stories +   (entree filtree)   (Dockerfiles)       + integration       images Docker       (passerelle         (metriques, latence
+cas de rejet     Secrets jamais     Dependency-Check    SonarCloud          construites)         Nginx, certificat   p95, disponibilite)
+identifies       commit (.env      (CVE dependances)   (couverture,        SARIF publie        auto-signe dev)
+(docs/backlog)   gitignore)                            duplication,        (Security tab)      Secrets via .env
+                                                        complexite)         Gitleaks            non commite
+                                                        Semgrep + CodeQL    (secrets avant       HEALTHCHECK
+                                                        (SAST)              merge)              Docker
+    |                  |                  |                  |                    |                   |                       |
+    +------------------+------------------+------------------+--------------------+-------------------+-----------------------+
+                                                               |
+                                          Boucle de feedback continue vers PLAN
+                          (issues SonarCloud, vulnerabilites du registre, metriques Grafana, resultats des tests de charge)
+```
+
+Explication des phases :
+
+- **Plan** : le backlog (`docs/backlog.md`) formalise chaque fonctionnalite
+  sous forme de user story avec criteres d'acceptation, y compris les cas de
+  rejet (achat de son propre objet, objet deja vendu...) — ces cas de rejet
+  sont deja une reflexion de securite/robustesse en amont du code.
+- **Code** : validation systematique des entrees (Bean Validation, DTO),
+  aucun secret en dur dans le code source (`.env` gitignore, cf plus haut).
+- **Build** : Checkov verifie les Dockerfiles (utilisateur non-root,
+  HEALTHCHECK) des la construction de l'image ; Dependency-Check identifie
+  les CVE connues sur les dependances declarees avant meme d'executer le
+  code.
+- **Test** : deux familles de tests distinctes alimentent directement les
+  indicateurs qualite retenus (`docs/architecture-and-quality.md#indicateurs-qualite-retenus-et-prevention-de-la-dette-technique`)
+  — tests unitaires/integration (couverture) et scans SAST (Semgrep,
+  CodeQL) qui detectent des vulnerabilites dans le code applicatif lui-meme,
+  pas seulement dans ses dependances.
+- **Release** : les images Docker construites sont scannees (Trivy) avant
+  d'etre considerees pretes, et Gitleaks bloque la fusion si un secret a ete
+  commis par erreur.
+- **Deploy** : la passerelle TLS termine le HTTPS, les secrets applicatifs
+  sont fournis par un `.env` local jamais commite, et chaque conteneur
+  expose un `HEALTHCHECK` verifie par Docker.
+- **Operate/Monitor** : Prometheus/Grafana rendent visibles en continu les
+  metriques de performance et de disponibilite ; le registre de
+  vulnerabilites (`docs/vulnerability-register.md`) trace la boucle
+  detection -> decision -> correctif, qui reboucle vers la phase Plan pour
+  les chantiers restants (ex. migration Angular 20 LTS).
+
 ## CI/CD DevSecOps
+
+### Schema detaille du pipeline CI/CD
+
+```txt
+Declencheurs : push (dev, main) | pull_request (dev, main) | workflow_dispatch | cron hebdomadaire (lundi 06h00)
+                                              |
+          +-----------------+-----------------+------------------+-----------------+-----------------+
+          |                 |                 |                  |                 |                 |
+          v                 v                 v                  v                 v                 v
+   backend-tests      frontend-build    code-quality-sast    sonar-scan      secret-scanning   secure-iac-
+   [BLOQUANT]         [BLOQUANT]        [non bloquant]       [non bloquant]  [BLOQUANT]        dockerfile-scan
+   mvn test + JaCoCo  npm build +       Semgrep + CodeQL     SonarCloud      Gitleaks          [non bloquant]
+                      tests + E2E                            (JaCoCo+lcov)                     Checkov
+                      Playwright
+          \                 /
+           \               /
+            v             v
+         docker-build [non bloquant]
+         build images backend/frontend + scan Trivy des images
+                              |
+   (attend la fin de tous les jobs ci-dessus, quel que soit leur resultat individuel)
+                              v
+                     pipeline-summary
+          tableau recapitulatif + liens SARIF (Security tab) / dashboard SonarCloud
+```
+
+Le detail des jobs `backend-tests` et `frontend-build` (les deux seuls jobs
+bloquants avec `secret-scanning`) integre a minima deux types de tests
+distincts, comme demande par les consignes : tests unitaires/integration
+Maven (JaCoCo) cote backend, tests unitaires Karma/Jasmine et smoke test
+Playwright cote frontend. Ces deux familles alimentent directement
+l'indicateur "couverture de tests" retenu dans
+[`docs/architecture-and-quality.md`](architecture-and-quality.md#indicateurs-qualite-retenus-et-prevention-de-la-dette-technique).
 
 Le depot contient les workflows suivants :
 
@@ -230,6 +317,49 @@ ligne par ligne (CVE, severite, statut, justification) est trace dans
 [`docs/vulnerability-register.md`](vulnerability-register.md) ; cette
 section en donne la synthese priorisee.
 
+### Analyse des tests de charge et vulnerabilites potentielles
+
+Les tests Siege documentes dans
+[`docs/test-strategy.md`](test-strategy.md#tests-de-charge) montrent 100 %
+de disponibilite et une latence tres faible (0.01 s en moyenne) — mais
+cette analyse doit rester honnete sur ce qu'ils couvrent reellement :
+`load-tests/siege-urls.txt` n'appelle que des endpoints **publics en
+lecture seule** (`GET /api/items`, `/actuator/health`, `/actuator/info`,
+`/actuator/metrics`), sans authentification ni ecriture. Les resultats
+excellents obtenus ne demontrent donc que la robustesse du chemin de
+lecture, pas celle des chemins d'ecriture (connexion, creation d'article,
+achat), qui sont pourtant les operations les plus sensibles de
+l'application.
+
+Cette limite de couverture des tests de charge, une fois croisee avec la
+connaissance de l'application, fait ressortir deux vulnerabilites
+potentielles non verifiees experimentalement :
+
+- **Concurrence sur l'achat simultane d'un meme objet** : la protection
+  applicative (`OrderService.buyItem()` verifie `existsByItemId` avant de
+  creer la commande) est doublee d'une contrainte d'unicite au niveau base
+  de donnees (`uq_orders_item_id`, `V1__init.sql`), ce qui devrait empecher
+  qu'un objet soit vendu deux fois meme en cas de requetes concurrentes
+  quasi simultanees. Cette garantie n'a toutefois jamais ete verifiee sous
+  charge reelle : un test Siege/JMeter cible sur `POST
+  /api/orders/items/{id}` avec plusieurs utilisateurs concurrents visant le
+  meme objet permettrait de confirmer que la contrainte DB se declenche
+  bien comme filet de securite en pratique, et pas seulement en theorie.
+- **Comportement du rate limiting sous charge concurrente reelle** :
+  `LoginRateLimitFilter` (cf. [Deja traite](#deja-traite) plus bas) a ete
+  valide par des tests unitaires (`LoginRateLimitFilterTest`), mais jamais
+  sous une charge Siege/JMeter simulant plusieurs IP/clients tentant de se
+  connecter simultanement — un test de charge cible sur `POST
+  /api/auth/login` permettrait de confirmer que la limite (10
+  tentatives/minute par IP) tient sous une charge realiste sans faux
+  positifs (utilisateurs legitimes bloques a tort) ni faux negatifs (limite
+  contournable par un pic de requetes tres rapproche).
+
+Ces deux points sont ajoutes au plan de remediation ci-dessous plutot que
+presentes comme des vulnerabilites confirmees : l'analyse des tests de
+charge existants a permis de les identifier comme zones a verifier, pas de
+les valider ou de les invalider.
+
 ### Deja traite
 
 - **Durcissement des images Docker** : utilisateur non-root et `HEALTHCHECK`
@@ -286,6 +416,13 @@ section en donne la synthese priorisee.
 
 ### A traiter en priorite (chantiers en cours ou prevus)
 
+- **Verifier sous charge reelle la contrainte d'unicite sur l'achat
+  concurrent** et **le comportement du rate limiting de connexion sous
+  charge concurrente** : deux points identifies par l'analyse des tests de
+  charge existants (cf. [Analyse des tests de charge et vulnerabilites
+  potentielles](#analyse-des-tests-de-charge-et-vulnerabilites-potentielles)
+  ci-dessus), non encore verifies experimentalement faute de scenario Siege
+  couvrant les chemins d'ecriture authentifies.
 - **Migration Angular 20 LTS** : 9 advisories npm (8 high / 1 moderate)
   sur `@angular/core`/`@angular/common`/`@angular/compiler` `19.2.22` sans
   correctif disponible en version 19.x. Detail complet, analyse
