@@ -277,8 +277,13 @@ section en donne la synthese priorisee.
 
 ### A traiter en priorite (chantiers en cours ou prevus)
 
-Rien en attente actuellement — dernier point traite : voir "Secret JWT en
-dur" ci-dessus.
+- **Migration Angular 20 LTS** : 9 advisories npm (8 high / 1 moderate)
+  sur `@angular/core`/`@angular/common`/`@angular/compiler` `19.2.22` sans
+  correctif disponible en version 19.x. Detail complet, analyse
+  d'exploitabilite et justification de l'acceptation temporaire dans
+  [`docs/vulnerability-register.md`](vulnerability-register.md) (ligne
+  2026-07-09). Migration `ng update` vers Angular 20 LTS identifiee comme
+  chantier a part entiere, pas fait dans un correctif ponctuel.
 
 ### Accepte pour le perimetre POC (a justifier a l'oral)
 
