@@ -102,4 +102,42 @@ class LoginRateLimitFilterTest {
 
         assertThat(body.toString()).contains("Trop de tentatives de connexion");
     }
+
+    @Test
+    void shouldTrackAttemptsPerForwardedIpIndependently() throws Exception {
+        PrintWriter writer = new PrintWriter(new StringWriter());
+        lenient().when(response.getWriter()).thenReturn(writer);
+
+        HttpServletRequest firstClient = mock(HttpServletRequest.class);
+        when(firstClient.getMethod()).thenReturn("POST");
+        when(firstClient.getRequestURI()).thenReturn(LOGIN_PATH);
+        when(firstClient.getHeader("X-Forwarded-For")).thenReturn("203.0.113.10");
+
+        HttpServletRequest secondClient = mock(HttpServletRequest.class);
+        when(secondClient.getMethod()).thenReturn("POST");
+        when(secondClient.getRequestURI()).thenReturn(LOGIN_PATH);
+        when(secondClient.getHeader("X-Forwarded-For")).thenReturn("203.0.113.99");
+
+        for (int i = 0; i < 10; i++) {
+            filter.doFilterInternal(firstClient, response, filterChain);
+        }
+        filter.doFilterInternal(firstClient, response, filterChain);
+
+        verify(filterChain, times(10)).doFilter(firstClient, response);
+        verify(response).setStatus(429);
+
+        filter.doFilterInternal(secondClient, response, filterChain);
+
+        verify(filterChain).doFilter(secondClient, response);
+    }
+
+    @Test
+    void shouldFallBackToRemoteAddrWhenNoForwardedForHeader() throws Exception {
+        when(request.getHeader("X-Forwarded-For")).thenReturn(null);
+
+        filter.doFilterInternal(request, response, filterChain);
+
+        verify(request).getRemoteAddr();
+        verify(filterChain).doFilter(request, response);
+    }
 }

@@ -51,7 +51,7 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
             return;
         }
 
-        Bucket bucket = bucketsByIp.computeIfAbsent(request.getRemoteAddr(), ip -> newBucket());
+        Bucket bucket = bucketsByIp.computeIfAbsent(resolveClientIp(request), ip -> newBucket());
 
         if (!bucket.tryConsume(1)) {
             writeTooManyRequests(response);
@@ -59,6 +59,26 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * En Docker Compose, le backend n'est plus expose sur l'hote (ports
+     * retires de docker-compose.yml) : seule la gateway Nginx peut
+     * l'atteindre, et c'est elle qui pose X-Forwarded-For avec l'IP reelle
+     * du client (voir infra/gateway/nginx.conf). Aucun client externe ne
+     * peut donc forger ce header directement au backend. Sans cette
+     * garantie (backend joignable directement), faire confiance a ce
+     * header serait une faille : n'importe qui pourrait le falsifier pour
+     * obtenir un nouveau bucket a chaque requete et contourner la limite.
+     */
+    private String resolveClientIp(HttpServletRequest request) {
+        String forwardedFor = request.getHeader("X-Forwarded-For");
+
+        if (forwardedFor != null && !forwardedFor.isBlank()) {
+            return forwardedFor.split(",")[0].trim();
+        }
+
+        return request.getRemoteAddr();
     }
 
     private Bucket newBucket() {

@@ -269,6 +269,15 @@ section en donne la synthese priorisee.
   desormais le guard `${APP_JWT_SECRET:?APP_JWT_SECRET manquant, voir
   .env.example}` qui fait echouer `docker compose up` avec un message
   explicite si `.env` est absent ou incomplet.
+- **Rate limiting sur `/api/auth/login`** : aucune protection anti
+  brute-force a l'origine. `LoginRateLimitFilter` bloque au-dela de 10
+  tentatives/minute avec une reponse 429. La limite est appliquee par IP
+  client reelle, extraite du header `X-Forwarded-For` pose par la
+  passerelle Nginx (repli sur `request.getRemoteAddr()` si le header est
+  absent). Ce header n'est fiable que parce que le backend n'est plus
+  joignable directement (ports retires de `docker-compose.yml`, cf plus
+  haut) : seule la gateway peut l'atteindre, un client externe ne peut donc
+  pas le forger pour contourner la limite.
 - **CSRF desactive (SonarCloud `java:S4502`)** : verifie et documente
   comme acceptable, pas corrige par du code. Justification en commentaire
   directement dans `SecurityConfig.java` et detail dans
