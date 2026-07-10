@@ -216,7 +216,7 @@ mais qui sont deliberes pour la taille actuelle du projet :
   `PricingPolicy` (ou equivalent) le jour ou plusieurs regles de
   commission doivent coexister (taux variable par categorie, palier,
   periode promotionnelle...) — pas fait aujourd'hui pour eviter
-  d'introduire une abstraction sans second cas d'usage reel.
+  d'introduire une abstraction sans second cas d'usage réel.
 
 ## Endpoints principaux
 
