@@ -116,6 +116,63 @@ Cette verification a elle aussi ete validee lors du test manuel complet.
 - le calcul de la commission de 5 % est automatique ;
 - Docker Compose permet un lancement local reproductible.
 
+## Demo complementaire : panel admin et pipeline CI/CD
+
+Cette section illustre la mission de pilotage du deploiement (US-08, cf
+`docs/backlog.md`) : une nouvelle fonctionnalite qui traverse reellement le
+pipeline CI/CD (`main-pipeline.yml`), plutot que le seul parcours metier
+demontre plus haut.
+
+### Obtenir un compte administrateur local
+
+Aucun compte admin n'est commite dans le depot. Pour la demo, renseigner
+dans `.env` (jamais commite) :
+
+```bash
+ADMIN_BOOTSTRAP_EMAIL=admin@collector.shop
+ADMIN_BOOTSTRAP_PASSWORD=un-mot-de-passe-local-quelconque
+```
+
+Puis relancer `docker compose up --build` : `AdminBootstrapRunner` cree ce
+compte au demarrage s'il n'existe pas deja (voir
+`backend/.../admin/AdminBootstrapRunner.java`). Se connecter ensuite avec
+ces identifiants sur `http://localhost:4200/login`.
+
+### Scenario de demo du panel admin
+
+1. se connecter avec le compte administrateur ;
+2. cliquer sur "Panel admin" dans la navigation (visible uniquement pour
+   le role `ADMIN`) ;
+3. sur `/admin/users` : constater la liste des comptes et desactiver un
+   compte utilisateur de test ;
+4. constater que ce compte ne peut plus se connecter (message "Ce compte
+   a ete desactive par un administrateur") ;
+5. le reactiver depuis le panel ;
+6. sur `/admin/items` : constater la liste de toutes les annonces (tous
+   vendeurs confondus) et en supprimer une pour illustrer la moderation ;
+7. avec un compte `USER` standard, montrer qu'un appel direct a
+   `GET /api/admin/users` (Postman ou onglet reseau) renvoie 403.
+
+### Demo du deploiement CI/CD sur cette feature
+
+1. montrer la branche `feature/admin-panel` et la Pull Request ouverte
+   vers `dev` ;
+2. montrer `main-pipeline.yml` qui orchestre `backend-tests.yml`,
+   `frontend-build.yml`, `code-quality-sast.yml`, `sonar-scan.yml`,
+   `secret-scanning.yml`, `iac-dockerfile-scan.yml` et `docker-build.yml`
+   se declencher automatiquement sur cette PR (onglet GitHub Actions) ;
+   `frontend-build.yml` et `backend-tests.yml` sont bloquants ;
+   `code-quality-sast.yml` (Semgrep, CodeQL), `sonar-scan.yml` et
+   `iac-dockerfile-scan.yml` sont informatifs mais visibles dans le
+   resume de pipeline ;
+3. montrer le job `pipeline-summary` qui recapitule le resultat de chaque
+   etape ;
+4. rappeler que les consignes n'imposent pas d'etape de deploiement en
+   (pre-)production dans le pipeline lui-meme — ce qui est demontre ici,
+   c'est la chaine d'integration continue (tests + qualite + securite)
+   qui valide une nouvelle fonctionnalite avant fusion, pas un
+   deploiement automatique.
+
 ## Plan B demo
 
 Si la demonstration frontend rencontre un probleme :
@@ -141,19 +198,23 @@ Realise :
 - creation de commande ;
 - calcul de la commission ;
 - pages "Mes objets", "Mes achats" et "Mes ventes" ;
+- panel admin : liste et desactivation/reactivation des utilisateurs,
+  liste et suppression des annonces (moderation) ;
 - lancement complet avec Docker Compose.
 
 Teste :
 
 - test manuel complet du parcours principal, realise avec succes ;
-- tests backend automatises ;
+- tests backend automatises (dont le controle d'acces du panel admin) ;
 - build frontend automatise ;
 - tests de charge locaux documentes.
 
 Simule ou simplifie :
 
 - aucun paiement reel ;
-- pas d'administration complete ;
+- administration basique (gestion des comptes et moderation des
+  annonces), sans gestion de litiges ni journal d'audit des actions
+  admin ;
 - observabilite limitee a Actuator.
 
 Perspective :

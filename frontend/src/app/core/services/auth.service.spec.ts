@@ -80,6 +80,7 @@ describe('AuthService', () => {
       lastname: 'Dupont',
       email: 'paul@test.com',
       role: 'USER' as const,
+      enabled: true,
       createdAt: '2026-07-05T10:00:00Z'
     };
 
@@ -102,17 +103,40 @@ describe('AuthService', () => {
 
     expect(service.getToken()).toBe('demo-token');
     expect(service.getCurrentUserId()).toBe(7);
+    expect(service.getRole()).toBe('USER');
     expect(service.isAuthenticated()).toBeTrue();
+    expect(service.isAdmin()).toBeFalse();
+  });
+
+  it('should identify an admin session', () => {
+    service.saveSession({
+      token: 'admin-token',
+      id: 1,
+      firstname: 'Admin',
+      lastname: 'Collector',
+      email: 'admin@test.com',
+      role: 'ADMIN'
+    });
+
+    expect(service.getRole()).toBe('ADMIN');
+    expect(service.isAdmin()).toBeTrue();
+  });
+
+  it('should report no role and not admin when nothing is stored', () => {
+    expect(service.getRole()).toBeNull();
+    expect(service.isAdmin()).toBeFalse();
   });
 
   it('should clear the session and redirect to login on logout', () => {
     service.saveToken('demo-token');
     service.saveCurrentUserId(7);
+    service.saveRole('ADMIN');
 
     service.logout();
 
     expect(service.getToken()).toBeNull();
     expect(service.getCurrentUserId()).toBeNull();
+    expect(service.getRole()).toBeNull();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
   });
 });

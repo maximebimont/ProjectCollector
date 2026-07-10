@@ -5,7 +5,9 @@ import org.springframework.core.MethodParameter;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -36,6 +38,26 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(response.getBody()).containsEntry("status", 401);
         assertThat(response.getBody()).containsEntry("message", "Email ou mot de passe incorrect");
+    }
+
+    @Test
+    void shouldHandleDisabledException() {
+        ResponseEntity<Map<String, Object>> response =
+                handler.handleDisabledException(new DisabledException("disabled"));
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).containsEntry("status", 401);
+        assertThat(response.getBody()).containsEntry("message", "Ce compte a ete desactive par un administrateur");
+    }
+
+    @Test
+    void shouldHandleAccessDeniedException() {
+        ResponseEntity<Map<String, Object>> response =
+                handler.handleAccessDeniedException(new AccessDeniedException("denied"));
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getBody()).containsEntry("status", 403);
+        assertThat(response.getBody()).containsEntry("message", "Vous n'avez pas les droits necessaires pour cette action");
     }
 
     @Test

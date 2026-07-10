@@ -1,0 +1,73 @@
+<main class="container">
+  <section class="hero">
+    <p class="page-kicker">Panel admin / Annonces</p>
+    <h1 class="section-title">Modération des annonces</h1>
+    <p class="section-copy">Consultez toutes les annonces de la plateforme, tous vendeurs confondus, et supprimez celles qui ne respectent pas les règles.</p>
+  </section>
+
+  <section class="actions">
+    <a class="secondary-link" routerLink="/admin/users">
+      Voir les utilisateurs
+    </a>
+  </section>
+
+  <div *ngIf="isLoading" class="state">
+    Chargement des annonces...
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="successMessage" class="success">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="actionErrorMessage" class="error">
+    {{ actionErrorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && items.length === 0" class="state">
+    <p class="state-title">Aucune annonce trouvée.</p>
+  </div>
+
+  <table *ngIf="!isLoading && !errorMessage && items.length > 0" class="admin-table">
+    <thead>
+      <tr>
+        <th>Titre</th>
+        <th>Vendeur</th>
+        <th>Prix</th>
+        <th>Statut</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of items; trackBy: trackByItemId">
+        <td>{{ item.title || 'Objet sans titre' }}</td>
+        <td>{{ item.sellerFirstname }} {{ item.sellerLastname }}</td>
+        <td>{{ item.price | currency:'EUR':'symbol':'1.2-2' }}</td>
+        <td>
+          <span class="status" [class.sold]="item.status === 'SOLD'">
+            {{ item.status === 'AVAILABLE' ? 'Disponible' : 'Vendu' }}
+          </span>
+        </td>
+        <td>
+          <button
+            class="action-button"
+            type="button"
+            [disabled]="deletingItemId === item.id"
+            (click)="deleteItem(item)"
+          >
+            {{ deletingItemId === item.id ? 'Suppression...' : 'Supprimer' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <nav *ngIf="!isLoading && !errorMessage && totalPages > 1" class="pagination">
+    <button type="button" [disabled]="currentPage === 0" (click)="goToPreviousPage()">Précédent</button>
+    <span>Page {{ currentPage + 1 }} / {{ totalPages }}</span>
+    <button type="button" [disabled]="currentPage >= totalPages - 1" (click)="goToNextPage()">Suivant</button>
+  </nav>
+</main>

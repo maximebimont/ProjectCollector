@@ -171,9 +171,58 @@ Criteres d'acceptation :
 Tests couvrant ce critere : `OrderControllerTest.shouldReturnMySales`,
 `OrderServiceTest.shouldReturnMySales`.
 
+## US-08 — Moderation par un administrateur
+
+**En tant qu'** administrateur de la plateforme,
+**je veux** consulter la liste des utilisateurs et des annonces, desactiver
+un compte abusif et supprimer une annonce non conforme,
+**afin de** faire respecter les regles de la plateforme sans dependre d'une
+intervention manuelle en base de donnees.
+
+Cette user story a ete ajoutee apres la v1 pour demontrer, lors de la
+soutenance, le deploiement d'une nouvelle fonctionnalite au travers de la
+chaine CI/CD (`main-pipeline.yml`) plutot que le seul parcours metier
+initial. Elle n'etait pas requise par les consignes (« il ne vous est pas
+demande d'implementer l'ensemble des fonctionnalites ») mais respecte les
+memes regles que le reste du produit : architecture en couches, controle
+d'acces par role, gestion centralisee des erreurs, tests unitaires et
+d'integration.
+
+Criteres d'acceptation :
+
+- Given je suis authentifie avec le role `ADMIN`, When j'appelle
+  `GET /api/admin/users`, Then je recois la liste de tous les comptes avec
+  leur statut (actif/desactive).
+- Given je suis authentifie avec le role `USER`, When j'appelle
+  `GET /api/admin/users` ou toute autre route `/api/admin/**`, Then la
+  requete est refusee (403).
+- Given un compte utilisateur actif, When un administrateur le desactive
+  (`PATCH /api/admin/users/{id}/status`), Then l'utilisateur ne peut plus
+  se connecter (401 explicite : "Ce compte a ete desactive par un
+  administrateur").
+- Given un administrateur, When il tente de desactiver son propre compte,
+  Then l'action est refusee ("Vous ne pouvez pas modifier le statut de
+  votre propre compte") — pour eviter qu'un admin ne se verrouille
+  lui-meme hors de la plateforme.
+- Given une annonce existante (quel que soit son vendeur ou son statut),
+  When un administrateur la supprime (`DELETE /api/admin/items/{id}`),
+  Then l'annonce est retiree du catalogue.
+- Given aucune variable d'environnement `ADMIN_BOOTSTRAP_EMAIL` /
+  `ADMIN_BOOTSTRAP_PASSWORD` n'est fournie, When le backend demarre, Then
+  aucun compte administrateur n'est cree (aucun identifiant admin n'est
+  commite dans le depot).
+
+Tests couvrant ce critere : `AdminServiceTest`, `AdminControllerTest`,
+`AdminBootstrapRunnerTest`, `GlobalExceptionHandlerTest`
+(`AccessDeniedException`, `DisabledException`), `AdminAccessIntegrationTest`
+(backend, test d'integration MockMvc bout en bout) ; `admin.service.spec.ts`,
+`admin.guard.spec.ts`, `admin-users.component.spec.ts`,
+`admin-items.component.spec.ts` (frontend).
+
 ## Hors perimetre (assume, cf. `docs/architecture-and-quality.md#limites-actuelles`)
 
 - paiement reel (carte bancaire, virement) ;
-- role administrateur complet (moderation, litiges) ;
+- litiges entre acheteur et vendeur (la moderation de base est couverte
+  par US-08, mais pas la gestion de litiges) ;
 - messagerie entre acheteur et vendeur ;
 - notation/avis apres transaction.

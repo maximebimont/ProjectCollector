@@ -40,6 +40,9 @@ public class User implements UserDetails {
     private Role role;
 
     @Column(nullable = false)
+    private Boolean enabled;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @PrePersist
@@ -50,6 +53,10 @@ public class User implements UserDetails {
 
         if (role == null) {
             role = Role.USER;
+        }
+
+        if (enabled == null) {
+            enabled = true;
         }
     }
 
@@ -80,6 +87,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled == null || enabled;
     }
 }

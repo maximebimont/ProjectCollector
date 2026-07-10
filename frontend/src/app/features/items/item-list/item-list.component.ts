@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 
 import { ItemService } from '../../../core/services/item.service';
 import { Item } from '../../../core/models/item.model';
+import { loadPage, nextPageIndex, previousPageIndex } from '../../../core/utils/paginated-list';
 
 @Component({
   selector: 'app-item-list',
@@ -26,33 +27,22 @@ export class ItemListComponent implements OnInit {
   }
 
   loadItems(page: number): void {
-    this.isLoading = true;
-    this.errorMessage = '';
-
-    this.itemService.getAvailableItems(page).subscribe({
-      next: (result) => {
-        this.items = result.content;
-        this.currentPage = result.number;
-        this.totalPages = result.totalPages;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error(error);
-        this.errorMessage = 'Impossible de récupérer les objets.';
-        this.isLoading = false;
-      }
-    });
+    loadPage(this, this.itemService.getAvailableItems(page), 'Impossible de récupérer les objets.');
   }
 
   goToPreviousPage(): void {
-    if (this.currentPage > 0) {
-      this.loadItems(this.currentPage - 1);
+    const page = previousPageIndex(this);
+
+    if (page !== null) {
+      this.loadItems(page);
     }
   }
 
   goToNextPage(): void {
-    if (this.currentPage < this.totalPages - 1) {
-      this.loadItems(this.currentPage + 1);
+    const page = nextPageIndex(this);
+
+    if (page !== null) {
+      this.loadItems(page);
     }
   }
 
