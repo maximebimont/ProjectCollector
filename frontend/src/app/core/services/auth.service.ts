@@ -13,6 +13,7 @@ export class AuthService {
   private readonly apiUrl = '/api';
   private readonly tokenKey = 'collector_token';
   private readonly userIdKey = 'collector_user_id';
+  private readonly roleKey = 'collector_role';
 
   constructor(private readonly http: HttpClient) {}
 
@@ -41,10 +42,15 @@ export class AuthService {
   saveSession(response: AuthResponse): void {
     this.saveToken(response.token);
     this.saveCurrentUserId(response.id);
+    this.saveRole(response.role);
   }
 
   saveCurrentUserId(userId: number): void {
     localStorage.setItem(this.userIdKey, String(userId));
+  }
+
+  saveRole(role: 'USER' | 'ADMIN'): void {
+    localStorage.setItem(this.roleKey, role);
   }
 
   getToken(): string | null {
@@ -56,13 +62,22 @@ export class AuthService {
     return userId ? Number(userId) : null;
   }
 
+  getRole(): 'USER' | 'ADMIN' | null {
+    return localStorage.getItem(this.roleKey) as 'USER' | 'ADMIN' | null;
+  }
+
   isAuthenticated(): boolean {
     return !!this.getToken();
+  }
+
+  isAdmin(): boolean {
+    return this.getRole() === 'ADMIN';
   }
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userIdKey);
+    localStorage.removeItem(this.roleKey);
     this.router.navigate(['/login']);
   }
 }

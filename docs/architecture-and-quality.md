@@ -216,7 +216,7 @@ mais qui sont deliberes pour la taille actuelle du projet :
   `PricingPolicy` (ou equivalent) le jour ou plusieurs regles de
   commission doivent coexister (taux variable par categorie, palier,
   periode promotionnelle...) — pas fait aujourd'hui pour eviter
-  d'introduire une abstraction sans second cas d'usage reel.
+  d'introduire une abstraction sans second cas d'usage réel.
 
 ## Endpoints principaux
 
@@ -383,7 +383,7 @@ Limite ou perspective : le projet documente surtout le deploiement local, pas un
 ## Limites actuelles
 
 - pas de paiement reel ;
-- pas de role administrateur complet ;
+- role administrateur basique (gestion des comptes, moderation des annonces, cf US-08 dans `docs/backlog.md`), sans gestion de litiges ni journal d'audit des actions admin ;
 - observabilite limitee aux metriques (Prometheus/Grafana) : pas de logs centralises ni de traces distribuees ;
 - tests frontend et E2E encore partiels ;
 - pas de gestion avancee de la concurrence sur achat simultane ;

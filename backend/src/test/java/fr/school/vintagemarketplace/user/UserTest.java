@@ -15,6 +15,7 @@ class UserTest {
 
         assertThat(user.getCreatedAt()).isNotNull();
         assertThat(user.getRole()).isEqualTo(Role.USER);
+        assertThat(user.isEnabled()).isTrue();
     }
 
     @Test
@@ -23,12 +24,25 @@ class UserTest {
         User user = User.builder()
                 .createdAt(createdAt)
                 .role(Role.ADMIN)
+                .enabled(false)
                 .build();
 
         user.prePersist();
 
         assertThat(user.getCreatedAt()).isEqualTo(createdAt);
         assertThat(user.getRole()).isEqualTo(Role.ADMIN);
+        assertThat(user.isEnabled()).isFalse();
+    }
+
+    @Test
+    void isEnabledShouldReflectDisabledAccount() {
+        User user = User.builder()
+                .email("paul@test.com")
+                .role(Role.USER)
+                .enabled(false)
+                .build();
+
+        assertThat(user.isEnabled()).isFalse();
     }
 
     @Test

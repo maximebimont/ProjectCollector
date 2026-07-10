@@ -95,9 +95,9 @@ la reference a jour pour evaluer l'etat reel du projet.
 
 Le projet s'appuie sur :
 
-- des tests backend unitaires et d'integration (63 tests, ~99 % lignes / ~97 % branches) ;
+- des tests backend unitaires et d'integration (94 tests, ~99 % lignes / ~97 % branches) ;
 - un build frontend automatise ;
-- des tests frontend automatises (87 tests, 100 % de couverture) ;
+- des tests frontend automatises (130 tests, 100 % de couverture) ;
 - un smoke test navigateur Playwright limite ;
 - un test manuel complet valide ;
 - des tests de charge locaux reproductibles avec Siege.
@@ -124,7 +124,7 @@ Ces resultats sont satisfaisants pour un test local de POC, sans valoir une camp
 ## Limites du POC
 
 - pas de paiement reel ;
-- pas de role administrateur complet ;
+- role administrateur basique (gestion des comptes, moderation des annonces), sans gestion de litiges ni journal d'audit des actions admin ;
 - observabilite limitee aux metriques (Prometheus/Grafana), pas de logs centralises ni de traces distribuees ;
 - tests E2E encore limites (un seul smoke test) ;
 - tests de charge reproductibles localement, mais non industrialises dans une pipeline dediee ;

@@ -1,0 +1,72 @@
+<main class="container">
+  <section class="hero">
+    <p class="page-kicker">Panel admin / Utilisateurs</p>
+    <h1 class="section-title">Utilisateurs</h1>
+    <p class="section-copy">Consultez les comptes de la plateforme et désactivez un compte en cas d'abus.</p>
+  </section>
+
+  <section class="actions">
+    <a class="secondary-link" routerLink="/admin/items">
+      Voir les annonces
+    </a>
+  </section>
+
+  <div *ngIf="isLoading" class="state">
+    Chargement des utilisateurs...
+  </div>
+
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="successMessage" class="success">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="actionErrorMessage" class="error">
+    {{ actionErrorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && users.length === 0" class="state">
+    <p class="state-title">Aucun utilisateur trouvé.</p>
+  </div>
+
+  <table *ngIf="!isLoading && !errorMessage && users.length > 0" class="admin-table">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Rôle</th>
+        <th>Statut</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users; trackBy: trackByUserId">
+        <td>{{ user.firstname }} {{ user.lastname }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>
+          <span class="status" [class.disabled]="!user.enabled">
+            {{ user.enabled ? 'Actif' : 'Désactivé' }}
+          </span>
+        </td>
+        <td>
+          <button
+            *ngIf="!isCurrentUser(user); else selfLabel"
+            class="action-button"
+            [class.enable]="!user.enabled"
+            type="button"
+            [disabled]="updatingUserId === user.id"
+            (click)="toggleStatus(user)"
+          >
+            {{ updatingUserId === user.id ? 'Mise à jour...' : (user.enabled ? 'Désactiver' : 'Réactiver') }}
+          </button>
+          <ng-template #selfLabel>
+            <span class="self-label">Votre compte</span>
+          </ng-template>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</main>

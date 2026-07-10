@@ -16,22 +16,29 @@ Ce test manuel complet a ete realise avec succes.
 
 ## Tests backend
 
-Le backend est couvre par 17 classes de tests (63 tests, ~99 % de lignes et
+Le backend est couvre par 22 classes de tests (94 tests, ~99 % de lignes et
 ~97 % de branches en couverture JaCoCo) :
 
 - tests unitaires de services : `OrderServiceTest`, `ItemServiceTest`,
-  `AuthServiceTest` ;
+  `AuthServiceTest`, `AdminServiceTest` ;
 - tests unitaires des controleurs REST (construction manuelle, sans
   contexte Spring) : `OrderControllerTest`, `ItemControllerTest`,
-  `UserControllerTest`, `AuthControllerTest` ;
+  `UserControllerTest`, `AuthControllerTest`, `AdminControllerTest` ;
 - tests unitaires securite : `JwtServiceTest`,
-  `JwtAuthenticationFilterTest`, `CustomUserDetailsServiceTest` ;
+  `JwtAuthenticationFilterTest`, `CustomUserDetailsServiceTest`,
+  `LoginRateLimitFilterTest` ;
 - tests unitaires entites JPA (`@PrePersist`/`@PreUpdate`) : `ItemTest`,
   `OrderTest`, `UserTest` ;
 - tests unitaires DTO : `UserResponseTest`, `MessageResponseTest` ;
-- `GlobalExceptionHandlerTest` : gestion centralisee des erreurs ;
+- `GlobalExceptionHandlerTest` : gestion centralisee des erreurs (y
+  compris les refus d'acces 403 et les comptes desactives 401) ;
+- `AdminBootstrapRunnerTest` : creation conditionnelle du compte admin de
+  demonstration au demarrage ;
 - `PurchaseFlowIntegrationTest` : test d'integration sur le parcours
-  d'achat (base H2 en memoire).
+  d'achat (base H2 en memoire) ;
+- `AdminAccessIntegrationTest` : test d'integration sur le controle
+  d'acces du panel admin (403 pour un USER, 200 pour un ADMIN, login
+  refuse pour un compte desactive).
 
 Ils verifient notamment :
 
@@ -41,7 +48,10 @@ Ils verifient notamment :
 - le passage de l'article en `SOLD` ;
 - des refus sur des cas metier critiques ;
 - l'authentification JWT (generation, validation, filtre de securite) ;
-- les valeurs par defaut poses par les callbacks JPA.
+- les valeurs par defaut poses par les callbacks JPA ;
+- le controle d'acces par role (`hasRole('ADMIN')`) sur le panel admin ;
+- la desactivation/reactivation d'un compte utilisateur par un
+  administrateur, et le refus de desactiver son propre compte.
 
 Commande utile :
 
@@ -63,13 +73,13 @@ Cette etape valide la compilation de l'application Angular et sert de garde-fou 
 
 ## Tests frontend automatises
 
-Le depot contient 16 fichiers de specs (87 tests, 100 % de couverture
+Le depot contient 21 fichiers de specs (130 tests, 100 % de couverture
 Istanbul sur statements/branches/functions/lines) :
 
 - shell applicatif : `app.component.spec.ts` ;
 - services coeur : `auth.service.spec.ts`, `item.service.spec.ts`,
-  `order.service.spec.ts` ;
-- garde et intercepteur : `auth.guard.spec.ts`,
+  `order.service.spec.ts`, `admin.service.spec.ts` ;
+- gardes et intercepteur : `auth.guard.spec.ts`, `admin.guard.spec.ts`,
   `auth.interceptor.spec.ts` ;
 - authentification : `login.component.spec.ts`,
   `register.component.spec.ts` ;
@@ -78,17 +88,27 @@ Istanbul sur statements/branches/functions/lines) :
   `my-items.component.spec.ts` ;
 - commandes : `my-purchases.component.spec.ts`,
   `my-sales.component.spec.ts` ;
-- profil : `profile.component.spec.ts`.
+- profil : `profile.component.spec.ts` ;
+- panel admin : `admin-users.component.spec.ts`,
+  `admin-items.component.spec.ts` ;
+- utilitaire partage : `paginated-list.spec.ts` (logique de pagination
+  factorisee entre le catalogue public et le panel admin, pour eviter la
+  duplication de code entre les deux listes paginees).
 
 Ils apportent une verification sur :
 
-- le shell principal et la navigation contextuelle (espace utilisateur) ;
-- la persistance et la restitution de la session locale ;
+- le shell principal et la navigation contextuelle (espace utilisateur,
+  lien panel admin visible seulement pour un role ADMIN) ;
+- la persistance et la restitution de la session locale (y compris le
+  role) ;
 - l'affichage et le filtrage du catalogue ;
 - les parcours de creation/edition/suppression d'un article ;
 - l'achat, la consultation des achats/ventes ;
 - les cas d'erreur serveur (messages par defaut, absence de reponse) et les
-  branches conditionnelles (garde de route, intercepteur d'authentification).
+  branches conditionnelles (garde de route, intercepteur d'authentification) ;
+- la garde d'acces au panel admin (`adminGuard`) et les actions de
+  moderation (desactivation/reactivation d'un compte, suppression d'une
+  annonce par un administrateur).
 
 Commande utile :
 
@@ -197,9 +217,9 @@ Les rapports de scans sont conserves afin de pouvoir analyser et prioriser les v
 
 ## Ce qui est automatise
 
-- tests backend (63 tests, ~99 % lignes / ~97 % branches) ;
+- tests backend (94 tests, ~99 % lignes / ~97 % branches) ;
 - build frontend ;
-- tests frontend unitaires (87 tests, 100 % statements/branches/functions/lines) ;
+- tests frontend unitaires (130 tests, 100 % statements/branches/functions/lines) ;
 - un smoke test E2E navigateur ;
 - scans qualite et securite en GitHub Actions ;
 - blocage local du `git push` sous les seuils qualite SonarCloud (hook

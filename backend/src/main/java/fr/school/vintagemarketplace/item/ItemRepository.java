@@ -13,4 +13,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @EntityGraph(attributePaths = "seller")
     List<Item> findAllBySellerIdOrderByCreatedAtDesc(Long sellerId);
+
+    @EntityGraph(attributePaths = "seller")
+    Page<Item> findAllBy(Pageable pageable);
 }

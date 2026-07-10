@@ -5,10 +5,11 @@ import { AppComponent } from './app.component';
 import { AuthService } from './core/services/auth.service';
 
 describe('AppComponent', () => {
-  const authServiceSpy = jasmine.createSpyObj<AuthService>('AuthService', ['isAuthenticated', 'logout']);
+  const authServiceSpy = jasmine.createSpyObj<AuthService>('AuthService', ['isAuthenticated', 'isAdmin', 'logout']);
 
   beforeEach(async () => {
     authServiceSpy.isAuthenticated.and.returnValue(false);
+    authServiceSpy.isAdmin.and.returnValue(false);
     authServiceSpy.logout.calls.reset();
 
     await TestBed.configureTestingModule({
@@ -103,5 +104,27 @@ describe('AppComponent', () => {
     spyOnProperty(router, 'url', 'get').and.returnValue('/catalogue');
 
     expect(component.isUserSpaceRoute()).toBeFalse();
+  });
+
+  it('should not show the admin panel link for a non-admin user', () => {
+    authServiceSpy.isAuthenticated.and.returnValue(true);
+    authServiceSpy.isAdmin.and.returnValue(false);
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    const content = fixture.nativeElement.textContent;
+
+    expect(content).not.toContain('Panel admin');
+  });
+
+  it('should show the admin panel link for an admin user', () => {
+    authServiceSpy.isAuthenticated.and.returnValue(true);
+    authServiceSpy.isAdmin.and.returnValue(true);
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+
+    const content = fixture.nativeElement.textContent;
+
+    expect(content).toContain('Panel admin');
   });
 });

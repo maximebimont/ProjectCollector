@@ -19,6 +19,7 @@ class UserResponseTest {
                 .email("paul@test.com")
                 .password("secret")
                 .role(Role.USER)
+                .enabled(true)
                 .createdAt(createdAt)
                 .build();
 
@@ -29,6 +30,7 @@ class UserResponseTest {
         assertThat(response.lastname()).isEqualTo("Dupont");
         assertThat(response.email()).isEqualTo("paul@test.com");
         assertThat(response.role()).isEqualTo(Role.USER);
+        assertThat(response.enabled()).isTrue();
         assertThat(response.createdAt()).isEqualTo(createdAt);
     }
 }

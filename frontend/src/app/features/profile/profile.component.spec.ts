@@ -15,6 +15,7 @@ describe('ProfileComponent', () => {
     lastname: 'Acheteur',
     email: 'alice@test.com',
     role: 'USER',
+    enabled: true,
     createdAt: '2026-07-05T10:00:00Z'
   };
 

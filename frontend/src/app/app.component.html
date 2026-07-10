@@ -39,6 +39,7 @@
         <ng-container *ngIf="authService.isAuthenticated(); else guestLinks">
           <a routerLink="/items/new" routerLinkActive="nav-link-active" class="nav-link">Vendre un objet</a>
           <a routerLink="/profile" routerLinkActive="nav-link-active" [class.nav-link-active]="isUserSpaceRoute()" class="nav-link">Mon espace</a>
+          <a *ngIf="authService.isAdmin()" routerLink="/admin/users" routerLinkActive="nav-link-active" class="nav-link">Panel admin</a>
         </ng-container>
 
         <ng-template #guestLinks>
@@ -74,6 +75,14 @@
             (click)="closeMenu()"
           >
             Mon espace
+          </a>
+          <a
+            *ngIf="authService.isAdmin()"
+            routerLink="/admin/users"
+            class="inline-flex items-center rounded-2xl px-4 py-3 text-sm font-medium leading-none text-slate-700 no-underline hover:bg-slate-100"
+            (click)="closeMenu()"
+          >
+            Panel admin
           </a>
           <button pButton type="button" severity="contrast" icon="pi pi-sign-out" label="" (click)="logout()"></button>
         </ng-container>
