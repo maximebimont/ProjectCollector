@@ -16,8 +16,8 @@ Ce test manuel complet a ete realise avec succes.
 
 ## Tests backend
 
-Le backend est couvre par 17 classes de tests (63 tests, ~99 % de lignes et
-~97 % de branches en couverture JaCoCo) :
+Le backend est couvre par 18 classes de tests (69 tests, ~99 % de lignes et
+~96 % de branches en couverture JaCoCo) :
 
 - tests unitaires de services : `OrderServiceTest`, `ItemServiceTest`,
   `AuthServiceTest` ;
@@ -25,7 +25,8 @@ Le backend est couvre par 17 classes de tests (63 tests, ~99 % de lignes et
   contexte Spring) : `OrderControllerTest`, `ItemControllerTest`,
   `UserControllerTest`, `AuthControllerTest` ;
 - tests unitaires securite : `JwtServiceTest`,
-  `JwtAuthenticationFilterTest`, `CustomUserDetailsServiceTest` ;
+  `JwtAuthenticationFilterTest`, `CustomUserDetailsServiceTest`,
+  `LoginRateLimitFilterTest` ;
 - tests unitaires entites JPA (`@PrePersist`/`@PreUpdate`) : `ItemTest`,
   `OrderTest`, `UserTest` ;
 - tests unitaires DTO : `UserResponseTest`, `MessageResponseTest` ;
@@ -63,7 +64,7 @@ Cette etape valide la compilation de l'application Angular et sert de garde-fou 
 
 ## Tests frontend automatises
 
-Le depot contient 16 fichiers de specs (87 tests, 100 % de couverture
+Le depot contient 16 fichiers de specs (92 tests, 100 % de couverture
 Istanbul sur statements/branches/functions/lines) :
 
 - shell applicatif : `app.component.spec.ts` ;
@@ -197,9 +198,9 @@ Les rapports de scans sont conserves afin de pouvoir analyser et prioriser les v
 
 ## Ce qui est automatise
 
-- tests backend (63 tests, ~99 % lignes / ~97 % branches) ;
+- tests backend (69 tests, ~99 % lignes / ~96 % branches) ;
 - build frontend ;
-- tests frontend unitaires (87 tests, 100 % statements/branches/functions/lines) ;
+- tests frontend unitaires (92 tests, 100 % statements/branches/functions/lines) ;
 - un smoke test E2E navigateur ;
 - scans qualite et securite en GitHub Actions ;
 - blocage local du `git push` sous les seuils qualite SonarCloud (hook

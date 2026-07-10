@@ -95,9 +95,9 @@ la reference a jour pour evaluer l'etat reel du projet.
 
 Le projet s'appuie sur :
 
-- des tests backend unitaires et d'integration (63 tests, ~99 % lignes / ~97 % branches) ;
+- des tests backend unitaires et d'integration (69 tests, ~99 % lignes / ~96 % branches) ;
 - un build frontend automatise ;
-- des tests frontend automatises (87 tests, 100 % de couverture) ;
+- des tests frontend automatises (92 tests, 100 % de couverture) ;
 - un smoke test navigateur Playwright limite ;
 - un test manuel complet valide ;
 - des tests de charge locaux reproductibles avec Siege.
